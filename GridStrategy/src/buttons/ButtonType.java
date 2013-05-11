@@ -2,7 +2,8 @@ package buttons;
 
 public enum ButtonType
 {
-	NEXT_TURN("Next Turn");
+	NEXT_TURN("Next Turn"), MAIN_MENU("Main Menu"), DEPLOY_UNIT("Deploy Unit"), 
+	CANCEL("Cancel");
 	
 	private String text;
 	

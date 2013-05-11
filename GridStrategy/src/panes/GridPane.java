@@ -8,41 +8,95 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import main.Main;
+
+import screens.GameScreen;
+
+import buttons.ColumnButton;
+
 import data.UnitType;
 
 @SuppressWarnings("serial")
 public class GridPane extends JPanel
 {
-	private final static int GRIDWIDTH = 10;
-	private final static int GRIDHEIGHT = 10;
 	private final static int CELLWIDTH = 40;
 	private final static int CELLHEIGHT = 40;
 	
+	private GameScreen gameScreen;
 	private ArrayList<MyLine> lines;
+	private ColumnButton[] columnButtons;
 	private Cell[][] cells;
 	private Integer gridWidth;
 	private Integer gridHeight;
+	private Integer rowNumbers[];
+	private Integer columnNumbers[];
 	
-	public GridPane()
+	public GridPane(GameScreen gameScreen)
 	{
 		super();
+		this.gameScreen = gameScreen;
+		this.setLayout(null);
 		this.setupBoundaries();
+		this.setupNumbers();
 		this.setupLines();
 		this.setupCells();
+		this.setupColumnButtons();
+	}
+	
+	public void disableColumnButtons()
+	{
+		for (int i = 0; i < Main.getGridwidth(); i++)
+		{
+			this.columnButtons[i].setEnabled(false);
+		}
+	}
+	
+	public void enableValidColumnButtons()
+	{
+		Integer[] deploymentPoints = this.gameScreen.getPlayer1DeploymentPoints();
+		for (int i = 0; i < Main.getGridwidth(); i++)
+		{
+			int dep = deploymentPoints[i];
+			if (cells[i][dep].unitType == null)
+				this.columnButtons[i].setEnabled(true);
+		}
+	}
+	
+	private void setupNumbers()
+	{
+		this.rowNumbers = new Integer[10];
+		this.columnNumbers = new Integer[10];
+		for (int i = 0; i < Main.getGridwidth(); i++)
+		{
+			this.columnNumbers[i] = i + (i * CELLWIDTH) + 1;
+			for (int j = 0; j < Main.getGridheight(); j++)
+			{
+				this.rowNumbers[j] = j + (j * CELLHEIGHT) + 1;
+			}
+		}
+	}
+	
+	private void setupColumnButtons()
+	{
+		ColumnButton.setWidth(CELLWIDTH);
+		ColumnButton.setHeight(CELLHEIGHT);
+		this.columnButtons = new ColumnButton[Main.getGridwidth()];
+		
+		for (int i = 0; i < Main.getGridwidth(); i++)
+		{
+			this.columnButtons[i] = new ColumnButton(i, this.gameScreen);
+			this.add(this.columnButtons[i]);
+		}
 	}
 	
 	private void setupCells()
 	{
-		this.cells = new Cell[GRIDWIDTH][GRIDHEIGHT];
-		Integer xpos;
-		Integer ypos;
-		for (int i = 0; i < GRIDWIDTH; i++)
+		this.cells = new Cell[Main.getGridwidth()][Main.getGridheight()];
+		for (int i = 0; i < Main.getGridwidth(); i++)
 		{
-			xpos = i + (i * CELLWIDTH) + 1;
-			for (int j = 0; j < GRIDHEIGHT; j++)
+			for (int j = 0; j < Main.getGridheight(); j++)
 			{
-				ypos = j + (j * CELLHEIGHT) + 1;
-				cells[i][j] = new Cell(xpos, ypos);
+				cells[i][j] = new Cell(this.columnNumbers[i], this.rowNumbers[j]);
 			}
 		}
 	}
@@ -50,19 +104,19 @@ public class GridPane extends JPanel
 	public void setCellContent(int x, int y, UnitType unitType)
 	{
 		Cell cell = this.cells[x][y];
-		cell.image = unitType.getImage();
+		cell.unitType = unitType;
 	}
 	
 	public void deleteCellContent(int x, int y)
 	{
 		Cell cell = this.cells[x][y];
-		cell.image = null;
+		cell.unitType = null;
 	}
 	
 	private void setupBoundaries()
 	{
-		this.gridWidth = GRIDWIDTH * (CELLWIDTH + 1);
-		this.gridHeight = GRIDHEIGHT * (CELLHEIGHT + 1);
+		this.gridWidth = Main.getGridwidth() * (CELLWIDTH + 1);
+		this.gridHeight = Main.getGridheight() * (CELLHEIGHT + 1);
 	}
 	
 	private void setupLines()
@@ -120,6 +174,17 @@ public class GridPane extends JPanel
 		
 		this.drawLines(g2d, xpos, ypos);
 		this.drawCells(g2d, xpos, ypos);
+		this.placeColumnButtons(xpos, ypos);
+	}
+	
+	private void placeColumnButtons(Integer xpos, Integer ypos)
+	{
+		Integer yBase = this.rowNumbers[Main.getGridheight()-1] + CELLHEIGHT + 1 + ypos;
+		
+		for (int i = 0; i < Main.getGridwidth(); i++)
+		{
+			this.columnButtons[i].setLocation(this.columnNumbers[i] + xpos, yBase);
+		}		
 	}
 	
 	private void drawCells(Graphics2D g2d, Integer xpos, Integer ypos)
@@ -128,9 +193,9 @@ public class GridPane extends JPanel
 		{
 			for (Cell cell : cellColumn)
 			{
-				if (cell.image != null)
+				if (cell.unitType != null)
 				{
-					g2d.drawImage(cell.image, cell.X + xpos, cell.Y + ypos, this);
+					g2d.drawImage(cell.getImage(), cell.X + xpos, cell.Y + ypos, this);
 				}
 			}
 		}
@@ -156,12 +221,17 @@ public class GridPane extends JPanel
 	{
 		public Integer X;
 		public Integer Y;
-		public BufferedImage image;
+		public UnitType unitType;
 		
 		public Cell(Integer X, Integer Y)
 		{
 			this.X = X;
 			this.Y = Y;
+		}
+		
+		public BufferedImage getImage()
+		{
+			return this.unitType.getImage();
 		}
 	}
 }

@@ -1,17 +1,13 @@
 package data;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
+import main.Main;
 
 public enum UnitType
 {
 	TEST_UNIT("TestG");
 	
-	private static final String IMAGES = "Images\\";
-	private static final String FILEEXTENSION = ".png";
 	private BufferedImage image;
 	
 	public BufferedImage getImage() {
@@ -21,15 +17,11 @@ public enum UnitType
 	private UnitType(String filename)
 	{
 		try {
-			this.image = loadImage(filename);
+			this.image = Main.loadImage(filename);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private BufferedImage loadImage(String filename) throws IOException
-	{
-		File testG = new File(IMAGES + filename + FILEEXTENSION);
-		return ImageIO.read(testG);
-	}
+
 }
