@@ -12,7 +12,7 @@ public class UnitButton	extends JButton
 	
 	public UnitButton(UnitType unitType)
 	{
-		super(new ImageIcon(unitType.getImage()));
+		super(new ImageIcon(unitType.getImage(true)));
 		this.unitType = unitType;
 	}
 

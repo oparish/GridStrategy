@@ -1,5 +1,6 @@
 package screens;
 
+import static screens.GameScreenState.COMPUTER_PLAYING;
 import static screens.GameScreenState.DEPLOYING_UNIT;
 import static screens.GameScreenState.STANDARD;
 
@@ -7,10 +8,22 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
+import data.GameGrid;
+import data.Unit;
 import data.UnitType;
 import dialogs.UnitDialog;
+import events.MyEvent;
+import events.MyEventListener;
+import events.MyEventSpeaker;
+import events.OneUnitEvent;
+import events.TurnEvent;
+import events.TwoPositionEvent;
+import events.TwoUnitEvent;
 
+import animation.Animation;
+import animation.Animator;
 import buttons.ColumnButton;
 import buttons.ControlButton;
 import main.Main;
@@ -20,60 +33,55 @@ import panes.GridPane;
 import panes.MessagePane;
 
 @SuppressWarnings("serial")
-public class GameScreen extends JFrame implements ActionListener
+public class GameScreen extends JFrame implements ActionListener, MyEventListener
 {
 	private GridPane gridPane;
 	private ControlPane controlPane;
 	private MessagePane messagePane;
 	private GameScreenState screenState;
-	
-	private Integer[] player1DeploymentPoints;
-	private Integer[] player2DeploymentPoints;
+	private GameGrid gameGrid;
+	private Unit unitToDeploy;
 
-	private UnitType typeToDeploy;
-	private int turnMoves;
 
 	public GameScreen()
 	{
 		super();
-		this.setupDeploymentPoints();
 		this.setLayout(new GridBagLayout());
 		this.gridPane = new GridPane(this);
+		Animator.setGridPane(this.gridPane);
 		this.controlPane = new ControlPane(this);
 		this.messagePane = new MessagePane();
+		JScrollPane jScrollPane = new JScrollPane(this.messagePane);
 		this.add(this.gridPane, Main.getFillConstraints(0,0,1,2));
 		this.add(this.controlPane, Main.getFillConstraints(1,0,1,1));
-		this.add(this.messagePane, Main.getFillConstraints(1,1,1,1));
+		this.add(jScrollPane, Main.getFillConstraints(1,1,1,1));
+
 		this.switchScreenState(STANDARD);
-		this.newTurn();
+		MyEventSpeaker speaker = new MyEventSpeaker();
+		speaker.addEventListener(this);
+		this.gameGrid = new GameGrid(speaker);
 	}
 	
-	public Integer[] getPlayer1DeploymentPoints() {
-		return player1DeploymentPoints;
-	}
-	
-	public Integer[] getPlayer2DeploymentPoints() {
-		return player2DeploymentPoints;
-	}
-	
-	private void newTurn()
+	public Integer[] getPlayer1DeploymentPoints()
 	{
-		turnMoves = 0;
+		return this.gameGrid.getPlayer1DeploymentPoints();
 	}
 	
-	private void setupDeploymentPoints()
+	private void nextTurn()
 	{
-		int gridWidth = Main.getGridwidth();
-		this.player1DeploymentPoints = new Integer[gridWidth];
-		this.player2DeploymentPoints = new Integer[gridWidth];
+		this.gameGrid.nextTurn();
+	}
+	
+	private void startHumanTurn()
+	{
+		switchScreenState(STANDARD);
+	}
+	
+	private void startComputerTurn()
+	{
+		switchScreenState(COMPUTER_PLAYING);
+	}
 		
-		for (int i = 0; i < gridWidth; i++)
-		{
-			this.player1DeploymentPoints[i] = Main.getGridheight() - 1;
-			this.player2DeploymentPoints[i] = 0;
-		}
-	}
-	
 	public GameScreenState getScreenState() {
 		return screenState;
 	}
@@ -89,20 +97,29 @@ public class GameScreen extends JFrame implements ActionListener
 		case DEPLOYING_UNIT:
 			this.switchToDeployingScreen();
 			break;
+		case COMPUTER_PLAYING:
+			this.switchToComputerPlayingScreen();
+			break;
 		default:
 		}
+	}
+	
+	private void switchToComputerPlayingScreen()
+	{
+		this.gridPane.disableColumnButtons();
+		this.controlPane.disableControls();
 	}
 	
 	private void switchToStandardScreen()
 	{
 		this.gridPane.disableColumnButtons();
-		this.controlPane.runningOperation(false);
+		this.controlPane.runningPlayerOperation(false);
 	}
 	
 	private void switchToDeployingScreen()
 	{
 		this.gridPane.enableValidColumnButtons();
-		this.controlPane.runningOperation(true);
+		this.controlPane.runningPlayerOperation(true);
 	}
 	
 	private void selectUnit()
@@ -112,23 +129,15 @@ public class GameScreen extends JFrame implements ActionListener
 	
 	public void readyToDeployUnit(UnitType unitType)
 	{
-		this.typeToDeploy = unitType;
+		this.unitToDeploy = new Unit(true, unitType);
 		this.switchScreenState(DEPLOYING_UNIT);
 	}
 	
 	public void deployUnit(ColumnButton columnButton)
 	{
-		int xpos = columnButton.getXpos();
-		int dep = this.player1DeploymentPoints[xpos];
-		this.gridPane.setCellContent(xpos, dep, this.typeToDeploy);
-		this.gridPane.repaint();
+		int xpos = columnButton.getXPos();
+		this.gameGrid.deployUnit(this.unitToDeploy, xpos);
 		this.switchScreenState(STANDARD);
-		this.noteMove();
-	}
-	
-	private void nextTurn()
-	{
-		
 	}
 	
 	public GridPane getGridPane() {
@@ -142,25 +151,6 @@ public class GameScreen extends JFrame implements ActionListener
 	private void cancelOperation()
 	{
 		this.switchScreenState(STANDARD);
-	}
-	
-	private void noteMove()
-	{
-		this.turnMoves++;
-		this.checkTurnMoves();
-	}
-	
-	private void checkTurnMoves()
-	{
-		if (this.turnMoves == Main.getMovesperturn())
-		{
-			changePlayer();
-		}
-	}
-	
-	private void changePlayer()
-	{
-		
 	}
 
 	@Override
@@ -190,5 +180,108 @@ public class GameScreen extends JFrame implements ActionListener
 		{
 			this.deployUnit((ColumnButton) button);
 		}
+	}
+
+	@Override
+	public void receiveEvent(MyEvent event)
+	{
+		Integer xPos = null;
+		Integer yPos = null; 
+		Unit unit1 = null;
+		Integer xPos2 = null;
+		Integer yPos2 = null;
+		Unit unit2 = null;
+		Boolean isPlayer1Turn = null;
+		
+		if (event instanceof TurnEvent)
+			isPlayer1Turn = ((TurnEvent) event).isPlayer1();
+		else if (event instanceof OneUnitEvent)
+		{
+			OneUnitEvent oneUnitEvent = (OneUnitEvent) event;
+			unit1 = oneUnitEvent.getUnit();
+			xPos = oneUnitEvent.getXpos1();
+			yPos = oneUnitEvent.getyPos1();
+			if (event instanceof TwoPositionEvent)
+			{
+				TwoPositionEvent twoPositionEvent = (TwoPositionEvent) event;
+				xPos2 = twoPositionEvent.getxPos2();
+				yPos2 = twoPositionEvent.getyPos2();
+				if (event instanceof TwoUnitEvent)
+					unit2 = ((TwoUnitEvent) event).getUnit2();
+			}
+		}
+		
+		switch(event.getType())
+		{
+			case NEXT_TURN:
+				showNextTurn(isPlayer1Turn);
+				break;
+			case NEW_TURN:
+				showNewTurn(isPlayer1Turn);
+				break;
+			case DEPLOYING_UNIT:
+				paintUnitDeploy(xPos, yPos, unit1);
+				break;
+			case MOVING_UNIT:
+				paintUnitMove(xPos, yPos, unit1, xPos2, yPos2);
+				break;
+			case PLACE_DEPLOY_POINT:
+				paintDeployPoint(xPos, yPos, unit1);
+				break;
+			case COMBAT:
+				paintCombat(xPos, yPos, unit1, xPos2, yPos2, unit2);
+				break;
+			case UNITBASEATTACK:
+				paintBaseAttack(xPos, yPos, unit1);
+				break;
+		}
+	}
+	
+	private void showNextTurn(boolean isPlayer1Turn)
+	{
+		
+	}
+	
+	private void showNewTurn(boolean isPlayer1Turn)
+	{
+		if (isPlayer1Turn)
+			this.startHumanTurn();
+		else
+			this.startComputerTurn();
+	}
+	
+	private void paintUnitDeploy(int xPos, int yPos, Unit unit1)
+	{
+		Animation deployAnimation = Animator.getDeployAnimation(unit1);
+		deployAnimation.playAnimation(xPos, yPos);
+	}
+	
+	private void paintUnitMove(int xPos, int yPos, Unit unit1, int xPos2, int yPos2)
+	{
+		Animation moveAnimation = Animator.getSimpleMoveAnimation(unit1);
+		moveAnimation.playTwoCellAnimation(xPos, yPos, xPos2, yPos2);
+	}
+	
+	private void paintCombat(int xPos, int yPos, Unit unit1, int xPos2, 
+			int yPos2, Unit unit2)
+	{
+		Animation combatAnimation = Animator.getSimpleCombatAnimation(unit1);
+		combatAnimation.playTwoCellAnimation(xPos, yPos, xPos2, yPos2);
+	}
+	
+	private void paintDeployPoint(int xPos, int yPos, Unit unit1)
+	{
+		
+	}
+	
+	private void paintBaseAttack(int xPos, int yPos, Unit unit1)
+	{
+		Animation combatAnimation = Animator.getBaseAttackAnimation(unit1);
+		combatAnimation.playAnimation(xPos, yPos);
+		this.messagePane.add("Base Attack");
+		if (unit1.isOwnedByPlayer1())
+			this.messagePane.add("Player 2 HP: " + this.gameGrid.getPlayer2HP());
+		else
+			this.messagePane.add("Player 1 HP: " + this.gameGrid.getPlayer1HP());
 	}
 }

@@ -7,7 +7,6 @@ import static buttons.ButtonType.NEXT_TURN;
 import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 
-import buttons.ButtonType;
 import buttons.ControlButton;
 import main.Main;
 import screens.GameScreen;
@@ -28,12 +27,20 @@ public class ControlPane extends JPanel
 	}
 	
 	
-	public void runningOperation(boolean value)
+	public void runningPlayerOperation(boolean value)
 	{
 		nextTurnButton.setEnabled(!value);
 		mainMenuButton.setEnabled(!value);
 		deployUnitButton.setEnabled(!value);
 		cancelButton.setEnabled(value);
+	}
+	
+	public void disableControls()
+	{
+		nextTurnButton.setEnabled(false);
+		mainMenuButton.setEnabled(false);
+		deployUnitButton.setEnabled(false);
+		cancelButton.setEnabled(false);
 	}
 	
 	private void setupButtons(GameScreen gameScreen)

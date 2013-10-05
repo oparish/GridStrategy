@@ -1,11 +1,20 @@
 package panes;
 
+import static main.Main.CELLHEIGHT;
+import static main.Main.CELLWIDTH;
+
+import java.awt.AWTEvent;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.EventObject;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import main.Main;
@@ -14,224 +23,106 @@ import screens.GameScreen;
 
 import buttons.ColumnButton;
 
-import data.UnitType;
+import data.GameGrid;
+import data.Unit;
+import events.EventType;
+import events.MyEvent;
 
 @SuppressWarnings("serial")
 public class GridPane extends JPanel
-{
-	private final static int CELLWIDTH = 40;
-	private final static int CELLHEIGHT = 40;
-	
+{	
+	private ColumnButtonPanel columnButtonPanel;
+	private CellPanel cellPanel;
+	private GridInfo gridInfo;
 	private GameScreen gameScreen;
-	private ArrayList<MyLine> lines;
-	private ColumnButton[] columnButtons;
-	private Cell[][] cells;
-	private Integer gridWidth;
-	private Integer gridHeight;
-	private Integer rowNumbers[];
-	private Integer columnNumbers[];
 	
 	public GridPane(GameScreen gameScreen)
 	{
 		super();
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		this.gridInfo = new GridInfo();
 		this.gameScreen = gameScreen;
-		this.setLayout(null);
 		this.setupBoundaries();
 		this.setupNumbers();
-		this.setupLines();
 		this.setupCells();
-		this.setupColumnButtons();
+		this.setupCellPanel();
+		this.setupColumnButtonPanel();
+	}
+	
+	private void setupCellPanel()
+	{
+		this.cellPanel = new CellPanel(this.gridInfo);
+		this.add(this.cellPanel);
+	}
+	
+	private void setupColumnButtonPanel()
+	{
+		this.columnButtonPanel = new ColumnButtonPanel(this.gridInfo, 
+				this.gameScreen);
+		this.add(this.columnButtonPanel);
 	}
 	
 	public void disableColumnButtons()
 	{
-		for (int i = 0; i < Main.getGridwidth(); i++)
-		{
-			this.columnButtons[i].setEnabled(false);
-		}
+		this.columnButtonPanel.disableColumnButtons();
 	}
 	
 	public void enableValidColumnButtons()
 	{
-		Integer[] deploymentPoints = this.gameScreen.getPlayer1DeploymentPoints();
-		for (int i = 0; i < Main.getGridwidth(); i++)
-		{
-			int dep = deploymentPoints[i];
-			if (cells[i][dep].unitType == null)
-				this.columnButtons[i].setEnabled(true);
-		}
+		this.columnButtonPanel.enableValidColumnButtons();
 	}
 	
 	private void setupNumbers()
 	{
-		this.rowNumbers = new Integer[10];
-		this.columnNumbers = new Integer[10];
-		for (int i = 0; i < Main.getGridwidth(); i++)
+		this.gridInfo.rowNumbers = new Integer[10];
+		this.gridInfo.columnNumbers = new Integer[10];
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			this.columnNumbers[i] = i + (i * CELLWIDTH) + 1;
-			for (int j = 0; j < Main.getGridheight(); j++)
+			this.gridInfo.columnNumbers[i] = i + (i * Main.CELLWIDTH) + 1;
+			for (int j = 0; j < Main.GRIDHEIGHT; j++)
 			{
-				this.rowNumbers[j] = j + (j * CELLHEIGHT) + 1;
+				this.gridInfo.rowNumbers[j] = j + (j * Main.CELLHEIGHT) + 1;
 			}
 		}
-	}
-	
-	private void setupColumnButtons()
-	{
-		ColumnButton.setWidth(CELLWIDTH);
-		ColumnButton.setHeight(CELLHEIGHT);
-		this.columnButtons = new ColumnButton[Main.getGridwidth()];
-		
-		for (int i = 0; i < Main.getGridwidth(); i++)
-		{
-			this.columnButtons[i] = new ColumnButton(i, this.gameScreen);
-			this.add(this.columnButtons[i]);
-		}
+		this.gridInfo.baseY = this.gridInfo.rowNumbers[Main.GRIDHEIGHT-1] 
+				+ Main.CELLHEIGHT + 1;
 	}
 	
 	private void setupCells()
 	{
-		this.cells = new Cell[Main.getGridwidth()][Main.getGridheight()];
-		for (int i = 0; i < Main.getGridwidth(); i++)
+		this.gridInfo.cells = new Cell[Main.GRIDWIDTH][Main.GRIDHEIGHT];
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			for (int j = 0; j < Main.getGridheight(); j++)
+			for (int j = 0; j < Main.GRIDHEIGHT; j++)
 			{
-				cells[i][j] = new Cell(this.columnNumbers[i], this.rowNumbers[j]);
+				this.gridInfo.cells[i][j] = 
+						new Cell(this.gridInfo.columnNumbers[i], 
+								this.gridInfo.rowNumbers[j]);
 			}
 		}
 	}
 	
-	public void setCellContent(int x, int y, UnitType unitType)
+	public void setCellContent(int x, int y, Unit unit)
 	{
-		Cell cell = this.cells[x][y];
-		cell.unitType = unitType;
+		Cell cell = this.gridInfo.cells[x][y];
+		cell.unit = unit;
+		new MyEvent(this, EventType.DEPLOYING_UNIT);
 	}
 	
 	public void deleteCellContent(int x, int y)
 	{
-		Cell cell = this.cells[x][y];
-		cell.unitType = null;
+		Cell cell = this.gridInfo.cells[x][y];
+		cell.unit = null;
+	}
+	
+	public void repaintCell(int x, int y)
+	{
+		this.cellPanel.repaintCell(x, y);
 	}
 	
 	private void setupBoundaries()
 	{
-		this.gridWidth = Main.getGridwidth() * (CELLWIDTH + 1);
-		this.gridHeight = Main.getGridheight() * (CELLHEIGHT + 1);
-	}
-	
-	private void setupLines()
-	{
-		this.lines = new ArrayList<MyLine>();
-			
-		ArrayList<Integer> lineXPositions = setupLinePositions(gridWidth, CELLWIDTH);
-		ArrayList<Integer> lineYPositions = setupLinePositions(gridHeight, CELLHEIGHT);		
-		
-		for (Integer xPos : lineXPositions)
-		{
-			MyLine columnLine = new MyLine(xPos, 0, xPos, this.gridWidth);
-			this.lines.add(columnLine);
-		}
-		
-		for (Integer yPos : lineYPositions)
-		{
-			MyLine rowLine = new MyLine(0, yPos, this.gridHeight, yPos);
-			this.lines.add(rowLine);
-		}
-	}
-	
-	private ArrayList<Integer> setupLinePositions(int gridLength, int cellLength)
-	{
-		ArrayList<Integer> linePositions = new ArrayList<Integer>();
-		for (int i = 0; i < gridLength+1; i += (cellLength+1))
-		{
-			linePositions.add(i);
-		}
-		return linePositions;
-	}
-	
-	private void drawLines(Graphics2D g2d, Integer xpos, Integer ypos)
-	{	
-		for (MyLine line : lines)
-		{
-			Integer X1 = line.X1 + xpos;
-			Integer X2 = line.X2 + xpos;
-			Integer Y1 = line.Y1 + ypos;
-			Integer Y2 = line.Y2 + ypos;
-			g2d.drawLine(X1, Y1, X2, Y2);
-		}
-	}
-	
-	public void paint(Graphics g)
-	{
-		super.paint(g);
-		
-		Graphics2D g2d = (Graphics2D) g;
-		Rectangle bounds = g2d.getClipBounds();
-		Double xDouble =(Double) (bounds.getWidth() - this.gridWidth)/2;
-		Double yDouble =(Double) (bounds.getHeight() - this.gridHeight)/2;
-		Integer xpos = xDouble.intValue();
-		Integer ypos = yDouble.intValue();
-		
-		this.drawLines(g2d, xpos, ypos);
-		this.drawCells(g2d, xpos, ypos);
-		this.placeColumnButtons(xpos, ypos);
-	}
-	
-	private void placeColumnButtons(Integer xpos, Integer ypos)
-	{
-		Integer yBase = this.rowNumbers[Main.getGridheight()-1] + CELLHEIGHT + 1 + ypos;
-		
-		for (int i = 0; i < Main.getGridwidth(); i++)
-		{
-			this.columnButtons[i].setLocation(this.columnNumbers[i] + xpos, yBase);
-		}		
-	}
-	
-	private void drawCells(Graphics2D g2d, Integer xpos, Integer ypos)
-	{
-		for (Cell[] cellColumn : this.cells)
-		{
-			for (Cell cell : cellColumn)
-			{
-				if (cell.unitType != null)
-				{
-					g2d.drawImage(cell.getImage(), cell.X + xpos, cell.Y + ypos, this);
-				}
-			}
-		}
-	}
-	
-	private class MyLine
-	{
-		public Integer X1;
-		public Integer X2;
-		public Integer Y1;
-		public Integer Y2;
-		
-		public MyLine(Integer X1, Integer Y1, Integer X2, Integer Y2)
-		{
-			this.X1 = X1;
-			this.Y1 = Y1;
-			this.X2 = X2;
-			this.Y2 = Y2;
-		}
-	}
-	
-	private class Cell
-	{
-		public Integer X;
-		public Integer Y;
-		public UnitType unitType;
-		
-		public Cell(Integer X, Integer Y)
-		{
-			this.X = X;
-			this.Y = Y;
-		}
-		
-		public BufferedImage getImage()
-		{
-			return this.unitType.getImage();
-		}
+		this.gridInfo.gridWidth = Main.GRIDWIDTH * (Main.CELLWIDTH + 1);
+		this.gridInfo.gridHeight = Main.GRIDHEIGHT * (Main.CELLHEIGHT + 1);
 	}
 }

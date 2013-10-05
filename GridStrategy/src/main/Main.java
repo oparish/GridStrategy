@@ -11,23 +11,38 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import data.UnitType;
+import ai.CPlayer;
+import ai.Spawner;
+
+import data.Unit;
 
 import screens.GameScreen;
 
 public class Main
 {
-	private final static int GRIDWIDTH = 10;
-	private final static int GRIDHEIGHT = 10;
-	private final static int MOVESPERTURN = 1;
+	public final static int PLAYER1_MAXHP = 10;
+	public final static int PLAYER2_MAXHP = 10;
+	public final static int GRIDWIDTH = 10;
+	public final static int GRIDHEIGHT = 10;
+	public final static int MOVESPERTURN = 1;
+	public final static boolean PLAYER1STARTS = true;
 
-	private static final String IMAGES = "Images\\";
-	private static final String FILEEXTENSION = ".png";
+	public static final String IMAGES = "Images\\";
+	public static final String FILEEXTENSION = ".png";
+	
+	public final static int CELLWIDTH = 40;
+	public final static int CELLHEIGHT = 40;
 	
 	private int screenWidth;
 	private int screenHeight;
+	private static CPlayer testPlayer;
 
-	private GameScreen gameScreen;
+	public static CPlayer getTestPlayer() {
+		return Main.testPlayer;
+	}
+
+	private static GameScreen gameScreen;
+
 	private static Main main;
 
 	public static Main getMain() {
@@ -36,24 +51,14 @@ public class Main
 
 	Main()
 	{
+		Main.testPlayer = Spawner.createCPlayer(false);
+		CPlayer.showCPlayer(Main.testPlayer);
 		this.setupGameScreen();
-	}
-	
-	public static int getMovesperturn() {
-		return MOVESPERTURN;
-	}
-	
-	public static int getGridwidth() {
-		return GRIDWIDTH;
-	}
-	
-	public static int getGridheight() {
-		return GRIDHEIGHT;
 	}
 	
 	private void setupGameScreen()
 	{
-		this.gameScreen = new GameScreen();
+		Main.gameScreen = new GameScreen();
 		gameScreen.setUndecorated(true);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.screenWidth = screenSize.width;
@@ -78,7 +83,6 @@ public class Main
 	public static void main(String args[])
 	{
 		Main.main = new Main();
-//		Main.test1(main);
 	}
 	
 	public static GridBagConstraints getAnchoredConstraints(int xpos, int ypos)
@@ -117,8 +121,9 @@ public class Main
 	
 	private static void test1(Main main)
 	{
-			main.gameScreen.getGridPane().setCellContent(4, 4, TEST_UNIT);
-			main.gameScreen.getGridPane().setCellContent(1, 5, TEST_UNIT);
-			main.gameScreen.getGridPane().repaint();
+		Unit testUnit = new Unit(true, TEST_UNIT);
+		main.gameScreen.getGridPane().setCellContent(4, 4, testUnit);
+		main.gameScreen.getGridPane().setCellContent(1, 5, testUnit);
+		main.gameScreen.getGridPane().repaint();
 	}
 }

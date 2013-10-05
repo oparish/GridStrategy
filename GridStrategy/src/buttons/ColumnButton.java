@@ -15,10 +15,10 @@ public class ColumnButton extends JButton
 	private static ImageIcon arrowIcon;
 	private static Integer width;
 	private static Integer height;
-	private int xpos;
+	private int xPos;
 	
-	public int getXpos() {
-		return xpos;
+	public int getXPos() {
+		return xPos;
 	}
 	
 	public static void setWidth(Integer width) {
@@ -41,7 +41,7 @@ public class ColumnButton extends JButton
 	public ColumnButton(int xpos, ActionListener actionListener)
 	{
 		super(ColumnButton.arrowIcon);
-		this.xpos = xpos;
+		this.xPos = xpos;
 		this.setSize(ColumnButton.width, ColumnButton.height);
 		this.addActionListener(actionListener);
 	}
