@@ -184,6 +184,7 @@ public class GameGrid
 		if (((start - potentialEndPos) * incrementor) > 0)
 		{
 			unitBaseAttack(unit1);
+			this.gridContents[xPos][yPos] = null;
 			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, xPos, 
 					yPos, unit1));
 		}
