@@ -195,15 +195,16 @@ public class GameGrid
 	
 	private void unitBaseAttack(Unit unit)
 	{
+		int damage = unit.getUnitType().getBaseDamage();
 		if (unit.isOwnedByPlayer1())
 		{
-			this.player2HP--;
+			this.player2HP -= damage;
 			if (this.player2HP >= 0)
 				this.player2Loss();
 		}
 		else
 		{
-			this.player1HP--;
+			this.player1HP -= damage;
 			if (this.player1HP >= 0)
 				this.player1Loss();
 		}

@@ -6,12 +6,17 @@ import main.Main;
 
 public enum UnitType
 {
-	TEST_UNIT("TestG", "TestE", 1);
+	TEST_UNIT("TestG", "TestE", 1, 1);
 	
 	private BufferedImage image1;
 	private BufferedImage image2;
 	private final int speed;
+	private final int baseDamage;
 	
+	public int getBaseDamage() {
+		return baseDamage;
+	}
+
 	public int getSpeed() {
 		return speed;
 	}
@@ -23,7 +28,7 @@ public enum UnitType
 			return this.image2;
 	}
 
-	private UnitType(String filename1, String filename2, int speed)
+	private UnitType(String filename1, String filename2, int speed, int baseDamage)
 	{
 		try {
 			this.image1 = Main.loadImage(filename1);
@@ -32,6 +37,7 @@ public enum UnitType
 			e.printStackTrace();
 		}
 		this.speed = speed;
+		this.baseDamage = baseDamage;
 	}
 	
 
