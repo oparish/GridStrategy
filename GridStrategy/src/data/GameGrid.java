@@ -278,18 +278,20 @@ public class GameGrid
 	private void randomPlayerTurn()
 	{
 		int startPos;
+		Integer[] deploymentPoints;
+		
 		if (this.isPlayer1Turn)
 		{
-			startPos = Main.GRIDHEIGHT - 1;
+			deploymentPoints = this.player1DeploymentPoints;
 		}
 		else
 		{
-			startPos = 0;
+			deploymentPoints = this.player2DeploymentPoints;
 		}
 		ArrayList<Integer> possiblePositions = new ArrayList<Integer>();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			if (this.gridContents[i][startPos] == null)
+			if (this.gridContents[i][deploymentPoints[i]] == null)
 				possiblePositions.add(i);
 		}
 		int actionNumber = GameGrid.random.nextInt(possiblePositions.size() + 1);
