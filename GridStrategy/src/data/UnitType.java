@@ -6,12 +6,13 @@ import main.Main;
 
 public enum UnitType
 {
-	TEST_UNIT("TestG", "TestE", 1, 1);
+	TEST_UNIT("TestG", "TestE", 1, 1, new UnitCategory[]{});
 	
 	private BufferedImage image1;
 	private BufferedImage image2;
 	private final int speed;
 	private final int baseDamage;
+	private final UnitCategory[] categories;
 	
 	public int getBaseDamage() {
 		return baseDamage;
@@ -20,6 +21,16 @@ public enum UnitType
 	public int getSpeed() {
 		return speed;
 	}
+	
+	public boolean hasCategory(UnitCategory testCategory)
+	{
+		for (UnitCategory category : this.categories)
+		{
+			if (category == testCategory)
+				return true;
+		}
+		return false;
+	}
 
 	public BufferedImage getImage(boolean player1) {
 		if (player1)
@@ -27,8 +38,9 @@ public enum UnitType
 		else
 			return this.image2;
 	}
-
-	private UnitType(String filename1, String filename2, int speed, int baseDamage)
+	
+	private UnitType(String filename1, String filename2, int speed, 
+			int baseDamage, UnitCategory[] categories)
 	{
 		try {
 			this.image1 = Main.loadImage(filename1);
@@ -38,6 +50,7 @@ public enum UnitType
 		}
 		this.speed = speed;
 		this.baseDamage = baseDamage;
+		this.categories = categories;
 	}
 	
 

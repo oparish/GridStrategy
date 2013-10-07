@@ -339,13 +339,45 @@ public class GameGrid
 		this.gridContents[xPos1][yPos1] = null;
 	}
 	
+	private boolean checkCategoryCombat(UnitCategory unitCategory1, 
+			UnitType unitType, boolean player1HigherPriorityType)
+	{
+		switch(unitCategory1)
+		{
+		case INTERCEPTOR:
+			return false;
+		default:
+			return false;
+		}
+	}
+	
 	public boolean unitCombat(Unit unit1, Unit unit2, int xPos1, int yPos1, 
 			int xPos2, int yPos2)
 	{
-		this.gridContents[xPos1][yPos1] = null;
-		this.gridContents[xPos2][yPos2] = null;
 		this.considerEvent(new CombatEvent(this, COMBAT, xPos1, yPos1, unit1, 
 				unit2, xPos2, yPos2, BASIC, DRAW));
+		
+		UnitType unit1Type = unit1.getUnitType();
+		UnitType unit2Type = unit2.getUnitType();
+		boolean combatRun = false;
+
+		for (UnitCategory unitCategory : UnitCategory.values())
+		{
+			if (unit1Type.hasCategory(unitCategory))
+				combatRun = this.checkCategoryCombat(unitCategory, unit2Type, 
+						true);
+			else if (unit2Type.hasCategory(unitCategory))
+				combatRun = this.checkCategoryCombat(unitCategory, unit1Type, 
+						false);
+			if (combatRun)
+				break;
+		}
+		if (!combatRun)
+		{
+			this.gridContents[xPos1][yPos1] = null;
+			this.gridContents[xPos2][yPos2] = null;	
+		}
+		
 		return false;
 	}
 	
