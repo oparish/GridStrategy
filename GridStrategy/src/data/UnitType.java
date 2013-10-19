@@ -1,12 +1,16 @@
 package data;
 
+import static data.UnitCategory.INTERCEPTOR;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import main.Main;
 
 public enum UnitType
 {
-	TEST_UNIT("TestG", "TestE", 1, 1, new UnitCategory[]{});
+	TEST_UNIT("TestG", "TestE", 1, 1, new UnitCategory[]{}), 
+	INTERCEPTOR("Player1Interceptor", "Player2Interceptor", 1, 1, 
+			new UnitCategory[]{UnitCategory.INTERCEPTOR});
 	
 	private BufferedImage image1;
 	private BufferedImage image2;

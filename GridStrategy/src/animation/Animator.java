@@ -65,13 +65,33 @@ public class Animator
 		return new AtomicAnimation(frames);
 	}
 	
-	public static AtomicAnimation getSimpleCombatAnimation(Unit unit)
+	public static AtomicAnimation getSimpleCombatDrawAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
 		OperationFrame combat1Frame = new OperationFrame(unit, REMOVE);
 		OperationFrame combat2Frame = new OperationFrame(unit, REMOVE);
 		frames.add(new FrameWithContext(combat1Frame, true));
 		frames.add(new FrameWithContext(combat2Frame, false));
+		return new AtomicAnimation(frames);
+	}
+	
+	public static AtomicAnimation getSimpleCombatUnit1DestroyedAnimation(Unit unit)
+	{
+		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
+		OperationFrame combat1Frame = new OperationFrame(unit, REMOVE);
+		frames.add(new FrameWithContext(combat1Frame, true));
+		return new AtomicAnimation(frames);
+	}
+	
+	public static AtomicAnimation getSimpleCombatUnit2DestroyedAnimation(Unit unit)
+	{
+		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
+		OperationFrame combat1Frame = new OperationFrame(unit, REMOVE);
+		OperationFrame combat2Frame = new OperationFrame(unit, ADD);
+		OperationFrame combat3Frame = new OperationFrame(unit, REMOVE);
+		frames.add(new FrameWithContext(combat1Frame, false));
+		frames.add(new FrameWithContext(combat2Frame, false));
+		frames.add(new FrameWithContext(combat3Frame, true));
 		return new AtomicAnimation(frames);
 	}
 	

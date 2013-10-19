@@ -14,6 +14,9 @@ import data.GameGrid;
 import data.Unit;
 import data.UnitType;
 import dialogs.UnitDialog;
+import events.CombatEvent;
+import events.CombatResult;
+import events.CombatType;
 import events.MyEvent;
 import events.MyEventListener;
 import events.MyEventSpeaker;
@@ -229,7 +232,10 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 				paintDeployPoint(xPos, yPos, unit1);
 				break;
 			case COMBAT:
-				paintCombat(xPos, yPos, unit1, xPos2, yPos2, unit2);
+				CombatEvent combatEvent = (CombatEvent) event;
+				paintCombat(xPos, yPos, unit1, xPos2, yPos2, unit2, 
+						combatEvent.getCombatResult(), 
+						combatEvent.getCombatType());
 				break;
 			case UNITBASEATTACK:
 				paintBaseAttack(xPos, yPos, unit1);
@@ -263,9 +269,21 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	}
 	
 	private void paintCombat(int xPos, int yPos, Unit unit1, int xPos2, 
-			int yPos2, Unit unit2)
+			int yPos2, Unit unit2, CombatResult combatResult, CombatType combatType)
 	{
-		Animation combatAnimation = Animator.getSimpleCombatAnimation(unit1);
+		Animation combatAnimation;
+		switch(combatResult)
+		{
+		case UNIT1DESTROYED:
+			combatAnimation = Animator.getSimpleCombatUnit1DestroyedAnimation(unit1);
+			break;
+		case UNIT2DESTROYED:
+			combatAnimation = Animator.getSimpleCombatUnit2DestroyedAnimation(unit1);
+			break;
+		default:
+			combatAnimation = Animator.getSimpleCombatDrawAnimation(unit1);	
+		}
+		
 		combatAnimation.playTwoCellAnimation(xPos, yPos, xPos2, yPos2);
 	}
 	

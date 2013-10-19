@@ -1,6 +1,5 @@
 package data;
 
-import static events.CombatResult.DRAW;
 import static events.CombatType.BASIC;
 import static events.EventType.COMBAT;
 import static events.EventType.DEPLOYING_UNIT;
@@ -323,10 +322,13 @@ public class GameGrid
 			deployPoint = this.player1DeploymentPoints[columnPos];
 		else
 			deployPoint = this.player2DeploymentPoints[columnPos];
-		
-		considerEvent(new OneUnitEvent(this, DEPLOYING_UNIT, columnPos, 
-				deployPoint, unit));
-		this.gridContents[columnPos][deployPoint] = unit;
+			
+		if (this.gridContents[columnPos][deployPoint] == null)
+		{
+			considerEvent(new OneUnitEvent(this, DEPLOYING_UNIT, columnPos, 
+					deployPoint, unit));
+			this.gridContents[columnPos][deployPoint] = unit;
+		}	
 		this.noteMove();
 	}
 	
@@ -339,44 +341,61 @@ public class GameGrid
 		this.gridContents[xPos1][yPos1] = null;
 	}
 	
-	private boolean checkCategoryCombat(UnitCategory unitCategory1, 
-			UnitType unitType, boolean player1HigherPriorityType)
+	private CombatResult checkCategoryCombat(UnitCategory unitCategory1, 
+			UnitType unitType, boolean unit1HigherPriorityType)
 	{
 		switch(unitCategory1)
 		{
 		case INTERCEPTOR:
-			return false;
+			if (!unitType.hasCategory(UnitCategory.INTERCEPTOR))
+				if (unit1HigherPriorityType)
+					return CombatResult.UNIT2DESTROYED;
+				else
+					return CombatResult.UNIT1DESTROYED;
+			else
+				return CombatResult.NORESULTYET;
 		default:
-			return false;
+			return CombatResult.NORESULTYET;
 		}
 	}
 	
 	public boolean unitCombat(Unit unit1, Unit unit2, int xPos1, int yPos1, 
 			int xPos2, int yPos2)
-	{
-		this.considerEvent(new CombatEvent(this, COMBAT, xPos1, yPos1, unit1, 
-				unit2, xPos2, yPos2, BASIC, DRAW));
-		
+	{	
 		UnitType unit1Type = unit1.getUnitType();
 		UnitType unit2Type = unit2.getUnitType();
-		boolean combatRun = false;
+		
+		CombatResult combatResult = CombatResult.NORESULTYET;
 
 		for (UnitCategory unitCategory : UnitCategory.values())
 		{
 			if (unit1Type.hasCategory(unitCategory))
-				combatRun = this.checkCategoryCombat(unitCategory, unit2Type, 
+				combatResult = this.checkCategoryCombat(unitCategory, unit2Type, 
 						true);
 			else if (unit2Type.hasCategory(unitCategory))
-				combatRun = this.checkCategoryCombat(unitCategory, unit1Type, 
+				combatResult = this.checkCategoryCombat(unitCategory, unit1Type, 
 						false);
-			if (combatRun)
+			if (combatResult != CombatResult.NORESULTYET)
 				break;
 		}
-		if (!combatRun)
+		if (combatResult == CombatResult.NORESULTYET || 
+				combatResult == CombatResult.BOTHDESTROYED)
 		{
 			this.gridContents[xPos1][yPos1] = null;
 			this.gridContents[xPos2][yPos2] = null;	
 		}
+		else if (combatResult == CombatResult.UNIT2DESTROYED)
+		{
+			this.gridContents[xPos1][yPos1] = null;
+			this.gridContents[xPos2][yPos2] = unit1;	
+		}
+		else if (combatResult == CombatResult.UNIT1DESTROYED)
+		{
+			this.gridContents[xPos1][yPos1] = null;
+			this.gridContents[xPos2][yPos2] = unit2;
+		}
+		this.considerEvent(new CombatEvent(this, COMBAT, xPos1, yPos1, unit1, 
+				unit2, xPos2, yPos2, BASIC, combatResult));
 		
 		return false;
 	}
@@ -422,9 +441,9 @@ public class GameGrid
 			if (events.size() > 0)
 			{
 				MyEvent currentEvent = this.events.get(0);
-				GameGrid.this.speaker.fireEvent(currentEvent);
+				if (currentEvent != null)
+					GameGrid.this.speaker.fireEvent(currentEvent);
 				this.events.remove(currentEvent);
-				
 			}
 		}
 		

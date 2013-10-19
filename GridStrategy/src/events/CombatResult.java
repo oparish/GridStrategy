@@ -1,6 +1,6 @@
 package events;
 
-public enum CombatResult 
+public enum CombatResult
 {
-	WIN, LOSE, DRAW;
+	BOTHDESTROYED, UNIT1DESTROYED, UNIT2DESTROYED, NORESULTYET;
 }
