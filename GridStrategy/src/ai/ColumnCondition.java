@@ -1,12 +1,15 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import main.FileOperations;
 import main.Main;
 import data.Unit;
+import data.UnitType;
 
 public class ColumnCondition extends Condition
-{
+{	
 	private final ConditionType conditionType;
 	private final int number;
 	private Integer column;
@@ -50,12 +53,31 @@ public class ColumnCondition extends Condition
 		this.number = number;
 	}
 	
+	public ColumnCondition(List<Integer> integers, boolean player1)
+	{
+		this.conditionType = ConditionType.values()[integers.get(0)];
+		this.number = integers.get(1);
+		int columnNumber = integers.get(2);
+		if (columnNumber != Main.GRIDWIDTH)
+			this.column = columnNumber;
+		int rowNumber = integers.get(3);
+		if (rowNumber != Main.GRIDHEIGHT)
+			this.row = rowNumber;
+		int unitNumber = integers.get(4);
+		if (unitNumber != UnitType.values().length)
+		{
+			boolean unitPlayer = integers.get(5) == 0 ? true : false;
+			this.unit = new Unit(unitPlayer, UnitType.values()[unitNumber]);
+		}
+		
+	}
+	
 	public String toString(int depth)
 	{
-		String unitString = (this.unit == null) ? null : 
-			this.unit.toString();
+		String unitString = (this.unit == null) ? null : "{" +
+			this.unit.toString() + "}";
 		return "		" + depth + " - Column Condition: " + this.conditionType + 
-				", Number: " + this.number + ", Column: " + this.column + ", " + 
+				", Number: " + this.number + ", Column: " + this.column + ", Unit: " + 
 				unitString + ", Row: " + this.row;
 	}
 
@@ -186,5 +208,50 @@ public class ColumnCondition extends Condition
 			}
 		}
 		return units;
+	}
+
+	@Override
+	public ArrayList<Byte> toBytes()
+	{
+		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		Byte conditionClass = FileOperations.intToByte(COLUMNCONDITIONTYPE);	
+		Byte conditionType = FileOperations.intToByte(this.conditionType.ordinal());
+		Byte conditionNumber = FileOperations.intToByte(this.number);
+		Byte columnNumber;
+		
+		if (this.column != null)
+			columnNumber =  FileOperations.intToByte(this.column);
+		else
+			columnNumber = FileOperations.intToByte(Main.GRIDWIDTH);
+		
+		Byte rowNumber;
+		if (this.row != null)
+			rowNumber =  FileOperations.intToByte(this.row);
+		else
+			rowNumber = FileOperations.intToByte(Main.GRIDHEIGHT);
+		
+		Byte unitType;
+		Byte unitPlayer;
+		if (this.unit != null)
+		{
+			unitType =  FileOperations.intToByte(this.unit.getUnitType().ordinal());
+			unitPlayer = 
+					FileOperations.intToByte(this.unit.isOwnedByPlayer1() ? 0 : 1);
+		}
+		else
+		{
+			unitType = FileOperations.intToByte(UnitType.values().length);
+			unitPlayer = FileOperations.intToByte(2);
+		}
+			
+		bytes.add(conditionClass);
+		bytes.add(conditionType);
+		bytes.add(conditionNumber);
+		bytes.add(columnNumber);
+		bytes.add(rowNumber);
+		bytes.add(unitType);
+		bytes.add(unitPlayer);
+		
+		return bytes;
 	}
 }

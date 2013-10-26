@@ -1,7 +1,11 @@
 package ai;
 
+import java.util.ArrayList;
+
+import main.FileOperations;
+
 public class GateCondition extends Condition
-{
+{	
 	private final GateType gateType;
 	private final Condition condition1;
 	private final Condition condition2;
@@ -12,6 +16,16 @@ public class GateCondition extends Condition
 		this.condition1 = condition1;
 		this.condition2 = condition2;
 		this.gateType = gateType;
+	}
+	
+	public GateCondition(ArrayList<Integer> integers, boolean player1)
+	{
+		this.gateType = GateType.values()[integers.get(Manufacturer.counter++)
+		                                  .intValue()];
+		this.condition1 = Condition.setupConditionFromIntegers(integers, 
+				player1);
+		this.condition2 = Condition.setupConditionFromIntegers(integers, 
+				player1);
 	}
 	
 	public String toString(int depth)
@@ -38,5 +52,18 @@ public class GateCondition extends Condition
 		default:
 			return false;
 		}
+	}
+
+	@Override
+	public ArrayList<Byte> toBytes()
+	{
+		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		Byte conditionClass = FileOperations.intToByte(GATECONDITIONTYPE);
+		Byte conditionType = FileOperations.intToByte(this.gateType.ordinal());
+		bytes.add(conditionClass);
+		bytes.add(conditionType);
+		bytes.addAll(this.condition1.toBytes());
+		bytes.addAll(this.condition2.toBytes());
+		return bytes;
 	}
 }
