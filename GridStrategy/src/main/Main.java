@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import ai.CPlayer;
 import ai.Spawner;
 
+import data.GameGrid;
 import data.Unit;
 
 import screens.GameScreen;
@@ -36,6 +37,7 @@ public class Main
 	
 	private int screenWidth;
 	private int screenHeight;
+	private GameGrid gameGrid;
 	private static CPlayer testPlayer;
 
 	public static CPlayer getTestPlayer() {
@@ -49,17 +51,16 @@ public class Main
 	public static Main getMain() {
 		return main;
 	}
-
-	Main()
+	
+	Main(CPlayer cPlayer1, CPlayer cPlayer2)
 	{
-		Main.testPlayer = Spawner.createCPlayer(false);
-		CPlayer.showCPlayer(Main.testPlayer);
+		this.gameGrid = new GameGrid(cPlayer1, cPlayer2);
 		this.setupGameScreen();
 	}
 	
 	private void setupGameScreen()
 	{
-		Main.gameScreen = new GameScreen();
+		Main.gameScreen = new GameScreen(this.gameGrid);
 		gameScreen.setUndecorated(true);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.screenWidth = screenSize.width;
@@ -81,9 +82,13 @@ public class Main
 		return screenHeight;
 	}
 	
-	public static void main(String args[])
+	public static void main(String args[]) throws IOException
 	{
-		Main.main = new Main();
+		//Main.testPlayer = Spawner.createCPlayer(false);
+		//CPlayer.showCPlayer(Main.testPlayer);
+		//CPlayer readPlayer = 
+		//new CPlayer(false, FileOperations.loadFile("Test.ai"));
+		Main.main = new Main(null, TestPlayers.unitsOnBoardTestPlayer());
 	}
 	
 	public static GridBagConstraints getAnchoredConstraints(int xpos, int ypos)

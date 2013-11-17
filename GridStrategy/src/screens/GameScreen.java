@@ -46,7 +46,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	private Unit unitToDeploy;
 
 
-	public GameScreen()
+	public GameScreen(GameGrid gameGrid)
 	{
 		super();
 		this.setLayout(new GridBagLayout());
@@ -58,11 +58,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		this.add(this.gridPane, Main.getFillConstraints(0,0,1,2));
 		this.add(this.controlPane, Main.getFillConstraints(1,0,1,1));
 		this.add(jScrollPane, Main.getFillConstraints(1,1,1,1));
-
 		this.switchScreenState(STANDARD);
-		MyEventSpeaker speaker = new MyEventSpeaker();
-		speaker.addEventListener(this);
-		this.gameGrid = new GameGrid(speaker);
+		this.gameGrid = gameGrid;
+		this.gameGrid.addEventListener(this);
 	}
 	
 	public Integer[] getPlayer1DeploymentPoints()

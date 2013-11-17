@@ -7,15 +7,10 @@ public abstract class Condition
 	protected static final int COLUMNCONDITIONTYPE = 0;
 	protected static final int GATECONDITIONTYPE = 1;
 	
-	private Boolean result;
-	
 	public boolean checkCondition(ObservationBatch observationBatch)
 	{
-		if (this.result == null)
-		{
-			this.result = runCheck(observationBatch);
-		}
-		return this.result;
+		boolean check = runCheck(observationBatch);
+		return check;
 	}
 	
 	protected abstract boolean runCheck(ObservationBatch observationBatch);

@@ -39,6 +39,7 @@ public class GateCondition extends Condition
 	{
 		boolean result1 = this.condition1.checkCondition(observationBatch);
 		boolean result2 = this.condition2.checkCondition(observationBatch);
+		
 		switch(this.gateType)
 		{
 		case AND:

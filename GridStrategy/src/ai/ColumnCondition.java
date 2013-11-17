@@ -92,20 +92,16 @@ public class ColumnCondition extends Condition
 	private boolean checkNumber(ObservationBatch observationBatch, 
 			ArrayList<Unit> conditionUnits)
 	{
-		int conditionNumber = this.number;
 		int unitNumber = conditionUnits.size();
-		
-		if (!observationBatch.isPlayer1())
-			conditionNumber = Main.GRIDHEIGHT - 1 - conditionNumber;
 		
 		switch(this.conditionType)
 		{
 		case GREATER_THAN:
-			return unitNumber > conditionNumber;
+			return unitNumber > this.number;
 		case SMALLER_THAN:
-			return unitNumber < conditionNumber;
+			return unitNumber < this.number;
 		case EQUAL_TO:
-			return unitNumber == conditionNumber;
+			return unitNumber == this.number;
 		default:
 			return false;
 		}
@@ -122,7 +118,7 @@ public class ColumnCondition extends Condition
 			ArrayList<Unit> removeList = new ArrayList<Unit>();
 			for (Unit unit : conditionUnits)
 			{
-				if (Unit.match(unit, filterType))
+				if (!Unit.match(unit, filterType))
 					removeList.add(unit);
 			}
 			for (Unit unit : removeList)
@@ -130,6 +126,12 @@ public class ColumnCondition extends Condition
 				conditionUnits.remove(unit);
 			}
 		}
+	}
+	
+	private void addUnitToList(ArrayList<Unit> units, Unit unit)
+	{
+		if (unit != null)
+			units.add(unit);
 	}
 	
 	private ArrayList<Unit> findUnits(ObservationBatch observationBatch)
@@ -162,7 +164,7 @@ public class ColumnCondition extends Condition
 		{
 			for (int j = 0; j < Main.GRIDHEIGHT; j++)
 			{
-				units.add(observationBatch.getUnits()[i][j]);
+				this.addUnitToList(units, observationBatch.getUnits()[i][j]);
 			}
 		}
 		return units;
@@ -171,14 +173,20 @@ public class ColumnCondition extends Condition
 	private ArrayList<Unit> findUnitsPastRow(ObservationBatch observationBatch, 
 			int row)
 	{
+		int rowNumber;
+		if (!observationBatch.isPlayer1())
+			rowNumber = Main.GRIDHEIGHT - 1 - this.getRow();
+		else
+			rowNumber = this.row;
+		
 		ArrayList<Unit> units = new ArrayList<Unit>();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
 			for (int j = 0; j < Main.GRIDHEIGHT; j++)
 			{
-				if (j > row)
+				if (j > rowNumber)
 				{
-					units.add(observationBatch.getUnits()[i][j]);
+					this.addUnitToList(units, observationBatch.getUnits()[i][j]);
 				}
 			}
 		}
@@ -191,7 +199,7 @@ public class ColumnCondition extends Condition
 		ArrayList<Unit> units = new ArrayList<Unit>();
 		for (int j = 0; j < Main.GRIDHEIGHT; j++)
 		{
-			units.add(observationBatch.getUnits()[column][j]);
+			this.addUnitToList(units, observationBatch.getUnits()[column][j]);
 		}
 		return units;
 	}
@@ -204,7 +212,7 @@ public class ColumnCondition extends Condition
 		{
 			if (j > row)
 			{
-				units.add(observationBatch.getUnits()[column][j]);
+				this.addUnitToList(units, observationBatch.getUnits()[column][j]);
 			}
 		}
 		return units;

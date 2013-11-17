@@ -18,6 +18,7 @@ import events.CombatResult;
 import events.CombatType;
 import events.EventType;
 import events.MyEvent;
+import events.MyEventListener;
 import events.MyEventSpeaker;
 import events.OneUnitEvent;
 import events.TurnEvent;
@@ -45,19 +46,10 @@ public class GameGrid
 	private Thread thread;
 	private CPlayer cplayer1;
 	private CPlayer cplayer2;
-	private boolean randomPlayer = false;
 
 	static 
 	{
 		GameGrid.random = new Random();
-	}
-	
-	public boolean isRandomPlayer() {
-		return randomPlayer;
-	}
-
-	public void setRandomPlayer(boolean randomPlayer) {
-		this.randomPlayer = randomPlayer;
 	}
 	
 	public int getPlayer2HP() {
@@ -80,21 +72,24 @@ public class GameGrid
 		return player2DeploymentPoints;
 	}
 	
-	public GameGrid(MyEventSpeaker speaker)
+	public GameGrid(CPlayer cPlayer1, CPlayer cPlayer2)
 	{
-		this.cplayer2 = Main.getTestPlayer();
-		this.speaker = speaker;
-		if (speaker != null)
-		{
-			this.eventRunnable = new EventRunnable();
-			this.thread = new Thread(eventRunnable);
-			this.thread.start();
-		}
+		this.cplayer1 = cPlayer1;
+		this.cplayer2 = cPlayer2;
+		this.speaker = new MyEventSpeaker();;
+		this.eventRunnable = new EventRunnable();
+		this.thread = new Thread(eventRunnable);
+		this.thread.start();
 		this.player1HP = Main.PLAYER1_MAXHP;
 		this.player2HP = Main.PLAYER2_MAXHP;
 		this.isPlayer1Turn = Main.PLAYER1STARTS;
 		this.gridContents = new Unit[Main.GRIDWIDTH][Main.GRIDHEIGHT];
 		this.setupDeploymentPoints();
+	}
+	
+	public void addEventListener(MyEventListener listener)
+	{
+		this.speaker.addEventListener(listener);
 	}
 	
 	private void setupDeploymentPoints()
@@ -246,9 +241,13 @@ public class GameGrid
 		this.completeEvents();
 		considerEvent(new TurnEvent(this, NEW_TURN, this.isPlayer1Turn));
 
-		if (!this.isPlayer1Turn)
+		if (this.isPlayer1Turn && this.cplayer1 != null)
 		{
-			if (this.randomPlayer)
+			this.cPlayerTurn(true);
+		}
+		else if (!this.isPlayer1Turn)
+		{
+			if (this.cplayer2 == null)
 				this.randomPlayerTurn();
 			else
 				this.cPlayerTurn(false);
@@ -278,7 +277,6 @@ public class GameGrid
 	
 	private void randomPlayerTurn()
 	{
-		int startPos;
 		Integer[] deploymentPoints;
 		
 		if (this.isPlayer1Turn)

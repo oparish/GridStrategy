@@ -16,9 +16,8 @@ public class Manufacturer
 		ArrayList<Byte> bytes = cPlayer.toBytes();
 		FileOperations.saveFile("Test.ai", bytes);
 		
-		CPlayer readPlayer = new CPlayer(false, FileOperations.loadFile("Test.ai"));
+		//CPlayer readPlayer = new CPlayer(false, FileOperations.loadFile("Test.ai"));
 		System.out.println(cPlayer.toString());
-		System.out.println(readPlayer.toString());
-		System.out.println("End");
+
 	}
 }

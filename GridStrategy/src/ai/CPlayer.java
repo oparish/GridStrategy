@@ -29,7 +29,9 @@ public class CPlayer
 		for(Rule rule : this.rules)
 		{
 			if (rule.getCondition().checkCondition(observationBatch))
+			{
 				return rule.getAction();
+			}
 		}
 		return null;
 	}
