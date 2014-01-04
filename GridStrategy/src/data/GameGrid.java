@@ -13,6 +13,8 @@ import java.awt.Event;
 import java.util.ArrayList;
 import java.util.Random;
 
+import screens.GameScreen;
+
 import events.CombatEvent;
 import events.CombatResult;
 import events.CombatType;
@@ -194,25 +196,25 @@ public class GameGrid
 		if (unit.isOwnedByPlayer1())
 		{
 			this.player2HP -= damage;
-			if (this.player2HP >= 0)
+			if (this.player2HP <= 0)
 				this.player2Loss();
 		}
 		else
 		{
 			this.player1HP -= damage;
-			if (this.player1HP >= 0)
+			if (this.player1HP <= 0)
 				this.player1Loss();
 		}
 	}
 		
 	private void player1Loss()
 	{
-		
+		Main.gameStops(false);
 	}
 	
 	private void player2Loss()
 	{
-		
+		Main.gameStops(true);
 	}
 	
 	private void considerEvent(MyEvent event)
@@ -411,6 +413,16 @@ public class GameGrid
 			nextTurn();
 		}
 	}
+	
+	public void startGame(GameScreen gameScreen)
+	{
+		gameScreen.setVisible(true);		
+	}
+	
+	public void startGame()
+	{
+		this.newTurn();
+	}	
 	
 	private class EventRunnable implements Runnable
 	{
