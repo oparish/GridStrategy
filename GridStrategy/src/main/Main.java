@@ -37,36 +37,38 @@ public class Main
 	
 	private int screenWidth;
 	private int screenHeight;
-	private GameState gameState;
 	private GameGrid gameGrid;
-	private static CPlayer testPlayer;
-
-	public static CPlayer getTestPlayer() {
-		return Main.testPlayer;
-	}
 
 	private static GameScreen gameScreen;
 
 	private static Main main;
 
 	public static Main getMain() {
-		return main;
-	}
-	
-	Main(CPlayer cPlayer1, CPlayer cPlayer2)
-	{
-		this.gameGrid = new GameGrid(cPlayer1, cPlayer2);
-		if (cPlayer1 == null)
-		{
-			this.gameState = GameState.SINGLE_PLAYER;
-			this.setupGameScreen();
-			this.gameGrid.startGame(Main.gameScreen);
-		}
+		if (Main.main != null)
+			return main;
 		else
 		{
-			this.gameState = GameState.AUTOMATED;
-			this.gameGrid.startGame();
+			Main.main = new Main();
+			return Main.main;
 		}
+	}
+	
+	Main()
+	{
+
+	}
+	
+	public void startGameGridWithScreen(CPlayer cPlayer1, CPlayer cPlayer2)
+	{
+		this.gameGrid = new GameGrid(cPlayer1, cPlayer2);			
+		this.setupGameScreen();
+		this.gameGrid.startGame(Main.gameScreen);
+	}
+	
+	public boolean startGameGridWithoutScreen(CPlayer cPlayer1, CPlayer cPlayer2)
+	{
+		this.gameGrid = new GameGrid(cPlayer1, cPlayer2);
+		return this.gameGrid.startGameWithoutScreen();
 	}
 	
 	private void setupGameScreen()
@@ -77,48 +79,6 @@ public class Main
 		this.screenWidth = screenSize.width;
 		this.screenHeight = screenSize.height;
 		gameScreen.setSize(this.screenWidth, this.screenHeight);
-	}
-	
-	public static void gameStops(boolean result)
-	{
-		switch(Main.main.gameState)
-		{
-			case SINGLE_PLAYER:
-				Main.main.singlePlayerStops(result);
-				break;
-			case AUTOMATED:
-				Main.main.automatedStops(result);
-				break;
-			default:
-		}
-	}
-	
-	private void singlePlayerStops(boolean result)
-	{
-		if (result)
-		{
-			System.out.println("Player 2 loses");
-			System.exit(0);
-		}
-		else
-		{
-			System.out.println("Player 1 loses");
-			System.exit(0);
-		}		
-	}
-	
-	private void automatedStops(boolean result)
-	{
-		if (result)
-		{
-			System.out.println("Player 2 loses");
-			System.exit(0);
-		}
-		else
-		{
-			System.out.println("Player 1 loses");
-			System.exit(0);
-		}
 	}
 	
 	public void switchToMainMenu()
@@ -140,8 +100,14 @@ public class Main
 		//CPlayer.showCPlayer(Main.testPlayer);
 		//CPlayer readPlayer = 
 		//new CPlayer(false, FileOperations.loadFile("Test.ai"));
-//		Main.main = new Main(TestPlayers.unitsOnBoardTestPlayer(), null);
-		Main.main = new Main(null, null);
+		Main main = Main.getMain();
+//		while (Main.currentOpponent == null)
+//		{
+			CPlayer testPlayer = TestPlayers.unitsOnBoardTestPlayer();
+			main.startGameGridWithScreen(null, testPlayer);
+
+//		}
+//		Main.main.startGameGrid(null, Main.getCurrentOpponent());
 	}
 	
 	public static GridBagConstraints getAnchoredConstraints(int xpos, int ypos)
@@ -184,10 +150,5 @@ public class Main
 		main.gameScreen.getGridPane().setCellContent(4, 4, testUnit);
 		main.gameScreen.getGridPane().setCellContent(1, 5, testUnit);
 		main.gameScreen.getGridPane().repaint();
-	}
-	
-	private enum GameState
-	{
-		SINGLE_PLAYER, AUTOMATED;
 	}
 }

@@ -48,6 +48,18 @@ public class GameGrid
 	private Thread thread;
 	private CPlayer cplayer1;
 	private CPlayer cplayer2;
+	private boolean gameRunning = false;
+	private boolean automatedMode;
+	private boolean nextTurn;
+	private boolean result;
+
+	public synchronized boolean isNextTurn() {
+		return nextTurn;
+	}
+
+	public synchronized void setNextTurn(boolean nextTurn) {
+		this.nextTurn = nextTurn;
+	}
 
 	static 
 	{
@@ -107,12 +119,11 @@ public class GameGrid
 		}
 	}
 	
-	public void nextTurn()
+	public void endOfTurn()
 	{
 		this.considerEvent(new TurnEvent(this, NEXT_TURN, this.isPlayer1Turn));
 		this.movePlayerUnits();
 		this.isPlayer1Turn = !this.isPlayer1Turn;
-		newTurn();
 	}
 	
 	private void movePlayerUnits()
@@ -209,12 +220,24 @@ public class GameGrid
 		
 	private void player1Loss()
 	{
-		Main.gameStops(false);
+		System.out.println("Player 1 loses");
+		this.result = false;
+		this.endGame();
 	}
 	
 	private void player2Loss()
 	{
-		Main.gameStops(true);
+		System.out.println("Player 2 loses");
+		this.result = true;
+		this.endGame();
+	}
+	
+	private void endGame()
+	{
+		if (this.automatedMode == false)
+			System.exit(0);
+		else
+			this.gameRunning = false;
 	}
 	
 	private void considerEvent(MyEvent event)
@@ -237,12 +260,21 @@ public class GameGrid
 		}
 	}
 	
-	private void newTurn()
+	private void waitForPlayer()
+	{
+		this.setNextTurn(false);
+		while (!this.isNextTurn())
+		{
+			
+		}
+		this.endOfTurn();
+	}
+	
+	private void startOfTurn()
 	{
 		this.turnMoves = 0;
 		this.completeEvents();
 		considerEvent(new TurnEvent(this, NEW_TURN, this.isPlayer1Turn));
-
 		if (this.isPlayer1Turn && this.cplayer1 != null)
 		{
 			this.cPlayerTurn(true);
@@ -254,7 +286,10 @@ public class GameGrid
 			else
 				this.cPlayerTurn(false);
 		}
-
+		else
+		{
+			this.waitForPlayer();
+		}
 	}
 	
 	private void cPlayerTurn(boolean isPlayer1)
@@ -273,7 +308,7 @@ public class GameGrid
 		}
 		else
 		{
-			this.nextTurn();
+			this.endOfTurn();
 		}
 	}
 	
@@ -300,7 +335,7 @@ public class GameGrid
 		int unitNumber = GameGrid.random.nextInt(unitTypes.length);
 		if (actionNumber == Main.GRIDWIDTH)
 		{
-			this.nextTurn();
+			this.endOfTurn();
 		}
 		else
 		{
@@ -410,18 +445,33 @@ public class GameGrid
 	{
 		if (this.turnMoves == Main.MOVESPERTURN)
 		{
-			nextTurn();
+			if (!this.automatedMode && this.isPlayer1Turn)
+				this.setNextTurn(true);
+			else
+				this.endOfTurn();
 		}
 	}
 	
 	public void startGame(GameScreen gameScreen)
 	{
-		gameScreen.setVisible(true);		
+		this.automatedMode = false;
+		gameScreen.setVisible(true);
+		this.gameRunning = true;
+		while (this.gameRunning)
+		{
+			this.startOfTurn();
+		}
 	}
 	
-	public void startGame()
+	public boolean startGameWithoutScreen()
 	{
-		this.newTurn();
+		this.automatedMode = true;
+		this.gameRunning = true;
+		while (this.gameRunning)
+		{
+			this.startOfTurn();
+		}
+		return this.result;
 	}	
 	
 	private class EventRunnable implements Runnable

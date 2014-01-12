@@ -70,7 +70,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void nextTurn()
 	{
-		this.gameGrid.nextTurn();
+		this.gameGrid.setNextTurn(true);
 	}
 	
 	private void startHumanTurn()

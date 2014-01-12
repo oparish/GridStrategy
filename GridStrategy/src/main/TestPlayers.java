@@ -1,5 +1,6 @@
 package main;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import data.Unit;
@@ -58,5 +59,9 @@ public class TestPlayers
 		return testCondition;
 	}
 	
-	
+	public static void main(String args[]) throws IOException
+	{
+		CPlayer cPlayer = new CPlayer(false, FileOperations.loadFile("Test.ai"));
+		Main.getMain().startGameGridWithScreen(null, cPlayer);
+	}
 }
