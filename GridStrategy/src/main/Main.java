@@ -16,6 +16,7 @@ import ai.CPlayer;
 import ai.Spawner;
 
 import data.GameGrid;
+import data.GameResult;
 import data.Unit;
 
 import screens.GameScreen;
@@ -27,6 +28,8 @@ public class Main
 	public final static int GRIDWIDTH = 10;
 	public final static int GRIDHEIGHT = 10;
 	public final static int MOVESPERTURN = 1;
+	public final static int FIRSTATTACKSTALEMATE = 60;
+	public final static int SUBATTACKSTALEMATE = 40;	
 	public final static boolean PLAYER1STARTS = true;
 
 	public static final String IMAGES = "Images\\";
@@ -65,7 +68,7 @@ public class Main
 		this.gameGrid.startGame(Main.gameScreen);
 	}
 	
-	public boolean startGameGridWithoutScreen(CPlayer cPlayer1, CPlayer cPlayer2)
+	public GameResult startGameGridWithoutScreen(CPlayer cPlayer1, CPlayer cPlayer2)
 	{
 		this.gameGrid = new GameGrid(cPlayer1, cPlayer2);
 		return this.gameGrid.startGameWithoutScreen();

@@ -1,5 +1,8 @@
 package data;
 
+import static data.GameResult.PLAYER1_WINS;
+import static data.GameResult.PLAYER2_WINS;
+import static data.GameResult.TIMED_OUT;
 import static events.CombatType.BASIC;
 import static events.EventType.COMBAT;
 import static events.EventType.DEPLOYING_UNIT;
@@ -51,7 +54,9 @@ public class GameGrid
 	private boolean gameRunning = false;
 	private boolean automatedMode;
 	private boolean nextTurn;
-	private boolean result;
+	private GameResult result;
+	private int stalemateCounter = 0;
+	private boolean firstBaseAttackMade = false;
 
 	public synchronized boolean isNextTurn() {
 		return nextTurn;
@@ -123,7 +128,25 @@ public class GameGrid
 	{
 		this.considerEvent(new TurnEvent(this, NEXT_TURN, this.isPlayer1Turn));
 		this.movePlayerUnits();
+		this.checkForStalemate();
 		this.isPlayer1Turn = !this.isPlayer1Turn;
+	}
+	
+	private void checkForStalemate()
+	{
+		this.stalemateCounter++;
+		if (this.firstBaseAttackMade && 
+				this.stalemateCounter > Main.SUBATTACKSTALEMATE)
+			this.declareStalemate();
+		else if (!this.firstBaseAttackMade && 
+				this.stalemateCounter > Main.FIRSTATTACKSTALEMATE)
+			this.declareStalemate();
+	}
+	
+	private void declareStalemate()
+	{
+		this.result = TIMED_OUT;
+		this.endGame();
 	}
 	
 	private void movePlayerUnits()
@@ -216,19 +239,21 @@ public class GameGrid
 			if (this.player1HP <= 0)
 				this.player1Loss();
 		}
+		this.firstBaseAttackMade = true;
+		this.stalemateCounter = 0;
 	}
 		
 	private void player1Loss()
 	{
 		System.out.println("Player 1 loses");
-		this.result = false;
+		this.result = PLAYER2_WINS;
 		this.endGame();
 	}
 	
 	private void player2Loss()
 	{
 		System.out.println("Player 2 loses");
-		this.result = true;
+		this.result = PLAYER1_WINS;
 		this.endGame();
 	}
 	
@@ -463,7 +488,7 @@ public class GameGrid
 		}
 	}
 	
-	public boolean startGameWithoutScreen()
+	public GameResult startGameWithoutScreen()
 	{
 		this.automatedMode = true;
 		this.gameRunning = true;
