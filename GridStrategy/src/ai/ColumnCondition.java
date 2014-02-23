@@ -68,8 +68,16 @@ public class ColumnCondition extends Condition
 		{
 			boolean unitPlayer = integers.get(5) == 0 ? true : false;
 			this.unit = new Unit(unitPlayer, UnitType.values()[unitNumber]);
-		}
-		
+		}	
+	}
+	
+	public ColumnCondition copyConditionWithNewColumn(int index)
+	{
+		ColumnCondition newCondition = new ColumnCondition(this.conditionType, this.number);
+		newCondition.setRow(this.row);
+		newCondition.setColumn(index);
+		newCondition.setUnit(this.unit);
+		return newCondition;
 	}
 	
 	public String toString(int depth)

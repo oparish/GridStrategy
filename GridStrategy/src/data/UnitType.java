@@ -8,7 +8,6 @@ import main.Main;
 
 public enum UnitType
 {
-	TEST_UNIT("TestG", "TestE", 1, 1, new UnitCategory[]{}),
 	DEMOLISHER("Player1Demolisher", "Player2Demolisher", 1, 2, 
 			new UnitCategory[]{}),
 	INTERCEPTOR("Player1Interceptor", "Player2Interceptor", 1, 1, 

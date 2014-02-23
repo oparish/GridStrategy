@@ -18,6 +18,15 @@ public class Manufacturer
 	public static void main(String args[]) throws IOException
 	{
 		CPlayer[] initialCplayers = Manufacturer.getInitialCPlayers();
+		CPlayer winner = Manufacturer.pitPlayers(initialCplayers);
+		
+		FileOperations.saveFile("Test.ai", winner.toBytes());
+		System.out.println("Finish");
+		System.exit(0);
+	}
+	
+	private static CPlayer pitPlayers(CPlayer[] initialCplayers)
+	{
 		HashMap<CPlayer, Integer> cPlayerMap = new HashMap<CPlayer, Integer>();
 		for (CPlayer cPlayer : initialCplayers)
 		{
@@ -42,11 +51,7 @@ public class Manufacturer
 			}
 		}
 
-		CPlayer winner = Manufacturer.findWinner(cPlayerMap);
-		
-		FileOperations.saveFile("Test.ai", winner.toBytes());
-		System.out.println("Finish");
-		System.exit(0);
+		return Manufacturer.findWinner(cPlayerMap);
 	}
 	
 	private static CPlayer findWinner(HashMap<CPlayer, Integer> cPlayerMap)
@@ -77,7 +82,7 @@ public class Manufacturer
 		{
 			do
 			{
-				cPlayer = Spawner.createCPlayer(false);
+				cPlayer = Spawner.createBatchedCPlayer(false);
 				result = Main.getMain().startGameGridWithoutScreen(cPlayer, null);
 			} while(result != GameResult.PLAYER1_WINS);
 			players[i] = cPlayer;

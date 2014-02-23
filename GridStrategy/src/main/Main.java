@@ -1,7 +1,5 @@
 package main;
 
-import static data.UnitType.TEST_UNIT;
-
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Toolkit;
@@ -14,11 +12,10 @@ import javax.imageio.ImageIO;
 
 import ai.CPlayer;
 import ai.Spawner;
-
 import data.GameGrid;
 import data.GameResult;
 import data.Unit;
-
+import data.UnitType;
 import screens.GameScreen;
 
 public class Main
@@ -101,13 +98,12 @@ public class Main
 	{
 		//Main.testPlayer = Spawner.createCPlayer(false);
 		//CPlayer.showCPlayer(Main.testPlayer);
-		//CPlayer readPlayer = 
-		//new CPlayer(false, FileOperations.loadFile("Test.ai"));
+		CPlayer readPlayer = new CPlayer(false, FileOperations.loadFile("Test.ai"));
 		Main main = Main.getMain();
 //		while (Main.currentOpponent == null)
 //		{
-			CPlayer testPlayer = TestPlayers.unitsOnBoardTestPlayer();
-			main.startGameGridWithScreen(null, testPlayer);
+			//CPlayer testPlayer = TestPlayers.unitsOnBoardTestPlayer();
+			main.startGameGridWithScreen(null, readPlayer);
 
 //		}
 //		Main.main.startGameGrid(null, Main.getCurrentOpponent());
@@ -149,7 +145,7 @@ public class Main
 	
 	private static void test1(Main main)
 	{
-		Unit testUnit = new Unit(true, TEST_UNIT);
+		Unit testUnit = new Unit(true, UnitType.INTERCEPTOR);
 		main.gameScreen.getGridPane().setCellContent(4, 4, testUnit);
 		main.gameScreen.getGridPane().setCellContent(1, 5, testUnit);
 		main.gameScreen.getGridPane().repaint();
