@@ -16,10 +16,15 @@ import data.GameGrid;
 import data.GameResult;
 import data.Unit;
 import data.UnitType;
+import events.EventType;
 import screens.GameScreen;
 
 public class Main
 {
+	public final static boolean DEBUG = false;
+	private final static int[] DEBUG_COLUMNS = {0};
+	private final static EventType[] DEBUG_EVENTTYPES = {EventType.COMBAT};
+	
 	public final static int PLAYER1_MAXHP = 10;
 	public final static int PLAYER2_MAXHP = 10;
 	public final static int GRIDWIDTH = 10;
@@ -56,6 +61,26 @@ public class Main
 	Main()
 	{
 
+	}
+	
+	public static boolean checkDebugColumns(int column)
+	{
+		for (int i : Main.DEBUG_COLUMNS)
+		{
+			if (i == column)
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean checkDebugEventType(EventType eventType)
+	{
+		for (EventType type : Main.DEBUG_EVENTTYPES)
+		{
+			if (type == eventType)
+				return true;
+		}
+		return false;
 	}
 	
 	public void startGameGridWithScreen(CPlayer cPlayer1, CPlayer cPlayer2)

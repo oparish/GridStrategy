@@ -61,6 +61,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		this.switchScreenState(STANDARD);
 		this.gameGrid = gameGrid;
 		this.gameGrid.addEventListener(this);
+		this.gameGrid.addEventListener(this.messagePane);
 	}
 	
 	public Integer[] getPlayer1DeploymentPoints()
@@ -201,12 +202,12 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			OneUnitEvent oneUnitEvent = (OneUnitEvent) event;
 			unit1 = oneUnitEvent.getUnit();
 			xPos = oneUnitEvent.getXpos1();
-			yPos = oneUnitEvent.getyPos1();
+			yPos = oneUnitEvent.getYPos1();
 			if (event instanceof TwoPositionEvent)
 			{
 				TwoPositionEvent twoPositionEvent = (TwoPositionEvent) event;
-				xPos2 = twoPositionEvent.getxPos2();
-				yPos2 = twoPositionEvent.getyPos2();
+				xPos2 = twoPositionEvent.getXPos2();
+				yPos2 = twoPositionEvent.getYPos2();
 				if (event instanceof TwoUnitEvent)
 					unit2 = ((TwoUnitEvent) event).getUnit2();
 			}
@@ -294,10 +295,5 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	{
 		Animation combatAnimation = Animator.getBaseAttackAnimation(unit1);
 		combatAnimation.playAnimation(xPos, yPos);
-		this.messagePane.add("Base Attack");
-		if (unit1.isOwnedByPlayer1())
-			this.messagePane.add("Player 2 HP: " + this.gameGrid.getPlayer2HP());
-		else
-			this.messagePane.add("Player 1 HP: " + this.gameGrid.getPlayer1HP());
 	}
 }

@@ -9,7 +9,7 @@ public class OneUnitEvent extends MyEvent
 	private final int xPos1;
 	private final int yPos1;
 	
-	public int getyPos1() {
+	public int getYPos1() {
 		return yPos1;
 	}
 

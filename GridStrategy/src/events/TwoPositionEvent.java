@@ -5,13 +5,13 @@ import data.Unit;
 public class TwoPositionEvent extends OneUnitEvent
 {
 	private final int xPos2;
-	public int getxPos2() {
+	public int getXPos2() {
 		return xPos2;
 	}
 
 	private final int yPos2;
 	
-	public int getyPos2() {
+	public int getYPos2() {
 		return yPos2;
 	}
 	
