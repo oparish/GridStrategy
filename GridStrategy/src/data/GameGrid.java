@@ -206,7 +206,10 @@ public class GameGrid
 	private void tryMovingPlayerUnit(MoveAttempt moveAttempt, 
 			int start, int end, int direction)
 	{
-		this.doCombats(moveAttempt, start, end, direction);
+		boolean success = this.doCombats(moveAttempt, start, end, direction);
+		
+		if (!success)
+			return;
 		
 		if (((start - moveAttempt.potentialEndPos) * direction) > 0)
 		{
@@ -221,7 +224,7 @@ public class GameGrid
 		}
 	}
 	
-	private void doCombats(MoveAttempt moveAttempt, 
+	private boolean doCombats(MoveAttempt moveAttempt, 
 			int start, int end, int direction)
 	{
 		Unit[] column = this.gridContents[moveAttempt.column];
@@ -239,10 +242,11 @@ public class GameGrid
 						moveAttempt.column, k);
 				if (!combatResult)
 				{
-					return;
+					return false;
 				}
 			}
 		}
+		return true;
 	}
 	
 	private void unitBaseAttack(Unit unit)
