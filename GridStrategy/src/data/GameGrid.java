@@ -161,66 +161,87 @@ public class GameGrid
 	{
 		int start;
 		int end;
-		int incrementor;
+		int direction;
 		
 		if (player1)
 		{
 			start = 0;
 			end = Main.GRIDHEIGHT - 1;
-			incrementor = 1;
+			direction = 1;
 		}
 		else
 		{
 			start = Main.GRIDHEIGHT - 1;
 			end = 0;
-			incrementor = -1;
+			direction = -1;
 		}
+		
+		ArrayList<MoveAttempt> moveList = this.getMoveList(player1, start, end, direction);
+		
+		for (MoveAttempt moveAttempt : moveList)
+		{
+			tryMovingPlayerUnit(moveAttempt, start, end, direction);
+		}
+		
+	}
+	
+	private ArrayList<MoveAttempt> getMoveList(boolean player1, int start, int end, int direction)
+	{
+		ArrayList<MoveAttempt> moveList = new ArrayList<MoveAttempt>();
 		
 		for (int i = 0 ; i < this.gridContents.length; i++)
 		{
 			Unit[] column = this.gridContents[i];
-			for(int j = start ; (end - j) * incrementor >= 0; j += incrementor)
+			for(int j = start ; (end - j) * direction >= 0; j += direction)
 			{
-				Unit unit1 = column[j];
-				if (unit1 == null || (unit1.isOwnedByPlayer1() != player1))
+				Unit unit = column[j];
+				if (unit == null || (unit.isOwnedByPlayer1() != player1))
 					continue;
-				tryMovingPlayerUnit(unit1, i, j, start, end, incrementor);
+				moveList.add(new MoveAttempt(i, j, unit));
 			}
+		}
+		return moveList;
+	}
+	
+	private void tryMovingPlayerUnit(MoveAttempt moveAttempt, 
+			int start, int end, int direction)
+	{
+		this.doCombats(moveAttempt, start, end, direction);
+		
+		if (((start - moveAttempt.potentialEndPos) * direction) > 0)
+		{
+			unitBaseAttack(moveAttempt.unit);
+			this.gridContents[moveAttempt.column][moveAttempt.startPos] = null;
+			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, moveAttempt.column, 
+					moveAttempt.startPos, moveAttempt.unit));
+		}
+		else
+		{
+			this.moveUnit(moveAttempt.column, moveAttempt.startPos, moveAttempt.column, moveAttempt.potentialEndPos);
 		}
 	}
 	
-	private void tryMovingPlayerUnit(Unit unit1, int xPos, int yPos, 
-			int start, int end, int incrementor)
+	private void doCombats(MoveAttempt moveAttempt, 
+			int start, int end, int direction)
 	{
-		Unit[] column = this.gridContents[xPos];
-		int speed = unit1.getUnitType().getSpeed();
-		int potentialEndPos = (yPos + (speed * incrementor * -1));
-		for (int k = yPos - incrementor; 
-				(start - k) * incrementor * -1 >= 0 && 
-				(potentialEndPos - k) * incrementor * -1 >= 0; 
-				k -= incrementor)
+		Unit[] column = this.gridContents[moveAttempt.column];
+		int speed = moveAttempt.unit.getUnitType().getSpeed();
+		moveAttempt.potentialEndPos = (moveAttempt.startPos + (speed * direction * -1));
+		for (int k = moveAttempt.startPos - direction; 
+				(start - k) * direction * -1 >= 0 && 
+				(moveAttempt.potentialEndPos - k) * direction * -1 >= 0; 
+				k -= direction)
 		{
 			Unit unit2 = column[k];
 			if (unit2 != null)
 			{
-				boolean combatResult = this.unitCombat(unit1, unit2, xPos, yPos, 
-						xPos, k);
+				boolean combatResult = this.unitCombat(moveAttempt.unit, unit2, moveAttempt.column, moveAttempt.startPos, 
+						moveAttempt.column, k);
 				if (!combatResult)
 				{
 					return;
 				}
 			}
-		}
-		if (((start - potentialEndPos) * incrementor) > 0)
-		{
-			unitBaseAttack(unit1);
-			this.gridContents[xPos][yPos] = null;
-			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, xPos, 
-					yPos, unit1));
-		}
-		else
-		{
-			this.moveUnit(xPos, yPos, xPos, potentialEndPos);
 		}
 	}
 	
@@ -538,6 +559,21 @@ public class GameGrid
 			{
 				this.processEvents();
 			}
+		}
+	}
+	
+	private class MoveAttempt
+	{
+		public int startPos;
+		public int column;
+		public int potentialEndPos;
+		public Unit unit;
+		
+		MoveAttempt(int column, int startPos, Unit unit)
+		{
+			this.startPos = startPos;
+			this.column = column;
+			this.unit = unit;
 		}
 	}
 }
