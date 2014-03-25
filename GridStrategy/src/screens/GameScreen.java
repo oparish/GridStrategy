@@ -5,10 +5,14 @@ import static screens.GameScreenState.DEPLOYING_UNIT;
 import static screens.GameScreenState.STANDARD;
 
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import data.GameGrid;
@@ -33,6 +37,7 @@ import buttons.ControlButton;
 import main.Main;
 import panes.ControlPane;
 import panes.GridPane;
+import panes.InfoPane;
 import panes.MessagePane;
 
 @SuppressWarnings("serial")
@@ -41,6 +46,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	private GridPane gridPane;
 	private ControlPane controlPane;
 	private MessagePane messagePane;
+	private InfoPane infoPane;
 	private GameScreenState screenState;
 	private GameGrid gameGrid;
 	private Unit unitToDeploy;
@@ -49,19 +55,22 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	public GameScreen(GameGrid gameGrid)
 	{
 		super();
-		this.setLayout(new GridBagLayout());
+		this.gameGrid = gameGrid;
+		this.setLayout(new GridLayout(2,2));
 		this.gridPane = new GridPane(this);
 		Animator.setGridPane(this.gridPane);
 		this.controlPane = new ControlPane(this);
 		this.messagePane = new MessagePane();
+		this.infoPane = new InfoPane(this.gameGrid);
 		JScrollPane jScrollPane = new JScrollPane(this.messagePane);
-		this.add(this.gridPane, Main.getFillConstraints(0,0,1,2));
-		this.add(this.controlPane, Main.getFillConstraints(1,0,1,1));
-		this.add(jScrollPane, Main.getFillConstraints(1,1,1,1));
+		this.add(this.gridPane);
+		this.add(this.controlPane);
+		this.add(jScrollPane);
+		this.add(this.infoPane);
 		this.switchScreenState(STANDARD);
-		this.gameGrid = gameGrid;
 		this.gameGrid.addEventListener(this);
 		this.gameGrid.addEventListener(this.messagePane);
+		this.gameGrid.addEventListener(this.infoPane);
 	}
 	
 	public Integer[] getPlayer1DeploymentPoints()
