@@ -7,6 +7,7 @@ import static screens.GameScreenState.STANDARD;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
@@ -24,13 +25,12 @@ import events.OneUnitEvent;
 import events.TurnEvent;
 import events.TwoPositionEvent;
 import events.TwoUnitEvent;
-
 import animation.Animation;
+import animation.AnimationSeries;
 import animation.Animator;
 import buttons.ColumnButton;
 import buttons.ControlButton;
 import main.Main;
-
 import panes.ControlPane;
 import panes.GridPane;
 import panes.MessagePane;
@@ -263,8 +263,8 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void paintUnitMove(int xPos, int yPos, Unit unit1, int xPos2, int yPos2)
 	{
-		Animation moveAnimation = Animator.getSimpleMoveAnimation(unit1);
-		moveAnimation.playTwoCellAnimation(xPos, yPos, xPos2, yPos2);
+		AnimationSeries moveAnimationSeries = Animator.getMoveAnimationSeries(unit1);
+		moveAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), xPos, yPos, xPos2, yPos2);
 	}
 	
 	private void paintCombat(int xPos, int yPos, Unit unit1, int xPos2, 
@@ -277,7 +277,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			combatAnimation = Animator.getSimpleCombatUnit1DestroyedAnimation(unit1);
 			break;
 		case UNIT2DESTROYED:
-			combatAnimation = Animator.getSimpleCombatUnit2DestroyedAnimation(unit1);
+			combatAnimation = Animator.getSimpleCombatUnit2DestroyedAnimation(unit2);
 			break;
 		default:
 			combatAnimation = Animator.getSimpleCombatDrawAnimation(unit1);	

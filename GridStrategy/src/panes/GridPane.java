@@ -120,6 +120,11 @@ public class GridPane extends JPanel
 		this.cellPanel.repaintCell(x, y);
 	}
 	
+	public void paintEffect(int x, int y, Effect effect)
+	{
+		this.cellPanel.paintEffect(x, y, effect);
+	}
+	
 	private void setupBoundaries()
 	{
 		this.gridInfo.gridWidth = Main.GRIDWIDTH * (Main.CELLWIDTH + 1);

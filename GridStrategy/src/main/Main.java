@@ -162,10 +162,17 @@ public class Main
 		return baseConstraints;
 	}
 	
-	public static BufferedImage loadImage(String filename) throws IOException
+	public static BufferedImage loadImage(String filename)
 	{
 		File testG = new File(IMAGES + filename + FILEEXTENSION);
-		return ImageIO.read(testG);
+		try
+		{
+			return ImageIO.read(testG);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	private static void test1(Main main)

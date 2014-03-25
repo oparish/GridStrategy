@@ -8,9 +8,9 @@ import main.Main;
 
 public enum UnitType
 {
-	DEMOLISHER("Player1Demolisher", "Player2Demolisher", 1, 2, 
+	DEMOLISHER("Player1Demolisher", "Player2Demolisher", 3, 2, 
 			new UnitCategory[]{}),
-	INTERCEPTOR("Player1Interceptor", "Player2Interceptor", 1, 1, 
+	INTERCEPTOR("Player1Interceptor", "Player2Interceptor", 2, 1, 
 			new UnitCategory[]{UnitCategory.INTERCEPTOR});
 	
 	private BufferedImage image1;
@@ -47,12 +47,8 @@ public enum UnitType
 	private UnitType(String filename1, String filename2, int speed, 
 			int baseDamage, UnitCategory[] categories)
 	{
-		try {
-			this.image1 = Main.loadImage(filename1);
-			this.image2 = Main.loadImage(filename2);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.image1 = Main.loadImage(filename1);
+		this.image2 = Main.loadImage(filename2);
 		this.speed = speed;
 		this.baseDamage = baseDamage;
 		this.categories = categories;

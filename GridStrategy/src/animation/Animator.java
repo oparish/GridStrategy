@@ -11,6 +11,10 @@ import panes.GridPane;
 
 public class Animator 
 {
+	private static final int NO_PAUSE = 0;
+	private static final int SHORT_PAUSE = 333;
+	private static final int MEDIUM_PAUSE = 1000;
+	
 	private static boolean animationRunning = false;
 	private static Animation currentAnimation;
 	private static Graphics2D currentGraphics;
@@ -55,30 +59,42 @@ public class Animator
 		Animator.currentGraphics = currentGraphics;
 	}
 	
-	public static AtomicAnimation getSimpleMoveAnimation(Unit unit)
+	private static AtomicAnimation getSimpleMoveAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		OperationFrame removeFrame = new OperationFrame(unit, REMOVE);
-		OperationFrame addFrame = new OperationFrame(unit, ADD);
+		OperationFrame removeFrame = new OperationFrame(NO_PAUSE, unit, REMOVE);
+		OperationFrame addFrame = new OperationFrame(SHORT_PAUSE,unit, ADD);
 		frames.add(new FrameWithContext(removeFrame, true));
 		frames.add(new FrameWithContext(addFrame, false));
 		return new AtomicAnimation(frames);
 	}
 	
+	public static VerticalAnimationSeries getMoveAnimationSeries(Unit unit)
+	{
+		AtomicAnimation moveAnimation = Animator.getSimpleMoveAnimation(unit);
+		return new VerticalAnimationSeries(moveAnimation);
+	}
+	
 	public static AtomicAnimation getSimpleCombatDrawAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		OperationFrame combat1Frame = new OperationFrame(unit, REMOVE);
-		OperationFrame combat2Frame = new OperationFrame(unit, REMOVE);
-		frames.add(new FrameWithContext(combat1Frame, true));
-		frames.add(new FrameWithContext(combat2Frame, false));
+		EffectFrame effectFrame1 = new EffectFrame(SHORT_PAUSE);
+		EffectFrame effectFrame2 = new EffectFrame(SHORT_PAUSE);
+		OperationFrame combat1Frame = new OperationFrame(NO_PAUSE, unit, REMOVE);
+		OperationFrame combat2Frame = new OperationFrame(NO_PAUSE, unit, REMOVE);
+		frames.add(new FrameWithContext(effectFrame1, true));
+		frames.add(new FrameWithContext(effectFrame2, false));
+		frames.add(new FrameWithContext(combat1Frame, false));
+		frames.add(new FrameWithContext(combat2Frame, true));
 		return new AtomicAnimation(frames);
 	}
 	
 	public static AtomicAnimation getSimpleCombatUnit1DestroyedAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		OperationFrame combat1Frame = new OperationFrame(unit, REMOVE);
+		EffectFrame effectFrame = new EffectFrame(SHORT_PAUSE);
+		OperationFrame combat1Frame = new OperationFrame(1000, unit, REMOVE);
+		frames.add(new FrameWithContext(effectFrame, true));
 		frames.add(new FrameWithContext(combat1Frame, true));
 		return new AtomicAnimation(frames);
 	}
@@ -86,19 +102,17 @@ public class Animator
 	public static AtomicAnimation getSimpleCombatUnit2DestroyedAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		OperationFrame combat1Frame = new OperationFrame(unit, REMOVE);
-		OperationFrame combat2Frame = new OperationFrame(unit, ADD);
-		OperationFrame combat3Frame = new OperationFrame(unit, REMOVE);
+		EffectFrame effectFrame = new EffectFrame(SHORT_PAUSE);
+		OperationFrame combat1Frame = new OperationFrame(1000, unit, REMOVE);
+		frames.add(new FrameWithContext(effectFrame, false));
 		frames.add(new FrameWithContext(combat1Frame, false));
-		frames.add(new FrameWithContext(combat2Frame, false));
-		frames.add(new FrameWithContext(combat3Frame, true));
 		return new AtomicAnimation(frames);
 	}
 	
 	public static AtomicAnimation getBaseAttackAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		OperationFrame removeFrame = new OperationFrame(unit, REMOVE);
+		OperationFrame removeFrame = new OperationFrame(SHORT_PAUSE, unit, REMOVE);
 		frames.add(new FrameWithContext(removeFrame, true));
 		return new AtomicAnimation(frames);
 	}
@@ -106,7 +120,7 @@ public class Animator
 	public static AtomicAnimation getDeployAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		OperationFrame removeFrame = new OperationFrame(unit, ADD);
+		OperationFrame removeFrame = new OperationFrame(SHORT_PAUSE, unit, ADD);
 		frames.add(new FrameWithContext(removeFrame, true));
 		return new AtomicAnimation(frames);
 	}

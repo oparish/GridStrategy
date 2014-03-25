@@ -31,11 +31,7 @@ public class ColumnButton extends JButton
 
 	static
 	{
-		try {
-			arrowIcon = new ImageIcon(Main.loadImage(ARROW));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		arrowIcon = new ImageIcon(Main.loadImage(ARROW));
 	}
 	
 	public ColumnButton(int xpos, ActionListener actionListener)

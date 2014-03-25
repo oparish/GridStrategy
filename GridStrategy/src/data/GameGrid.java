@@ -159,40 +159,40 @@ public class GameGrid
 	
 	private void movePlayerUnits(boolean player1)
 	{
-		int start;
 		int end;
-		int direction;
+		int start;
+		int directionToWalk;
 		
 		if (player1)
 		{
-			start = 0;
-			end = Main.GRIDHEIGHT - 1;
-			direction = 1;
+			end = 0;
+			start = Main.GRIDHEIGHT - 1;
+			directionToWalk = -1;
 		}
 		else
 		{
-			start = Main.GRIDHEIGHT - 1;
-			end = 0;
-			direction = -1;
+			end = Main.GRIDHEIGHT - 1;
+			start = 0;
+			directionToWalk = 1;
 		}
 		
-		ArrayList<MoveAttempt> moveList = this.getMoveList(player1, start, end, direction);
+		ArrayList<MoveAttempt> moveList = this.getMoveList(player1, end, start, directionToWalk);
 		
 		for (MoveAttempt moveAttempt : moveList)
 		{
-			tryMovingPlayerUnit(moveAttempt, start, end, direction);
+			tryMovingPlayerUnit(moveAttempt, end, start, directionToWalk);
 		}
 		
 	}
 	
-	private ArrayList<MoveAttempt> getMoveList(boolean player1, int start, int end, int direction)
+	private ArrayList<MoveAttempt> getMoveList(boolean player1, int end, int start, int directionToWalk)
 	{
 		ArrayList<MoveAttempt> moveList = new ArrayList<MoveAttempt>();
 		
 		for (int i = 0 ; i < this.gridContents.length; i++)
 		{
 			Unit[] column = this.gridContents[i];
-			for(int j = start ; (end - j) * direction >= 0; j += direction)
+			for(int j = end ; (start - j) * -directionToWalk >= 0; j -= directionToWalk)
 			{
 				Unit unit = column[j];
 				if (unit == null || (unit.isOwnedByPlayer1() != player1))
@@ -204,49 +204,54 @@ public class GameGrid
 	}
 	
 	private void tryMovingPlayerUnit(MoveAttempt moveAttempt, 
-			int start, int end, int direction)
-	{
-		boolean success = this.doCombats(moveAttempt, start, end, direction);
-		
-		if (!success)
-			return;
-		
-		if (((start - moveAttempt.potentialEndPos) * direction) > 0)
-		{
-			unitBaseAttack(moveAttempt.unit);
-			this.gridContents[moveAttempt.column][moveAttempt.startPos] = null;
-			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, moveAttempt.column, 
-					moveAttempt.startPos, moveAttempt.unit));
-		}
-		else
-		{
-			this.moveUnit(moveAttempt.column, moveAttempt.startPos, moveAttempt.column, moveAttempt.potentialEndPos);
-		}
-	}
-	
-	private boolean doCombats(MoveAttempt moveAttempt, 
-			int start, int end, int direction)
+			int end, int start, int directionToWalk)
 	{
 		Unit[] column = this.gridContents[moveAttempt.column];
 		int speed = moveAttempt.unit.getUnitType().getSpeed();
-		moveAttempt.potentialEndPos = (moveAttempt.startPos + (speed * direction * -1));
-		for (int k = moveAttempt.startPos - direction; 
-				(start - k) * direction * -1 >= 0 && 
-				(moveAttempt.potentialEndPos - k) * direction * -1 >= 0; 
-				k -= direction)
+		moveAttempt.potentialEndPos = (moveAttempt.startPos + (speed * directionToWalk));
+		
+		int currentScreenPos = moveAttempt.startPos;
+		
+		for (int k = moveAttempt.startPos + directionToWalk; 
+				(end - k) * directionToWalk >= 0 && 
+				(moveAttempt.potentialEndPos - k) * directionToWalk >= 0; 
+				k += directionToWalk)
 		{
 			Unit unit2 = column[k];
 			if (unit2 != null)
 			{
-				boolean combatResult = this.unitCombat(moveAttempt.unit, unit2, moveAttempt.column, moveAttempt.startPos, 
-						moveAttempt.column, k);
-				if (!combatResult)
+				int newPos = k - directionToWalk;
+				if (newPos != currentScreenPos)
+					this.moveUnit(moveAttempt.column, currentScreenPos, moveAttempt.column, newPos);
+				if (moveAttempt.unit.isOwnedByPlayer1() != unit2.isOwnedByPlayer1())
 				{
-					return false;
+					boolean combatResult = this.unitCombat(moveAttempt.unit, unit2, moveAttempt.column, newPos, 
+							moveAttempt.column, k);
+					if (!combatResult)
+					{
+						return;
+					}
+					currentScreenPos = k - directionToWalk;
 				}
+				else
+				{
+					return;
+				}			
 			}
 		}
-		return true;
+		
+		if (((end - moveAttempt.potentialEndPos) * -directionToWalk) > 0)
+		{
+			this.moveUnit(moveAttempt.column, currentScreenPos, moveAttempt.column, end);
+			unitBaseAttack(moveAttempt.unit);
+			this.gridContents[moveAttempt.column][moveAttempt.startPos] = null;
+			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, moveAttempt.column, 
+					end, moveAttempt.unit));
+		}
+		else
+		{
+			this.moveUnit(moveAttempt.column, currentScreenPos, moveAttempt.column, moveAttempt.potentialEndPos);
+		}
 	}
 	
 	private void unitBaseAttack(Unit unit)
@@ -471,8 +476,8 @@ public class GameGrid
 		}
 		else if (combatResult == CombatResult.UNIT2DESTROYED)
 		{
-			this.gridContents[xPos1][yPos1] = null;
-			this.gridContents[xPos2][yPos2] = unit1;	
+			this.gridContents[xPos1][yPos1] = unit1;
+			this.gridContents[xPos2][yPos2] = null;	
 		}
 		else if (combatResult == CombatResult.UNIT1DESTROYED)
 		{
@@ -482,7 +487,10 @@ public class GameGrid
 		this.considerEvent(new CombatEvent(this, COMBAT, xPos1, yPos1, unit1, 
 				unit2, xPos2, yPos2, BASIC, combatResult));
 		
-		return false;
+		if (combatResult == CombatResult.UNIT2DESTROYED)
+			return true;
+		else
+			return false;
 	}
 	
 	private void noteMove()

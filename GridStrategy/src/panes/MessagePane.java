@@ -95,5 +95,11 @@ public class MessagePane extends List implements MyEventListener
 			break;
 		}
 	}
+	
+	@Override
+	public void add(String text)
+	{
+		super.add(text, 0);
+	}
 
 }

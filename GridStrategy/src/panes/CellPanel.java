@@ -6,9 +6,11 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Timer;
 
 import javax.swing.JPanel;
 
+import animation.EffectTask;
 import main.Main;
 
 public class CellPanel extends JPanel
@@ -121,6 +123,15 @@ public class CellPanel extends JPanel
 		else
 			g2d.clearRect(cell.paintedX, cell.paintedY, 
 					Main.CELLWIDTH, Main.CELLHEIGHT);
+	}
+	
+	public void paintEffect(int x, int y, Effect effect)
+	{
+		Cell cell = this.gridInfo.cells[x][y];
+		BufferedImage image = effect.getImage();
+		Graphics2D g2d = (Graphics2D) this.getGraphics();
+		g2d.drawImage(image, cell.paintedX, cell.paintedY,
+					this);
 	}
 	
 	private class MyLine

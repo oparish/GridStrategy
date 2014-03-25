@@ -7,8 +7,9 @@ public class OperationFrame extends Frame
 	private final Unit unit;
 	private final OperationType operationType;
 	
-	public OperationFrame(Unit unit, OperationType operationType)
+	public OperationFrame(int millis, Unit unit, OperationType operationType)
 	{
+		super(millis);
 		this.unit = unit;
 		this.operationType = operationType;
 	}
@@ -36,5 +37,6 @@ public class OperationFrame extends Frame
 			break;
 		}
 		Animator.getGridPane().repaintCell(x, y);
+		this.pause();
 	}
 }
