@@ -175,6 +175,8 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 				case CANCEL:
 					this.cancelOperation();
 					break;
+				case QUIT:
+					System.exit(0);
 				default:
 			}
 		}
