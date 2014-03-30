@@ -31,6 +31,7 @@ import events.TurnEvent;
 import events.TwoPositionEvent;
 import ai.Action;
 import ai.CPlayer;
+import ai.DeployAction;
 import ai.ObservationBatch;
 import ai.Spawner;
 import buttons.ColumnButton;
@@ -464,15 +465,19 @@ public class GameGrid
 		}
 		else
 		{
-			Action action = new Action(actionNumber, unitTypes[unitNumber]);
+			DeployAction action = new DeployAction(actionNumber, unitTypes[unitNumber]);
 			this.takeAction(action, this.isPlayer1Turn);
 		}
 	}
 	
 	private void takeAction(Action action, boolean isPlayer1)
 	{
-		Unit unit = new Unit(isPlayer1, action.getUnitType());
-		this.deployUnit(unit, action.getColumnPos());
+		if (action instanceof DeployAction)
+		{
+			DeployAction deployAction = (DeployAction) action;
+			Unit unit = new Unit(isPlayer1, deployAction.getUnitType());
+			this.deployUnit(unit, deployAction.getColumnPos());
+		}
 	}
 	
 	public void deployUnit(Unit unit, int columnPos)

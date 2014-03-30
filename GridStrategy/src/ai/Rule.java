@@ -1,5 +1,6 @@
 package ai;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 public class Rule
@@ -15,8 +16,18 @@ public class Rule
 	
 	public Rule(ArrayList<Integer> integers, boolean player1)
 	{
-		this.action = new Action(integers);
-		Manufacturer.counter+=2;
+		int actionInt = integers.get(Manufacturer.counter);
+		ActionType actionType = ActionType.values()[actionInt];
+		Manufacturer.counter += 1;
+		switch(actionType)
+		{
+		case DEPLOY_ACTION:
+			this.action = new DeployAction(integers);
+		break;
+		default:
+			this.action = null;
+		}	
+		Manufacturer.counter += 2;
 		this.condition = Condition.setupConditionFromIntegers(integers, 
 				player1);
 	}

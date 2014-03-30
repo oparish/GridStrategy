@@ -113,7 +113,7 @@ public class Spawner
 		ColumnCondition[] conditions = Spawner.turnColumnConditionIntoBatch(Spawner.createColumnCondition(parameters));
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			Action action = new Action(i, unitType);
+			Action action = new DeployAction(i, unitType);
 			rules.add(new Rule(conditions[i], action));
 		}
 		return rules;
@@ -157,7 +157,20 @@ public class Spawner
 	
 	private static Action createAction()
 	{
-		return new Action(randomColumn(), randomUnitType());
+		switch (randomActionType())
+		{
+		case DEPLOY_ACTION:
+			return new DeployAction(randomColumn(), randomUnitType());
+		default:
+			return null;
+		}
+	}
+	
+	private static ActionType randomActionType()
+	{
+		ActionType[] actionTypes = ActionType.values();
+		int randomNumber = random.nextInt(actionTypes.length);
+		return actionTypes[randomNumber];
 	}
 	
 	private static int randomColumn()

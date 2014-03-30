@@ -10,6 +10,7 @@ import ai.CPlayer;
 import ai.ColumnCondition;
 import ai.Condition;
 import ai.ConditionType;
+import ai.DeployAction;
 import ai.GateCondition;
 import ai.GateType;
 import ai.Rule;
@@ -36,7 +37,7 @@ public class TestPlayers
 	
 	private static Rule standardTestFailureRule()
 	{
-		Action testFailureAction = new Action(0, UnitType.INTERCEPTOR);
+		Action testFailureAction = new DeployAction(0, UnitType.INTERCEPTOR);
 		ColumnCondition testFailureCondition = 
 				new ColumnCondition(ConditionType.SMALLER_THAN, 100);
 		Rule testFailureRule = new Rule(testFailureCondition, testFailureAction);
@@ -45,7 +46,7 @@ public class TestPlayers
 	
 	private static Action standardTestSuccessAction()
 	{
-		return new Action(9, UnitType.INTERCEPTOR);
+		return new DeployAction(9, UnitType.INTERCEPTOR);
 	}
 	
 	private static ColumnCondition numberOfUnitsInColumnTestCondition
