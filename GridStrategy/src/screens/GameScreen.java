@@ -1,5 +1,6 @@
 package screens;
 
+import static screens.GameScreenState.ACTIVATING_ABILITY;
 import static screens.GameScreenState.COMPUTER_PLAYING;
 import static screens.GameScreenState.DEPLOYING_UNIT;
 import static screens.GameScreenState.STANDARD;
@@ -9,12 +10,15 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import data.AbilityType;
 import data.GameGrid;
 import data.Unit;
 import data.UnitType;
@@ -41,7 +45,7 @@ import panes.InfoPane;
 import panes.MessagePane;
 
 @SuppressWarnings("serial")
-public class GameScreen extends JFrame implements ActionListener, MyEventListener
+public class GameScreen extends JFrame implements ActionListener, MyEventListener, MouseListener
 {
 	private GridPane gridPane;
 	private ControlPane controlPane;
@@ -108,11 +112,19 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		case DEPLOYING_UNIT:
 			this.switchToDeployingScreen();
 			break;
+		case ACTIVATING_ABILITY:
+			this.switchToActivatingAbilityScreen();
+			break;
 		case COMPUTER_PLAYING:
 			this.switchToComputerPlayingScreen();
 			break;
 		default:
 		}
+	}
+	
+	private void switchToActivatingAbilityScreen()
+	{
+		this.controlPane.runningPlayerOperation(true);
 	}
 	
 	private void switchToComputerPlayingScreen()
@@ -163,6 +175,11 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	{
 		this.switchScreenState(STANDARD);
 	}
+	
+	private void activateAbility()
+	{
+		this.switchScreenState(ACTIVATING_ABILITY);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent ae)
@@ -180,6 +197,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 					break;
 				case NEXT_TURN:
 					this.nextTurn();
+					break;
+				case ACTIVATE_ABILITY:
+					this.activateAbility();
 					break;
 				case CANCEL:
 					this.cancelOperation();
@@ -304,7 +324,63 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void paintBaseAttack(int xPos, int yPos, Unit unit1)
 	{
-		Animation combatAnimation = Animator.getBaseAttackAnimation(unit1);
-		combatAnimation.playAnimation(xPos, yPos);
+		if (yPos != -1 && yPos != Main.GRIDHEIGHT)
+		{
+			Animation combatAnimation = Animator.getBaseAttackAnimation(unit1);
+			combatAnimation.playAnimation(xPos, yPos);
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e)
+	{
+		if (this.screenState == GameScreenState.ACTIVATING_ABILITY)
+		{
+			this.activateAbility(e.getX(), e.getY());
+		}
+	}
+	
+	private void activateAbility(int x, int y)
+	{
+		int cellX = (int) Math.floor(x / Main.CELLWIDTH);
+		int cellY = (int) Math.floor(y / Main.CELLHEIGHT);
+		this.checkForAbility(cellX, cellY);
+	}
+	
+	public void checkForAbility(int x, int y)
+	{
+		Unit unit = this.gameGrid.getUnitAt(x, y);
+		if (unit == null)
+			return;
+		AbilityType abilityType = unit.getUnitType().getAbilityType();
+		if (abilityType != null)
+		{
+			this.switchScreenState(GameScreenState.STANDARD);
+			this.gameGrid.activateAbility(x, y, abilityType);
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

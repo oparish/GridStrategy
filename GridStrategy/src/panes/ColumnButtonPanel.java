@@ -56,9 +56,11 @@ public class ColumnButtonPanel extends JPanel
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
 			int dep = deploymentPoints[i];
-			if (this.gridInfo.cells[i][dep].unit == null)
+
+			if (dep == -1 || this.gridInfo.cells[i][dep].unit == null)
 				this.columnButtons[i].setEnabled(true);
 		}
+
 	}
 	
 	private void setupColumnButtons()

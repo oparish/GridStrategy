@@ -20,7 +20,7 @@ public class Action
 	public Action(ArrayList<Integer> integers)
 	{
 		this.columnPos = integers.get(Manufacturer.counter + 1);
-		this.unitType = UnitType.values()[integers.get(Manufacturer.counter)];
+		this.unitType = UnitType.getDeployableUnitTypes()[integers.get(Manufacturer.counter)];
 	}
 	
 	public String toString()

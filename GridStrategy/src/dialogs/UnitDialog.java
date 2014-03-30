@@ -31,7 +31,7 @@ public class UnitDialog extends MyDialog implements ActionListener
 	{
 		int i = 0;
 		int j = 0;
-		for (UnitType unitType : UnitType.values())
+		for (UnitType unitType : UnitType.getDeployableUnitTypes())
 		{
 			UnitButton unitButton = new UnitButton(unitType);
 			this.add(unitButton, Main.getAnchoredConstraints(i, j));

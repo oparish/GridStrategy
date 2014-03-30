@@ -52,6 +52,7 @@ public class GridPane extends JPanel
 	private void setupCellPanel()
 	{
 		this.cellPanel = new CellPanel(this.gridInfo);
+		this.cellPanel.addMouseListener(this.gameScreen);
 		this.add(this.cellPanel);
 	}
 	
