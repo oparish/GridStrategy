@@ -19,7 +19,8 @@ public abstract class Action
 	
 	public Action(ArrayList<Integer> integers)
 	{
-		this.columnPos = integers.get(Manufacturer.counter + 1);
+		this.columnPos = integers.get(Manufacturer.counter);
+		Manufacturer.counter += 1;
 	}
 	
 	public int getColumnPos() {
@@ -28,5 +29,13 @@ public abstract class Action
 	
 	public abstract String toString();
 	
-	public abstract ArrayList<Byte> toBytes();
+	public ArrayList<Byte> toBytes()
+	{
+		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		Byte classNumber = FileOperations.intToByte(ActionType.DEPLOY_ACTION.ordinal());
+		Byte columnNumber = FileOperations.intToByte(this.columnPos);
+		bytes.add(classNumber);
+		bytes.add(columnNumber);
+		return bytes;
+	}
 }

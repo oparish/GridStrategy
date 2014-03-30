@@ -2,5 +2,5 @@ package ai;
 
 public enum ActionType
 {
-	DEPLOY_ACTION;
+	DEPLOY_ACTION, ACTIVATE_ACTION;
 }

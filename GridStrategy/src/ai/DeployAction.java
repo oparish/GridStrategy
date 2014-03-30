@@ -19,17 +19,14 @@ public class DeployAction extends Action
 	{
 		super(integers);
 		this.unitType = UnitType.values()[integers.get(Manufacturer.counter)];
+		Manufacturer.counter += 1;
 	}
 	
 	public ArrayList<Byte> toBytes()
 	{
-		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		ArrayList<Byte> bytes = super.toBytes();
 		Byte typeNumber = FileOperations.intToByte(this.unitType.ordinal());
-		Byte columnNumber = FileOperations.intToByte(this.columnPos);
-		Byte classNumber = FileOperations.intToByte(ActionType.DEPLOY_ACTION.ordinal());
-		bytes.add(classNumber);
 		bytes.add(typeNumber);
-		bytes.add(columnNumber);
 		return bytes;
 	}
 	

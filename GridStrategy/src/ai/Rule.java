@@ -27,7 +27,6 @@ public class Rule
 		default:
 			this.action = null;
 		}	
-		Manufacturer.counter += 2;
 		this.condition = Condition.setupConditionFromIntegers(integers, 
 				player1);
 	}
