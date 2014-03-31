@@ -315,7 +315,7 @@ public class GameGrid
 		{
 			this.moveUnit(moveAttempt.column, currentScreenPos, moveAttempt.column, end);
 			unitBaseAttack(moveAttempt.unit);
-			this.gridContents[moveAttempt.column][moveAttempt.startPos] = null;
+			this.destroyUnitAt(moveAttempt.column, end);
 			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, moveAttempt.column, 
 					end, moveAttempt.unit));
 		}
