@@ -13,7 +13,6 @@ import main.Main;
 public class Manufacturer 
 {
 	private static final int NUMBER_OF_CONTESTANTS = 8;
-	public static Integer counter;
 	
 	public static void main(String args[]) throws IOException
 	{
