@@ -21,11 +21,11 @@ public class Rule
 	
 	public Rule(List<Integer> integers, boolean player1, RuleHeader ruleHeader)
 	{
-		ConditionHeader conditionHeader = ruleHeader.conditionHeader;
-		ActionHeader actionHeader = ruleHeader.actionHeader;
+		ConditionHeader conditionHeader = ruleHeader.getConditionHeader();
+		ActionHeader actionHeader = ruleHeader.getActionHeader();
 		this.condition = Condition.makeCondition(integers.subList(0, conditionHeader.getSize()), player1, conditionHeader);
 		this.action = Action.makeAction(integers.subList(conditionHeader.getSize(), actionHeader.getSize() + conditionHeader.getSize()), 
-				player1, ruleHeader.actionHeader);
+				player1, ruleHeader.getActionHeader());
 	}
 	
 	public Condition getCondition() {
