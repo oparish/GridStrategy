@@ -105,8 +105,6 @@ public abstract class Condition
 		for (ConditionFieldName fieldName : this.getConditionFieldNames())
 		{
 			Integer value = this.conditionFields.get(fieldName);
-			System.out.println(fieldName.name());
-			System.out.println(value);
 			if (value == null)
 			{
 				value = fieldName.defaultValue;
