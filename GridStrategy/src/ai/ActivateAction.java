@@ -1,38 +1,37 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import ai.Action.ActionFieldName;
 import main.FileOperations;
 import data.UnitType;
 
 public class ActivateAction extends DeployAction
 {
-	private ColumnSearchCondition columnSearchCondition;
+	public ActivateAction(List<Integer> integers)
+	{
+		super(integers);
+	}
 	
+	public ColumnSearchCondition getColumnSearchCondition() {
+		int value = this.actionFields.get(ActionFieldName.ACTIVATECONDITION);
+		return ColumnSearchCondition.values()[value];
+	}
+	
+	public void setColumnSearchCondition(ColumnSearchCondition columnSearchCondition)
+	{
+		this.actionFields.put(ActionFieldName.ACTIVATECONDITION, columnSearchCondition.ordinal());
+	}
+
 	public ActivateAction(int columnPos, UnitType unitType, ColumnSearchCondition columnSearchCondition)
 	{
 		super(columnPos, unitType);
-		this.columnSearchCondition = columnSearchCondition;
-	}
-	
-	public ActivateAction(ArrayList<Integer> integers)
-	{
-		super(integers);
-		this.columnSearchCondition = ColumnSearchCondition.values()[integers.get(Manufacturer.counter)];
-		Manufacturer.counter += 1;
-	}
-	
-	public ArrayList<Byte> toBytes()
-	{
-		ArrayList<Byte> bytes = super.toBytes();
-		Byte searchNumber = FileOperations.intToByte(this.columnSearchCondition.ordinal());
-		bytes.add(searchNumber);
-		return bytes;
+		this.setColumnSearchCondition(columnSearchCondition);
 	}
 	
 	public String toString()
 	{
-		return super.toString() + ", " + this.columnSearchCondition.name();
+		return super.toString() + ", " + this.getColumnSearchCondition().name();
 	}
-
 }

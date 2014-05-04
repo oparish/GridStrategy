@@ -1,36 +1,54 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import ai.Condition.ConditionFieldName;
+import ai.headers.ConditionHeader;
+import ai.headers.GateConditionHeader;
 import main.FileOperations;
 
 public class GateCondition extends Condition
 {	
-	private final GateType gateType;
+	private final static ConditionFieldName[] conditionFieldNames = {ConditionFieldName.GATETYPE};
 	private final Condition condition1;
 	private final Condition condition2;
 	
 	public GateCondition(Condition condition1, Condition condition2, 
-			GateType gateType)
+			GateType gateType, boolean isPlayer1)
 	{
+		super(isPlayer1);
 		this.condition1 = condition1;
 		this.condition2 = condition2;
-		this.gateType = gateType;
+		this.setGateType(gateType);
 	}
 	
-	public GateCondition(ArrayList<Integer> integers, boolean player1)
+	public GateCondition(List<Integer> conditionIntegers, boolean isPlayer1, 
+			GateConditionHeader conditionHeader)
 	{
-		this.gateType = GateType.values()[integers.get(Manufacturer.counter++)
-		                                  .intValue()];
-		this.condition1 = Condition.setupConditionFromIntegers(integers, 
-				player1);
-		this.condition2 = Condition.setupConditionFromIntegers(integers, 
-				player1);
+		super(conditionIntegers, isPlayer1, conditionHeader);
+		
+		ConditionHeader condition1Header = conditionHeader.condition1;
+		ConditionHeader condition2Header = conditionHeader.condition2;
+		this.condition1 = Condition.makeCondition(conditionIntegers.subList(0, condition1Header.getSize()), isPlayer1, condition1Header);
+		this.condition2 = Condition.makeCondition(conditionIntegers.subList(condition1Header.getSize(), 
+				condition1Header.getSize() + condition2Header.getSize()), isPlayer1, condition1Header);
+	}
+	
+	public GateType getGateType()
+	{
+		int value = this.conditionFields.get(ConditionFieldName.GATETYPE);
+		return GateType.values()[value];
+	}
+	
+	public void setGateType(GateType gateType)
+	{
+		this.conditionFields.put(ConditionFieldName.GATETYPE, gateType.ordinal());
 	}
 	
 	public String toString(int depth)
 	{
-		return "		" + depth + " - Gate Condition: " + this.gateType + "\n" + 
+		return "		" + depth + " - Gate Condition: " + this.getGateType() + "\n" + 
 				this.condition1.toString(depth + 1) + "\n" + 
 						this.condition2.toString(depth + 1);
 	}
@@ -40,7 +58,7 @@ public class GateCondition extends Condition
 		boolean result1 = this.condition1.checkCondition(observationBatch);
 		boolean result2 = this.condition2.checkCondition(observationBatch);
 		
-		switch(this.gateType)
+		switch(this.getGateType())
 		{
 		case AND:
 			return (result1 && result2);
@@ -54,17 +72,22 @@ public class GateCondition extends Condition
 			return false;
 		}
 	}
-
-	@Override
+	
 	public ArrayList<Byte> toBytes()
 	{
-		ArrayList<Byte> bytes = new ArrayList<Byte>();
-		Byte conditionClass = FileOperations.intToByte(GATECONDITIONTYPE);
-		Byte conditionType = FileOperations.intToByte(this.gateType.ordinal());
-		bytes.add(conditionClass);
-		bytes.add(conditionType);
+		ArrayList<Byte> bytes = super.toBytes();
 		bytes.addAll(this.condition1.toBytes());
 		bytes.addAll(this.condition2.toBytes());
 		return bytes;
+	}
+	
+	public ArrayList<Byte> getHeaderBytes()
+	{
+		ArrayList<Byte> headerByteList = new ArrayList<Byte>();
+		byte condition = FileOperations.intToByte(CPlayer.getConditionClassOrdinal(this.getClass()));
+		headerByteList.add(condition);
+		headerByteList.addAll(this.condition1.getHeaderBytes());
+		headerByteList.addAll(this.condition2.getHeaderBytes());
+		return headerByteList;
 	}
 }

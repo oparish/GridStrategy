@@ -2,6 +2,11 @@ package ai;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.List;
+
+import ai.headers.ActionHeader;
+import ai.headers.ConditionHeader;
+import ai.headers.RuleHeader;
 
 public class Rule
 {
@@ -14,21 +19,13 @@ public class Rule
 		this.action = action;
 	}
 	
-	public Rule(ArrayList<Integer> integers, boolean player1)
+	public Rule(List<Integer> integers, boolean player1, RuleHeader ruleHeader)
 	{
-		int actionInt = integers.get(Manufacturer.counter);
-		ActionType actionType = ActionType.values()[actionInt];
-		Manufacturer.counter += 1;
-		switch(actionType)
-		{
-		case DEPLOY_ACTION:
-			this.action = new DeployAction(integers);
-		break;
-		default:
-			this.action = null;
-		}	
-		this.condition = Condition.setupConditionFromIntegers(integers, 
-				player1);
+		ConditionHeader conditionHeader = ruleHeader.conditionHeader;
+		ActionHeader actionHeader = ruleHeader.actionHeader;
+		this.condition = Condition.makeCondition(integers.subList(0, conditionHeader.getSize()), player1, conditionHeader);
+		this.action = Action.makeAction(integers.subList(conditionHeader.getSize(), actionHeader.getSize() + conditionHeader.getSize()), 
+				player1, ruleHeader.actionHeader);
 	}
 	
 	public Condition getCondition() {
@@ -48,8 +45,16 @@ public class Rule
 	public ArrayList<Byte> toBytes()
 	{
 		ArrayList<Byte> bytes = new ArrayList<Byte>();
-		bytes.addAll(this.action.toBytes());
 		bytes.addAll(this.condition.toBytes());
+		bytes.addAll(this.action.toBytes());
 		return bytes;
+	}
+	
+	public ArrayList<Byte> getHeaderBytes()
+	{
+		ArrayList<Byte> headerByteList = new ArrayList<Byte>();
+		headerByteList.addAll(this.condition.getHeaderBytes());
+		headerByteList.add(this.action.getHeaderByte());
+		return headerByteList;
 	}
 }

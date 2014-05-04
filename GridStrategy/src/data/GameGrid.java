@@ -30,7 +30,9 @@ import events.OneUnitEvent;
 import events.TurnEvent;
 import events.TwoPositionEvent;
 import ai.Action;
+import ai.ActivateAction;
 import ai.CPlayer;
+import ai.ColumnSearchCondition;
 import ai.DeployAction;
 import ai.ObservationBatch;
 import ai.Spawner;
@@ -313,7 +315,8 @@ public class GameGrid
 		
 		if (((end - moveAttempt.potentialEndPos) * -directionToWalk) > 0)
 		{
-			this.moveUnit(moveAttempt.column, currentScreenPos, moveAttempt.column, end);
+			if (currentScreenPos != end)
+				this.moveUnit(moveAttempt.column, currentScreenPos, moveAttempt.column, end);
 			unitBaseAttack(moveAttempt.unit);
 			this.destroyUnitAt(moveAttempt.column, end);
 			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, moveAttempt.column, 
@@ -478,6 +481,43 @@ public class GameGrid
 			Unit unit = new Unit(isPlayer1, deployAction.getUnitType());
 			this.deployUnit(unit, deployAction.getColumnPos());
 		}
+		else if (action instanceof ActivateAction)
+		{
+			ActivateAction activateAction = (ActivateAction) action;
+			this.activateCplayerUnit(isPlayer1, activateAction.getUnitType(), activateAction.getColumnPos(), 
+					activateAction.getColumnSearchCondition());
+		}
+	}
+	
+	private void activateCplayerUnit(boolean isPlayer1, UnitType unitType, int x, ColumnSearchCondition searchCondition)
+	{
+		int start;
+		int end;
+		int direction;	
+		
+		if ((searchCondition == ColumnSearchCondition.NEAREST_TO_START && isPlayer1) || 
+				(searchCondition == ColumnSearchCondition.FURTHEST_FROM_START && !isPlayer1))
+		{
+			start = Main.GRIDHEIGHT - 1;
+			end = 0;
+			direction = -1;
+		}
+		else
+		{
+			start = 0;
+			end = Main.GRIDHEIGHT - 1;
+			direction = 1;
+		}
+		
+		for (int i = start ; (end - i) * direction <= 0 ; i += direction)
+		{
+			Unit unit = this.gridContents[x][i];
+			if (unit.isOwnedByPlayer1() == isPlayer1 && unit.getUnitType() == unitType)
+			{
+				this.activateAbility(x, i, unitType.getAbilityType());
+				break;
+			}
+		}
 	}
 	
 	public void deployUnit(Unit unit, int columnPos)
@@ -513,6 +553,8 @@ public class GameGrid
 	public void moveUnit(int xPos1, int yPos1, int xPos2, int yPos2)
 	{
 		Unit unit = this.gridContents[xPos1][yPos1];
+		if (unit == null)
+			System.out.println("Trying to move a null unit");
 		this.considerEvent(new TwoPositionEvent(this, MOVING_UNIT, xPos1, 
 				yPos1, unit, xPos2, yPos2));
 		this.gridContents[xPos2][yPos2] = unit;
@@ -582,9 +624,11 @@ public class GameGrid
 	private void destroyUnitAt(int x, int y)
 	{
 		Unit unit = this.gridContents[x][y];
-		this.gridContents[x][y] = null;
+		if (unit == null)
+			System.out.println("Trying to destroy a null unit");
 		if (unit.getUnitType().hasCategory(FRONTLINE))
 			this.updateDeployPoints(unit.isOwnedByPlayer1(), x);
+		this.gridContents[x][y] = null;
 	}
 	
 	private void noteMove()

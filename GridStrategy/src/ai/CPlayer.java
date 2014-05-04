@@ -2,8 +2,58 @@ package ai;
 
 import java.util.ArrayList;
 
+import main.FileOperations;
+import ai.headers.ActionHeader;
+import ai.headers.ColumnConditionHeader;
+import ai.headers.ConditionHeader;
+import ai.headers.GateConditionHeader;
+import ai.headers.RuleHeader;
+
 public class CPlayer
-{
+{	
+	private static ArrayList<Class<? extends Condition>> conditionClasses;
+	private static ArrayList<Class<? extends Action>> actionClasses;
+	
+	static
+	{
+		conditionClasses = new ArrayList<Class<? extends Condition>>();
+		conditionClasses.add(ColumnCondition.class);
+		conditionClasses.add(GateCondition.class);
+		actionClasses = new ArrayList<Class<? extends Action>>();
+		actionClasses.add(DeployAction.class);
+		actionClasses.add(ActivateAction.class);
+	}
+	
+	private static Class<? extends Condition> getConditionClass(int value)
+	{
+		return (Class<? extends Condition>) CPlayer.conditionClasses.get(value);
+	}
+	
+	public static Integer getConditionClassOrdinal(Class<? extends Condition> conditionClass)
+	{
+		for (int i = 0; i < CPlayer.conditionClasses.size(); i++)
+		{
+			if (conditionClass == conditionClasses.get(i))
+				return i;
+		}
+		return null;
+	}
+	
+	private static Class<? extends Action> getActionClass(int value)
+	{
+		return (Class<? extends Action>) CPlayer.actionClasses.get(value);
+	}
+	
+	public static Integer getActionClassOrdinal(Class<? extends Action> actionClass)
+	{
+		for (int i = 0; i < actionClasses.size(); i++)
+		{
+			if (actionClass == actionClasses.get(i))
+				return i;
+		}
+		return null;
+	}
+	
 	private final ArrayList<Rule> rules;
 	private final boolean isPlayer1;
 	
@@ -15,13 +65,59 @@ public class CPlayer
 	
 	public CPlayer(boolean isPlayer1, ArrayList<Integer> integers)
 	{
+		int rulesCount = integers.get(0);
+		
 		this.isPlayer1 = isPlayer1;
-		this.rules = new ArrayList<Rule>();
-		Manufacturer.counter = 0;
-		while(Manufacturer.counter < integers.size())
+		
+		Integer counter = 1;
+		ArrayList<RuleHeader> ruleHeaders = new ArrayList<RuleHeader>();
+		
+		while(ruleHeaders.size() < rulesCount)
 		{
-			this.rules.add(new Rule(integers, isPlayer1));
+			ConditionHeader conditionHeader = this.makeConditionHeader(integers, counter);
+			counter += conditionHeader.getHeaderSize();
+			ActionHeader actionHeader = this.makeActionHeader(integers, counter);
+			counter++;
+			ruleHeaders.add(new RuleHeader(conditionHeader, actionHeader));
+		}	
+		
+		
+		int ruleStart = counter;
+		int ruleEnd;
+		this.rules = new ArrayList<Rule>();
+		for (RuleHeader ruleHeader : ruleHeaders)
+		{
+			ruleEnd = ruleStart + ruleHeader.getSize();
+			this.rules.add(new Rule(integers.subList(ruleStart, ruleEnd), isPlayer1, ruleHeader));
+			ruleStart = ruleEnd;
 		}
+	}
+	
+	private ConditionHeader makeConditionHeader(ArrayList<Integer> integers, Integer counter)
+	{
+		Class<? extends Condition> conditionClass = CPlayer.getConditionClass(integers.get(counter));
+		ConditionHeader conditionHeader;
+		if (conditionClass == GateCondition.class)
+		{
+			counter++;
+			ConditionHeader condition1 = this.makeConditionHeader(integers, counter);
+			counter++;
+			ConditionHeader condition2 = this.makeConditionHeader(integers, counter);
+			conditionHeader = new GateConditionHeader(conditionClass, condition1, condition2);
+		}
+		else
+		{
+			conditionHeader = new ColumnConditionHeader(conditionClass);
+		}
+		return conditionHeader;
+	}
+	
+	private ActionHeader makeActionHeader(ArrayList<Integer> integers, Integer counter)
+	{
+		Class<? extends Action> actionClass = CPlayer.getActionClass(integers.get(counter));
+		ActionHeader actionHeader = new ActionHeader(actionClass);
+		counter++;
+		return actionHeader;
 	}
 	
 	public Action getAction(ObservationBatch observationBatch)
@@ -61,12 +157,20 @@ public class CPlayer
 	public ArrayList<Byte> toBytes()
 	{
 		ArrayList<Byte> bytes = new ArrayList<Byte>();
-		int i = 0;
+		bytes.add(FileOperations.intToByte(this.rules.size()));
+		for (Rule rule : this.rules)
+		{
+			bytes.addAll(rule.getHeaderBytes());
+		}
 		for (Rule rule : this.rules)
 		{
 			bytes.addAll(rule.toBytes());
-			i++;
 		}
 		return bytes;
+	}
+	
+	protected enum cPlayerValues
+	{
+		
 	}
 }

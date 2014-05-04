@@ -1,30 +1,84 @@
 package ai;
 
+import static ai.Action.ActionFieldName.COLUMNPOS;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
+import ai.Condition.ConditionFieldName;
+import ai.headers.ActionHeader;
+import ai.headers.ColumnConditionHeader;
+import ai.headers.ConditionHeader;
+import ai.headers.GateConditionHeader;
 import main.FileOperations;
 import data.UnitType;
 
 @SuppressWarnings("unchecked")
 public abstract class Action
 {	
-	protected final int columnPos;
+	private static HashMap<Class<? extends Action>, ActionFieldName[]> actionFieldNames;
+	
+	protected HashMap<ActionFieldName, Integer> actionFields = new HashMap<ActionFieldName, Integer>();
 
-	public Action(int columnPos)
+	static
 	{
-		this.columnPos = columnPos;
+		Action.actionFieldNames = new HashMap<Class<? extends Action>, ActionFieldName[]>();
+		Action.actionFieldNames.put(DeployAction.class, new ActionFieldName[]{ActionFieldName.COLUMNPOS, ActionFieldName.UNITTYPE});
+		Action.actionFieldNames.put(ActivateAction.class, new ActionFieldName[]{ActionFieldName.COLUMNPOS, ActionFieldName.UNITTYPE, 
+			ActionFieldName.ACTIVATECONDITION});
 	}
 	
-	public Action(ArrayList<Integer> integers)
+	public Action(int columnPos)
 	{
-		this.columnPos = integers.get(Manufacturer.counter);
-		Manufacturer.counter += 1;
+		this.setColumnPos(columnPos);
+	}
+	
+	public Action(List<Integer> integers)
+	{
+		int i = 0;
+		for (ActionFieldName fieldName : this.getActionFieldNames())
+		{
+			this.actionFields.put(fieldName, integers.get(i));
+			i++;
+		}
+	}
+	
+	public static ActionFieldName[] getActionFieldNames(Class<? extends Action> actionClass)
+	{
+		return Action.actionFieldNames.get(actionClass);
+	}
+	
+	public static int getActionFieldNamesLength(Class<? extends Action> actionClass)
+	{
+		return Action.getActionFieldNames(actionClass).length;
+	}
+	
+	public static Action makeAction(List<Integer> integers, boolean isPlayer1, ActionHeader actionHeader)
+	{
+		Class<? extends Action> actionClass = actionHeader.getActionClass();
+		if (actionClass == DeployAction.class)
+		{
+			return new DeployAction(integers);
+		}
+		else
+		{
+			return new ActivateAction(integers);
+		}
+	}
+	
+	public ActionFieldName[] getActionFieldNames()
+	{
+		return Action.getActionFieldNames(this.getClass());
 	}
 	
 	public int getColumnPos() {
-		return columnPos;
+		return this.actionFields.get(COLUMNPOS);
+	}
+	
+	public void setColumnPos(int columnPos) {
+		this.actionFields.put(COLUMNPOS, columnPos);
 	}
 	
 	public abstract String toString();
@@ -32,10 +86,35 @@ public abstract class Action
 	public ArrayList<Byte> toBytes()
 	{
 		ArrayList<Byte> bytes = new ArrayList<Byte>();
-		Byte classNumber = FileOperations.intToByte(ActionType.DEPLOY_ACTION.ordinal());
-		Byte columnNumber = FileOperations.intToByte(this.columnPos);
-		bytes.add(classNumber);
-		bytes.add(columnNumber);
+		
+		for (ActionFieldName fieldName : this.getActionFieldNames())
+		{
+			Integer value = this.actionFields.get(fieldName);
+			if (value == null)
+			{
+				value = fieldName.defaultValue;
+			}
+			bytes.add(FileOperations.intToByte(value));
+		}
+		
 		return bytes;
+	}
+	
+	public byte getHeaderByte()
+	{
+		return FileOperations.intToByte(CPlayer.getActionClassOrdinal(this.getClass()));
+	}
+	
+	protected enum ActionFieldName
+	{
+		COLUMNPOS(-1), ACTIVATECONDITION(ColumnSearchCondition.values().length), UNITTYPE(UnitType.values().length);
+		
+		
+		public int defaultValue;
+		
+		ActionFieldName(int defaultValue)
+		{
+			this.defaultValue = defaultValue;
+		}
 	}
 }

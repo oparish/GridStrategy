@@ -28,7 +28,7 @@ public class TestPlayers
 				TestPlayers.numberOfUnitsInColumnTestCondition(8, 2, testUnit,
 						ConditionType.EQUAL_TO, 2);
 		GateCondition gateCondition = new GateCondition(testCondition1, 
-				testCondition2, GateType.NOR);
+				testCondition2, GateType.NOR, false);
 		Rule testRule = new Rule(gateCondition, standardTestSuccessAction());
 		rules.add(testRule);
 		rules.add(TestPlayers.standardTestFailureRule());
@@ -39,7 +39,7 @@ public class TestPlayers
 	{
 		Action testFailureAction = new DeployAction(0, UnitType.INTERCEPTOR);
 		ColumnCondition testFailureCondition = 
-				new ColumnCondition(ConditionType.SMALLER_THAN, 100);
+				new ColumnCondition(ConditionType.SMALLER_THAN, 100, false);
 		Rule testFailureRule = new Rule(testFailureCondition, testFailureAction);
 		return testFailureRule;
 	}
@@ -53,16 +53,19 @@ public class TestPlayers
 		(int columnPos, int rowPos, Unit unit, ConditionType conditionType, int number)
 	{
 		ColumnCondition testCondition = 
-				new ColumnCondition(conditionType, number);
+				new ColumnCondition(conditionType, number, false);
 		testCondition.setColumn(columnPos);
 		testCondition.setRow(rowPos);
-		testCondition.setUnit(unit);
+		testCondition.setUnitType(unit.getUnitType());
+		testCondition.setUnitPlayer(unit.isOwnedByPlayer1());
 		return testCondition;
 	}
 	
 	public static void main(String args[]) throws IOException
 	{
-		CPlayer cPlayer = new CPlayer(false, FileOperations.loadFile("Test.ai"));
+		CPlayer cPlayer = new CPlayer(false, FileOperations.loadFile("test.ai"));
 		Main.getMain().startGameGridWithScreen(null, cPlayer);
+//		CPlayer cPlayer = TestPlayers.unitsOnBoardTestPlayer();
+//		FileOperations.saveFile("test.ai", cPlayer.toBytes());
 	}
 }

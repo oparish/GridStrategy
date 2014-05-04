@@ -40,4 +40,13 @@ public class Unit
 			return (unit1.ownedByPlayer1 == unit2.ownedByPlayer1) &&
 				(unit1.unitType == unit2.unitType);
 	}
+	
+	public static boolean match(Unit unit1, UnitType unit2Type, boolean unit2IsPlayer1)
+	{
+		if (unit1 == null)
+			return unit2Type == null;
+		else
+			return (unit1.ownedByPlayer1 == unit2IsPlayer1) &&
+				(unit1.unitType == unit2Type);
+	}
 }

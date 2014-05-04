@@ -1,5 +1,6 @@
 package ai;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -26,7 +27,7 @@ public class Spawner
 		int ruleNum = random.nextInt(range) + MIN_RULES;
 		for (int i = 0; i < ruleNum; i++)
 		{
-			rules.add(createCompletelyRandomRule());
+			rules.add(createCompletelyRandomRule(isPlayer1));
 		}
 		return new CPlayer(rules, isPlayer1);
 	}
@@ -38,41 +39,42 @@ public class Spawner
 		int ruleNum = random.nextInt(range) + MIN_RULES;
 		for (int i = 0; i < ruleNum; i++)
 		{
-			rules.addAll(createRuleBatch());
+			rules.addAll(createRuleBatch(isPlayer1));
 		}
 		return new CPlayer(rules, isPlayer1);
 	}
 	
-	private static Rule createCompletelyRandomRule()
+	private static Rule createCompletelyRandomRule(boolean isPlayer1)
 	{
-		return new Rule(createCondition(), createAction());
+		return new Rule(createCondition(isPlayer1), createAction());
 	}
 	
-	private static Condition createCondition()
+	private static Condition createCondition(boolean isPlayer1)
 	{
 		if (randomBoolean())
-			return createColumnCondition();
+			return createColumnCondition(isPlayer1);
 		else
-			return createGateCondition();	
+			return createGateCondition(isPlayer1);	
 	}
 	
-	private static ColumnCondition createColumnCondition(HashMap<ColumnConditionParameter, Boolean> parameters)
+	private static ColumnCondition createColumnCondition(HashMap<ColumnConditionParameter, Boolean> parameters, boolean isPlayer1)
 	{		
 		boolean useColumnCount = fillParameter(parameters, ColumnConditionParameter.USECOLUMNCOUNT);
 		boolean useRowCount = fillParameter(parameters, ColumnConditionParameter.USEROWCOUNT);
 		boolean useUnitType = fillParameter(parameters, ColumnConditionParameter.USEUNITTYPE);
-		return Spawner.createColumnCondition(useColumnCount, useRowCount, useUnitType);
+		return Spawner.createColumnCondition(useColumnCount, useRowCount, useUnitType, isPlayer1);
 	}
 	
-	private static ColumnCondition createColumnCondition()
+	private static ColumnCondition createColumnCondition(boolean isPlayer1)
 	{		
 		boolean useColumnCount = randomBoolean();
 		boolean useRowCount = randomBoolean();
 		boolean useUnitType = randomBoolean();
-		return Spawner.createColumnCondition(useColumnCount, useRowCount, useUnitType);
+		return Spawner.createColumnCondition(useColumnCount, useRowCount, useUnitType, isPlayer1);
 	}
 	
-	private static ColumnCondition createColumnCondition(boolean useColumnCount, boolean useRowCount, boolean useUnitType)
+	private static ColumnCondition createColumnCondition(boolean useColumnCount, boolean useRowCount, boolean useUnitType, 
+			boolean isPlayer1)
 	{
 		int unitCount;
 		
@@ -86,9 +88,13 @@ public class Spawner
 			unitCount = random.nextInt(Main.GRIDWIDTH * Main.GRIDHEIGHT + 1);		
 		
 		ColumnCondition columnCondition = new ColumnCondition(
-				randomConditionType(), unitCount);
+				randomConditionType(), unitCount, isPlayer1);
 		if (useUnitType)
-			columnCondition.setUnit(randomUnit());
+		{
+			columnCondition.setUnitType(randomUnitType());
+			columnCondition.setUnitPlayer(randomBoolean());
+		}
+
 		if (useColumnCount)
 			columnCondition.setColumn(randomColumn());
 		if (useRowCount)
@@ -104,16 +110,27 @@ public class Spawner
 			return randomBoolean();
 	}
 	
-	private static ArrayList<Rule> createRuleBatch()
+	private static ArrayList<Rule> createRuleBatch(boolean isPlayer1)
 	{
 		UnitType unitType = Spawner.randomUnitType();
 		ArrayList<Rule> rules = new ArrayList<Rule>();
 		HashMap<ColumnConditionParameter, Boolean> parameters = new HashMap<ColumnConditionParameter, Boolean>();
 		parameters.put(ColumnConditionParameter.USECOLUMNCOUNT, true);
-		ColumnCondition[] conditions = Spawner.turnColumnConditionIntoBatch(Spawner.createColumnCondition(parameters));
+		ColumnCondition[] conditions = Spawner.turnColumnConditionIntoBatch(Spawner.createColumnCondition(parameters, isPlayer1));
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			Action action = new DeployAction(i, unitType);
+			Action action;
+			switch(randomActionType())
+			{
+			case DEPLOY_ACTION:
+				action = new DeployAction(i, unitType);
+				break;
+			case ACTIVATE_ACTION:
+				action = new ActivateAction(i, unitType, randomColumnSearchCondition());
+				break;
+			default:
+				action = null;
+			}
 			rules.add(new Rule(conditions[i], action));
 		}
 		return rules;
@@ -135,10 +152,10 @@ public class Spawner
 		return conditionBatch;
 	}
 	
-	private static GateCondition createGateCondition()
+	private static GateCondition createGateCondition(boolean isPlayer1)
 	{
-		return new GateCondition(createCondition(), createCondition(),
-				randomGateType());
+		return new GateCondition(createCondition(isPlayer1), createCondition(isPlayer1),
+				randomGateType(), isPlayer1);
 	}
 	
 	private static ConditionType randomConditionType()
@@ -161,6 +178,8 @@ public class Spawner
 		{
 		case DEPLOY_ACTION:
 			return new DeployAction(randomColumn(), randomUnitType());
+		case ACTIVATE_ACTION:
+			return new ActivateAction(randomColumn(), randomUnitType(), randomColumnSearchCondition());
 		default:
 			return null;
 		}
@@ -190,16 +209,18 @@ public class Spawner
 			return false;
 	}
 	
-	private static Unit randomUnit()
-	{
-		return new Unit(randomBoolean(), randomUnitType());
-	}
-	
 	private static UnitType randomUnitType()
 	{
 		UnitType[] unitTypes = UnitType.values();
 		int randTypeNumber = random.nextInt(unitTypes.length);
 		return unitTypes[randTypeNumber];
+	}
+	
+	private static ColumnSearchCondition randomColumnSearchCondition()
+	{
+		ColumnSearchCondition[] columnSearchConditions = ColumnSearchCondition.values();
+		int randTypeNumber = random.nextInt(columnSearchConditions.length);
+		return columnSearchConditions[randTypeNumber];
 	}
 	
 	private enum ColumnConditionParameter

@@ -1,99 +1,104 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import ai.Condition.ConditionFieldName;
+import ai.headers.ColumnConditionHeader;
+import ai.headers.ConditionHeader;
 import main.FileOperations;
 import main.Main;
 import data.Unit;
 import data.UnitType;
 
 public class ColumnCondition extends Condition
-{	
-	private final ConditionType conditionType;
-	private final int number;
-	private Integer column;
-	private Unit unit;
-	private Integer row;
-	
+{		
 	public Integer getRow() {
-		return row;
+		return this.conditionFields.get(ConditionFieldName.ROW);
 	}
 
 	public Integer getColumn() {
-		return column;
+		return this.conditionFields.get(ConditionFieldName.COLUMN);
 	}
-	public Unit getUnit() {
-		return this.unit;
+	
+	public UnitType getUnitType()
+	{
+		Integer value = this.conditionFields.get(ConditionFieldName.UNIT_TYPE);
+		if (value == null)
+			return null;
+		else
+			return UnitType.values()[value];
 	}
 
-	public int getNumber() {
-		return number;
+	public Integer getNumber() {
+		return this.conditionFields.get(ConditionFieldName.NUMBER);
 	}
 	
 	public ConditionType getConditionType() {
-		return conditionType;
+		Integer value = this.conditionFields.get(ConditionFieldName.CONDITION_TYPE);
+		if (value == null)
+			return null;
+		else
+			return ConditionType.values()[value];
 	}
 	
 	public void setColumn(Integer column) {
-		this.column = column;
+		this.conditionFields.put(ConditionFieldName.COLUMN, column);
 	}
-
-	public void setUnit(Unit unit) {
-		this.unit = unit;
+	
+	public void setUnitType(UnitType unitType)
+	{
+		this.conditionFields.put(ConditionFieldName.UNIT_TYPE, unitType.ordinal());
 	}
 
 	public void setRow(Integer row) {
-		this.row = row;
+		this.conditionFields.put(ConditionFieldName.COLUMN, row);
 	}
 
-	public ColumnCondition(ConditionType conditionType, int number)
+	public ColumnCondition(HashMap<ConditionFieldName, Integer> fieldMap, boolean isPlayer1)
 	{
-		this.conditionType = conditionType;
-		this.number = number;
+		super(fieldMap, isPlayer1);
 	}
 	
-	public ColumnCondition(List<Integer> integers, boolean player1)
+	public ColumnCondition(ConditionType conditionType, int number, boolean isPlayer1)
 	{
-		this.conditionType = ConditionType.values()[integers.get(0)];
-		this.number = integers.get(1);
-		int columnNumber = integers.get(2);
-		if (columnNumber != Main.GRIDWIDTH)
-			this.column = columnNumber;
-		int rowNumber = integers.get(3);
-		if (rowNumber != Main.GRIDHEIGHT)
-			this.row = rowNumber;
-		int unitNumber = integers.get(4);
-		if (unitNumber != UnitType.values().length)
-		{
-			boolean unitPlayer = integers.get(5) == 0 ? true : false;
-			this.unit = new Unit(unitPlayer, UnitType.values()[unitNumber]);
-		}	
+		super(isPlayer1);
+		this.conditionFields.put(ConditionFieldName.CONDITION_TYPE, conditionType.ordinal());
+		this.conditionFields.put(ConditionFieldName.NUMBER, number);
+	}
+	
+	public ColumnCondition(List<Integer> integers, boolean isPlayer1, ColumnConditionHeader conditionHeader)
+	{
+		super(integers, isPlayer1, conditionHeader);
 	}
 	
 	public ColumnCondition copyConditionWithNewColumn(int index)
 	{
-		ColumnCondition newCondition = new ColumnCondition(this.conditionType, this.number);
-		newCondition.setRow(this.row);
+		ColumnCondition newCondition = new ColumnCondition(this.conditionFields, this.isPlayer1);
 		newCondition.setColumn(index);
-		newCondition.setUnit(this.unit);
 		return newCondition;
 	}
 	
 	public String toString(int depth)
 	{
-		String unitString = (this.unit == null) ? null : "{" +
-			this.unit.toString() + "}";
-		return "		" + depth + " - Column Condition: " + this.conditionType + 
-				", Number: " + this.number + ", Column: " + this.column + ", Unit: " + 
-				unitString + ", Row: " + this.row;
+		UnitType unitType = this.getUnitType();
+		String unitString;
+		if (unitType != null)
+			unitString = (new Unit(this.isPlayer1, unitType).toString());
+		else
+			unitString = "Null";	
+			
+		return "		" + depth + " - Column Condition: " + this.getConditionType() + 
+				", Number: " + this.getNumber() + ", Column: " + this.getColumn() + ", Unit: " + 
+				unitString + ", Row: " + this.getRow();
 	}
 
 	@Override
 	protected boolean runCheck(ObservationBatch observationBatch)
 	{
 		ArrayList<Unit> conditionUnits = this.findUnits(observationBatch);
-		this.filterTypes(this.unit, conditionUnits);
+		this.filterTypes(this.getUnitType(), this.isPlayer1, conditionUnits);
 		return this.checkNumber(observationBatch, conditionUnits);	
 	}
 	
@@ -101,21 +106,22 @@ public class ColumnCondition extends Condition
 			ArrayList<Unit> conditionUnits)
 	{
 		int unitNumber = conditionUnits.size();
+		int number = this.getNumber();
 		
-		switch(this.conditionType)
+		switch(this.getConditionType())
 		{
 		case GREATER_THAN:
-			return unitNumber > this.number;
+			return unitNumber > number;
 		case SMALLER_THAN:
-			return unitNumber < this.number;
+			return unitNumber < number;
 		case EQUAL_TO:
-			return unitNumber == this.number;
+			return unitNumber == number;
 		default:
 			return false;
 		}
 	}
 	
-	private void filterTypes(Unit filterType, ArrayList<Unit> conditionUnits)
+	private void filterTypes(UnitType filterType, boolean unitIsPlayer1, ArrayList<Unit> conditionUnits)
 	{
 		if (filterType == null)
 		{
@@ -126,7 +132,7 @@ public class ColumnCondition extends Condition
 			ArrayList<Unit> removeList = new ArrayList<Unit>();
 			for (Unit unit : conditionUnits)
 			{
-				if (!Unit.match(unit, filterType))
+				if (!Unit.match(unit, filterType, unitIsPlayer1))
 					removeList.add(unit);
 			}
 			for (Unit unit : removeList)
@@ -145,22 +151,24 @@ public class ColumnCondition extends Condition
 	private ArrayList<Unit> findUnits(ObservationBatch observationBatch)
 	{
 		ArrayList<Unit> conditionUnits;
-		if (this.column == null && this.row == null)
+		Integer column = this.getColumn();
+		Integer row = this.getRow();
+		if (column == null && row == null)
 		{
 			conditionUnits = findUnitsOnGrid(observationBatch);
 		}
-		else if (this.column == null)
+		else if (column == null)
 		{
-			conditionUnits = findUnitsPastRow(observationBatch, this.row);
+			conditionUnits = findUnitsPastRow(observationBatch, row);
 		}
-		else if (this.row == null)
+		else if (row == null)
 		{
-			conditionUnits = findUnitsInColumn(observationBatch, this.column);
+			conditionUnits = findUnitsInColumn(observationBatch, column);
 		}
 		else
 		{
 			conditionUnits = findUnitsInColumnPastRow(observationBatch, 
-					this.column, this.row);
+					column, row);
 		}
 		return conditionUnits;
 	}
@@ -185,7 +193,7 @@ public class ColumnCondition extends Condition
 		if (!observationBatch.isPlayer1())
 			rowNumber = Main.GRIDHEIGHT - 1 - this.getRow();
 		else
-			rowNumber = this.row;
+			rowNumber = this.getRow();
 		
 		ArrayList<Unit> units = new ArrayList<Unit>();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
@@ -225,49 +233,12 @@ public class ColumnCondition extends Condition
 		}
 		return units;
 	}
-
-	@Override
-	public ArrayList<Byte> toBytes()
+	
+	public ArrayList<Byte> getHeaderBytes()
 	{
-		ArrayList<Byte> bytes = new ArrayList<Byte>();
-		Byte conditionClass = FileOperations.intToByte(COLUMNCONDITIONTYPE);	
-		Byte conditionType = FileOperations.intToByte(this.conditionType.ordinal());
-		Byte conditionNumber = FileOperations.intToByte(this.number);
-		Byte columnNumber;
-		
-		if (this.column != null)
-			columnNumber =  FileOperations.intToByte(this.column);
-		else
-			columnNumber = FileOperations.intToByte(Main.GRIDWIDTH);
-		
-		Byte rowNumber;
-		if (this.row != null)
-			rowNumber =  FileOperations.intToByte(this.row);
-		else
-			rowNumber = FileOperations.intToByte(Main.GRIDHEIGHT);
-		
-		Byte unitType;
-		Byte unitPlayer;
-		if (this.unit != null)
-		{
-			unitType =  FileOperations.intToByte(this.unit.getUnitType().ordinal());
-			unitPlayer = 
-					FileOperations.intToByte(this.unit.isOwnedByPlayer1() ? 0 : 1);
-		}
-		else
-		{
-			unitType = FileOperations.intToByte(UnitType.values().length);
-			unitPlayer = FileOperations.intToByte(2);
-		}
-			
-		bytes.add(conditionClass);
-		bytes.add(conditionType);
-		bytes.add(conditionNumber);
-		bytes.add(columnNumber);
-		bytes.add(rowNumber);
-		bytes.add(unitType);
-		bytes.add(unitPlayer);
-		
-		return bytes;
+		ArrayList<Byte> headerByteList = new ArrayList<Byte>();
+		byte condition = FileOperations.intToByte(CPlayer.getConditionClassOrdinal(this.getClass()));
+		headerByteList.add(condition);
+		return headerByteList;
 	}
 }
