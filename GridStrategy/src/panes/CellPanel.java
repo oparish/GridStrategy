@@ -16,6 +16,7 @@ import main.Main;
 public class CellPanel extends JPanel
 {
 	private ArrayList<MyLine> lines;
+	private ArrayList<MyLine> endZoneLines;
 	private GridInfo gridInfo;
 	
 	public CellPanel(GridInfo gridInfo)
@@ -23,6 +24,7 @@ public class CellPanel extends JPanel
 		super();
 		this.gridInfo = gridInfo;
 		this.setLayout(null);
+		this.setupEndZoneLines();
 		this.setupLines();
 		this.setPanelBounds();
 	}
@@ -30,7 +32,7 @@ public class CellPanel extends JPanel
 	private void setPanelBounds()
 	{
 		Dimension size = new Dimension(gridInfo.gridWidth + 1, 
-				gridInfo.gridHeight + 1);
+				gridInfo.gridHeight + Main.CELLHEIGHT + Main.CELLHEIGHT + 2);
 		this.setMinimumSize(size);
 		this.setPreferredSize(size);
 		this.setMaximumSize(size);
@@ -58,17 +60,36 @@ public class CellPanel extends JPanel
 		}
 	}
 	
+	private void setupEndZoneLines()
+	{
+		int gridWidthPixels = Main.GRIDWIDTH * (Main.CELLWIDTH + 1);
+		int gridHeightPixels = Main.GRIDHEIGHT * (Main.CELLHEIGHT + 1);
+		this.endZoneLines = new ArrayList<MyLine>();
+		MyLine firstVertLine = new MyLine(0, 0, 0, Main.CELLHEIGHT);
+		MyLine secondVertLine = new MyLine(gridWidthPixels, 0, gridWidthPixels, 0 + Main.CELLHEIGHT);
+		MyLine firstHorzLine = new MyLine(0, 0, gridWidthPixels, 0);
+		this.endZoneLines.add(firstVertLine);
+		this.endZoneLines.add(secondVertLine);
+		this.endZoneLines.add(firstHorzLine);
+		MyLine thirdVertLine = new MyLine(0, gridHeightPixels + Main.CELLHEIGHT + 1, 0, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 1);
+		MyLine fourthVertLine = new MyLine(gridWidthPixels, gridHeightPixels + Main.CELLHEIGHT + 1, gridWidthPixels, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 1);
+		MyLine secondHorzLine = new MyLine(0, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 1, gridWidthPixels, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 1);
+		this.endZoneLines.add(thirdVertLine);
+		this.endZoneLines.add(fourthVertLine);
+		this.endZoneLines.add(secondHorzLine);
+	}
+	
 	private ArrayList<Integer> setupLinePositions(int gridLength, int cellLength)
 	{
 		ArrayList<Integer> linePositions = new ArrayList<Integer>();
-		for (int i = 0; i < gridLength+1; i += (cellLength+1))
+		for (int i = 0; i < gridLength + 1; i += (cellLength+1))
 		{
 			linePositions.add(i);
 		}
 		return linePositions;
 	}
 	
-	private void drawLines(Graphics2D g2d, Integer xpos, Integer ypos)
+	private void drawLines(ArrayList<MyLine> lines, Graphics2D g2d, Integer xpos, Integer ypos)
 	{	
 		for (MyLine line : lines)
 		{
@@ -104,12 +125,13 @@ public class CellPanel extends JPanel
 		Graphics2D g2d = (Graphics2D) g;
 		Rectangle bounds = g2d.getClipBounds();
 		Double xDouble =(Double) (bounds.getWidth() - this.gridInfo.gridWidth)/2;
-		Double yDouble =(Double) (bounds.getHeight() - this.gridInfo.gridHeight)/2;
+		Double yDouble =(Double) (bounds.getHeight() - (this.gridInfo.gridHeight + Main.CELLHEIGHT + 2 + Main.CELLHEIGHT))/2;
 		Integer xpos = xDouble.intValue();
 		Integer ypos = yDouble.intValue();
 		
-		this.drawLines(g2d, xpos, ypos);
-		this.drawCells(g2d, xpos, ypos);
+		this.drawLines(this.lines, g2d, xpos, ypos + Main.CELLHEIGHT + 1);
+		this.drawLines(this.endZoneLines, g2d, xpos, ypos);
+		this.drawCells(g2d, xpos, ypos + Main.CELLHEIGHT + 1);
 	}
 	
 	public void repaintCell(int x, int y)
