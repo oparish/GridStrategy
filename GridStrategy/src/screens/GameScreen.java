@@ -363,9 +363,32 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void activateAbility(int x, int y)
 	{
-		int cellX = (int) Math.floor(x / Main.CELLWIDTH);
-		int cellY = (int) Math.floor(y / Main.CELLHEIGHT);
-		this.checkForAbility(cellX, cellY);
+		int cellX = this.getColumnFromPosition(x);
+		int cellY = this.getRowFromPosition(y);
+		if (cellX != -1 && cellY != -1)
+			this.checkForAbility(cellX, cellY);
+	}
+	
+	private int getColumnFromPosition(int x)
+	{
+		for(int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			int paintedX = this.gridPane.getCell(i, 0).paintedX;
+			if (x > paintedX && x < (paintedX + Main.CELLWIDTH))
+				return i;
+		}
+		return -1;
+	}
+	
+	private int getRowFromPosition(int y)
+	{
+		for(int i = 0; i < Main.GRIDHEIGHT; i++)
+		{
+			int paintedY = this.gridPane.getCell(0, i).paintedY;
+			if (y > paintedY && y < (paintedY + Main.CELLHEIGHT))
+				return i;
+		}
+		return -1;
 	}
 	
 	public void checkForAbility(int x, int y)
