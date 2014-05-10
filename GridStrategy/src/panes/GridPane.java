@@ -18,11 +18,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import main.Main;
-
 import screens.GameScreen;
-
 import buttons.ColumnButton;
-
 import data.GameGrid;
 import data.Unit;
 import events.EventType;
@@ -85,8 +82,11 @@ public class GridPane extends JPanel
 				this.gridInfo.rowNumbers[j] = j + (j * Main.CELLHEIGHT) + 1;
 			}
 		}
-		this.gridInfo.baseY = this.gridInfo.rowNumbers[Main.GRIDHEIGHT-1] 
+		this.gridInfo.baseY = this.gridInfo.rowNumbers[Main.GRIDHEIGHT - 1] 
 				+ Main.CELLHEIGHT + 1;
+		
+		this.gridInfo.base1RowNumber = this.gridInfo.gridHeight + Main.CELLHEIGHT + 1;
+		this.gridInfo.base2RowNumber = 1;
 	}
 	
 	private void setupCells()
@@ -101,34 +101,53 @@ public class GridPane extends JPanel
 								this.gridInfo.rowNumbers[j]);
 			}
 		}
+		
+		this.gridInfo.player1BaseCells = new Cell[Main.GRIDWIDTH];
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			this.gridInfo.player1BaseCells[i] = new Cell(this.gridInfo.columnNumbers[i], this.gridInfo.base1RowNumber);
+		}
+		this.gridInfo.player2BaseCells = new Cell[Main.GRIDWIDTH];	
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			this.gridInfo.player2BaseCells[i] = new Cell(this.gridInfo.columnNumbers[i], this.gridInfo.base2RowNumber);
+		}
 	}
 	
-	public void setCellContent(int x, int y, Unit unit)
+	public void setCellContent(Cell cell, Unit unit)
 	{
-		Cell cell = this.gridInfo.cells[x][y];
 		cell.unit = unit;
 		new MyEvent(this, EventType.DEPLOYING_UNIT);
 	}
 	
-	public void deleteCellContent(int x, int y)
+	public void deleteCellContent(Cell cell)
 	{
-		Cell cell = this.gridInfo.cells[x][y];
 		cell.unit = null;
 	}
 	
-	public void repaintCell(int x, int y)
+	public void repaintCell(Cell cell)
 	{
-		this.cellPanel.repaintCell(x, y);
+		this.cellPanel.repaintCell(cell);
 	}
 	
-	public void paintEffect(int x, int y, Effect effect)
+	public void paintEffect(Cell cell, Effect effect)
 	{
-		this.cellPanel.paintEffect(x, y, effect);
+		this.cellPanel.paintEffect(cell, effect);
+	}
+	
+	public Cell getCell(int x, int y)
+	{
+		return this.cellPanel.getCell(x, y);
+	}
+	
+	public Cell getBaseCell(int x, boolean player1)
+	{
+		return this.cellPanel.getBaseCell(x, player1);
 	}
 	
 	private void setupBoundaries()
 	{
-		this.gridInfo.gridWidth = Main.GRIDWIDTH * (Main.CELLWIDTH + 1);
-		this.gridInfo.gridHeight = Main.GRIDHEIGHT * (Main.CELLHEIGHT + 1);
+		this.gridInfo.gridWidth = Main.GRIDWIDTH * (Main.CELLWIDTH + 1) + 1;
+		this.gridInfo.gridHeight = Main.GRIDHEIGHT * (Main.CELLHEIGHT + 1) + 1;
 	}
 }

@@ -1,5 +1,8 @@
 package animation;
 
+import panes.Cell;
+import panes.GridPane;
+
 public abstract class Frame
 {	
 protected int milliseconds;
@@ -26,5 +29,6 @@ protected int milliseconds;
 		}
 	}
 	
-	public abstract void playFrame(int x, int y);
+	public abstract void playFrame(Cell cell);
+
 }

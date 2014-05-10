@@ -39,6 +39,7 @@ import animation.Animator;
 import buttons.ColumnButton;
 import buttons.ControlButton;
 import main.Main;
+import panes.Cell;
 import panes.ControlPane;
 import panes.GridPane;
 import panes.InfoPane;
@@ -289,7 +290,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	private void paintUnitDeploy(int xPos, int yPos, Unit unit1)
 	{
 		Animation deployAnimation = Animator.getDeployAnimation(unit1);
-		deployAnimation.playAnimation(xPos, yPos);
+		GridPane gridPane = Animator.getGridPane();
+		Cell cell = gridPane.getCell(xPos, yPos);
+		deployAnimation.playAnimation(cell);
 	}
 	
 	private void paintUnitMove(int xPos, int yPos, Unit unit1, int xPos2, int yPos2)
@@ -302,6 +305,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			int yPos2, Unit unit2, CombatResult combatResult, CombatType combatType)
 	{
 		Animation combatAnimation;
+		GridPane gridPane = Animator.getGridPane();
 		switch(combatResult)
 		{
 		case UNIT1DESTROYED:
@@ -314,7 +318,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			combatAnimation = Animator.getSimpleCombatDrawAnimation(unit1);	
 		}
 		
-		combatAnimation.playTwoCellAnimation(xPos, yPos, xPos2, yPos2);
+		Cell cell1 = gridPane.getCell(xPos, xPos);
+		Cell cell2 = gridPane.getCell(xPos2, yPos2);
+		combatAnimation.playTwoCellAnimation(cell1, cell2);
 	}
 	
 	private void paintDeployPoint(int xPos, int yPos, Unit unit1)
@@ -327,7 +333,10 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		if (yPos != -1 && yPos != Main.GRIDHEIGHT)
 		{
 			Animation combatAnimation = Animator.getBaseAttackAnimation(unit1);
-			combatAnimation.playAnimation(xPos, yPos);
+			GridPane gridPane = Animator.getGridPane();
+			Cell cell = gridPane.getCell(xPos, yPos);
+			Cell baseCell = gridPane.getBaseCell(xPos, !unit1.isOwnedByPlayer1());
+			combatAnimation.playTwoCellAnimation(cell, baseCell);
 		}
 	}
 

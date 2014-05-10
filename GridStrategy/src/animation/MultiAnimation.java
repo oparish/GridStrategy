@@ -2,6 +2,8 @@ package animation;
 
 import java.util.ArrayList;
 
+import panes.Cell;
+
 public class MultiAnimation extends Animation
 {
 	private ArrayList<Animation> animations;
@@ -12,20 +14,20 @@ public class MultiAnimation extends Animation
 	}
 	
 	@Override
-	public void playAnimation(int x, int y) 
+	public void playAnimation(Cell cell) 
 	{
 		for (Animation animation : animations)
 		{
-			animation.playAnimation(x, y);
+			animation.playAnimation(cell);
 		}
 	}
 
 	@Override
-	public void playTwoCellAnimation(int x1, int y1, int x2, int y2)
+	public void playTwoCellAnimation(Cell cell1, Cell cell2)
 	{
 		for (Animation animation : animations)
 		{
-			animation.playTwoCellAnimation(x1, y1, x2, y2);
+			animation.playTwoCellAnimation(cell1, cell2);
 		}	
 	}
 

@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import panes.GridPane;
 import ai.CPlayer;
 import ai.Spawner;
 import data.GameGrid;
@@ -178,8 +179,9 @@ public class Main
 	private static void test1(Main main)
 	{
 		Unit testUnit = new Unit(true, UnitType.INTERCEPTOR);
-		main.gameScreen.getGridPane().setCellContent(4, 4, testUnit);
-		main.gameScreen.getGridPane().setCellContent(1, 5, testUnit);
-		main.gameScreen.getGridPane().repaint();
+		GridPane gridPane = main.gameScreen.getGridPane();
+		gridPane.setCellContent(gridPane.getCell(4, 4), testUnit);
+		gridPane.setCellContent(gridPane.getCell(1, 5), testUnit);
+		gridPane.repaint();
 	}
 }

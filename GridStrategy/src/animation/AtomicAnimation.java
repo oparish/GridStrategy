@@ -2,6 +2,8 @@ package animation;
 
 import java.util.ArrayList;
 
+import panes.Cell;
+
 public class AtomicAnimation extends Animation
 {
 	private ArrayList<FrameWithContext> frames;
@@ -11,25 +13,25 @@ public class AtomicAnimation extends Animation
 		this.frames = frames;
 	}
 	
-	public void playAnimation(int x, int y)
+	public void playAnimation(Cell cell)
 	{
 		Animator.startAnimation(this);
 		for (FrameWithContext frameWithContext : frames)
 		{
-			frameWithContext.getFrame().playFrame(x, y);
+			frameWithContext.getFrame().playFrame(cell);
 		}
 		Animator.endAnimation();
 	}
 	
-	public void playTwoCellAnimation(int x1, int y1, int x2, int y2)
+	public void playTwoCellAnimation(Cell cell1, Cell cell2)
 	{
 		Animator.startAnimation(this);
 		for (FrameWithContext frameWithContext : frames)
 		{
 			if (frameWithContext.isFirstPositionFrame())
-				frameWithContext.getFrame().playFrame(x1, y1);
+				frameWithContext.getFrame().playFrame(cell1);
 			else
-				frameWithContext.getFrame().playFrame(x2, y2);
+				frameWithContext.getFrame().playFrame(cell2);
 		}
 		Animator.endAnimation();
 	}

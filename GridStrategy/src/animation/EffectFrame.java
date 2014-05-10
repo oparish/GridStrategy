@@ -1,6 +1,8 @@
 package animation;
 
+import panes.Cell;
 import panes.Effect;
+import panes.GridPane;
 
 public class EffectFrame extends Frame
 {
@@ -9,10 +11,11 @@ public class EffectFrame extends Frame
 		super(milliseconds);
 	}
 	
-	public void playFrame(int x, int y)
+	public void playFrame(Cell cell)
 	{
-		Animator.getGridPane().paintEffect(x, y, Effect.BATTLE);
+		GridPane gridPane = Animator.getGridPane();
+		gridPane.paintEffect(cell, Effect.BATTLE);
 		this.pause();
-		Animator.getGridPane().repaintCell(x, y);
+		gridPane.repaintCell(cell);
 	}
 }

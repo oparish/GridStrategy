@@ -1,5 +1,7 @@
 package animation;
 
+import panes.Cell;
+import panes.GridPane;
 import data.Unit;
 
 public class OperationFrame extends Frame
@@ -14,29 +16,30 @@ public class OperationFrame extends Frame
 		this.operationType = operationType;
 	}
 	
-	private void addOperation(int x, int y)
+	private void addOperation(Cell cell)
 	{
-		Animator.getGridPane().setCellContent(x, y, this.unit);
+		Animator.getGridPane().setCellContent(cell, this.unit);
 	}
 	
-	private void removeOperation(int x, int y)
+	private void removeOperation(Cell cell)
 	{
-		Animator.getGridPane().deleteCellContent(x, y);
+		Animator.getGridPane().deleteCellContent(cell);
 	}
 	
-	public void playFrame(int x, int y)
+	public void playFrame(Cell cell)
 	{
+		GridPane gridPane = Animator.getGridPane();
 		switch(this.operationType)
 		{
 		default:
 		case ADD:
-			addOperation(x, y);
+			addOperation(cell);
 			break;
 		case REMOVE:
-			removeOperation(x, y);
+			removeOperation(cell);
 			break;
 		}
-		Animator.getGridPane().repaintCell(x, y);
+		gridPane.repaintCell(cell);
 		this.pause();
 	}
 }

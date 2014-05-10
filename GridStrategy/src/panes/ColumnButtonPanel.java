@@ -35,7 +35,7 @@ public class ColumnButtonPanel extends JPanel
 	
 	private void setPanelBounds()
 	{
-		Dimension size = new Dimension(gridInfo.gridWidth + 1, 
+		Dimension size = new Dimension(gridInfo.gridWidth, 
 				Main.CELLHEIGHT + 2);
 		this.setMinimumSize(size);
 		this.setPreferredSize(size);
