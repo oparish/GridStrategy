@@ -23,6 +23,7 @@ import events.CombatEvent;
 import events.CombatResult;
 import events.CombatType;
 import events.EventType;
+import events.FinishActionEvent;
 import events.MyEvent;
 import events.MyEventListener;
 import events.MyEventSpeaker;
@@ -645,6 +646,10 @@ public class GameGrid
 				this.setNextTurn(true);
 			else
 				this.endOfTurn();
+		}
+		else
+		{
+			this.considerEvent(new FinishActionEvent(this));
 		}
 	}
 	

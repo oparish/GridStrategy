@@ -3,6 +3,7 @@ package screens;
 import static screens.GameScreenState.ACTIVATING_ABILITY;
 import static screens.GameScreenState.COMPUTER_PLAYING;
 import static screens.GameScreenState.DEPLOYING_UNIT;
+import static screens.GameScreenState.MOVING_UNITS;
 import static screens.GameScreenState.STANDARD;
 
 import java.awt.GridBagLayout;
@@ -116,6 +117,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		case ACTIVATING_ABILITY:
 			this.switchToActivatingAbilityScreen();
 			break;
+		case MOVING_UNITS:
+			this.switchToComputerPlayingScreen();
+			break;
 		case COMPUTER_PLAYING:
 			this.switchToComputerPlayingScreen();
 			break;
@@ -161,7 +165,6 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	{
 		int xpos = columnButton.getXPos();
 		this.gameGrid.deployUnit(this.unitToDeploy, xpos);
-		this.switchScreenState(STANDARD);
 	}
 	
 	public GridPane getGridPane() {
@@ -271,12 +274,21 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			case UNITBASEATTACK:
 				paintBaseAttack(xPos, yPos, unit1);
 				break;
+			case FINISH_ACTION:
+				this.finishAction();
+				break;
 		}
+	}
+	
+	private void finishAction()
+	{
+		if (this.gameGrid.isPlayer1Turn())
+			this.switchScreenState(STANDARD);
 	}
 	
 	private void showNextTurn(boolean isPlayer1Turn)
 	{
-		
+		this.switchScreenState(MOVING_UNITS);
 	}
 	
 	private void showNewTurn(boolean isPlayer1Turn)
