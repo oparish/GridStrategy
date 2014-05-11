@@ -1,6 +1,7 @@
 package animation;
 
 import panes.Cell;
+import panes.CellPanel;
 import panes.Effect;
 import panes.GridPane;
 
@@ -26,8 +27,9 @@ public class EffectFrame extends Frame
 	public void playFrame(Cell cell)
 	{
 		GridPane gridPane = Animator.getGridPane();
-		gridPane.paintEffect(cell, effect, this.effectPosition);
+		CellPanel cellPanel = gridPane.getCellPanel();
+		cellPanel.paintEffect(cell, effect, this.effectPosition);
 		this.pause();
-		gridPane.repaintCell(cell);
+		cellPanel.repaintCell(cell);
 	}
 }

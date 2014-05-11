@@ -29,6 +29,10 @@ import events.MyEvent;
 public class GridPane extends JPanel
 {	
 	private CellPanel cellPanel;
+	public CellPanel getCellPanel() {
+		return cellPanel;
+	}
+
 	private GridInfo gridInfo;
 	private GameScreen gameScreen;
 	
@@ -104,41 +108,6 @@ public class GridPane extends JPanel
 	public void deleteCellContent(Cell cell)
 	{
 		cell.unit = null;
-	}
-	
-	public void repaintCell(Cell cell)
-	{
-		this.cellPanel.repaintCell(cell);
-	}
-	
-	public void paintEffect(Cell cell, Effect effect)
-	{
-		this.cellPanel.paintEffect(cell, effect);
-	}
-	
-	public void paintEffect(Cell cell, Effect effect, EffectPosition effectPosition)
-	{
-		this.cellPanel.paintEffect(cell, effect, effectPosition);
-	}
-	
-	public void showDeployPoints(Integer[] deployPositions)
-	{
-		this.cellPanel.showDeployPoints(deployPositions);
-	}
-	
-	public void clearDeployPoints(Integer[] deployPositions)
-	{
-		this.cellPanel.clearDeployPoints(deployPositions);
-	}
-	
-	public Cell getCell(int x, int y)
-	{
-		return this.cellPanel.getCell(x, y);
-	}
-	
-	public Cell getBaseCell(int x, boolean player1)
-	{
-		return this.cellPanel.getBaseCell(x, player1);
 	}
 	
 	private void setupBoundaries()

@@ -41,6 +41,7 @@ import animation.VerticalAnimationSeries;
 import buttons.ControlButton;
 import main.Main;
 import panes.Cell;
+import panes.CellPanel;
 import panes.ControlPane;
 import panes.GridPane;
 import panes.InfoPane;
@@ -50,6 +51,7 @@ import panes.MessagePane;
 public class GameScreen extends JFrame implements ActionListener, MyEventListener, MouseListener
 {
 	private GridPane gridPane;
+	private CellPanel cellPanel;
 	private ControlPane controlPane;
 	private MessagePane messagePane;
 	private InfoPane infoPane;
@@ -63,6 +65,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		this.gameGrid = gameGrid;
 		this.setLayout(new GridLayout(2,2));
 		this.gridPane = new GridPane(this);
+		this.cellPanel = this.gridPane.getCellPanel();
 		Animator.setGridPane(this.gridPane);
 		this.controlPane = new ControlPane(this);
 		this.messagePane = new MessagePane();
@@ -134,18 +137,18 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	private void switchToComputerPlayingScreen()
 	{
 		this.controlPane.disableControls();
-		this.gridPane.clearDeployPoints(this.getPlayer1DeploymentPoints());
+		this.cellPanel.clearDeployPoints(this.getPlayer1DeploymentPoints());
 	}
 	
 	private void switchToStandardScreen()
 	{
 		this.controlPane.runningPlayerOperation(false);
-		this.gridPane.clearDeployPoints(this.getPlayer1DeploymentPoints());
+		this.cellPanel.clearDeployPoints(this.getPlayer1DeploymentPoints());
 	}
 	
 	private void switchToDeployingScreen()
 	{
-		this.gridPane.showDeployPoints(this.getPlayer1DeploymentPoints());
+		this.cellPanel.showDeployPoints(this.getPlayer1DeploymentPoints());
 		this.controlPane.runningPlayerOperation(true);
 	}
 	
@@ -278,7 +281,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		VerticalAnimationSeries fireAnimationSeries = Animator.getFiringAnimationSeries(unit1);
 		fireAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), sourceX, sourceY + direction, targetX, targetY);
 		Animation removeAnimation = Animator.getSimpleCombatUnit1DestroyedAnimation(unit2);
-		removeAnimation.playAnimation(this.gridPane.getCell(targetX, targetY));
+		removeAnimation.playAnimation(this.cellPanel.getCell(targetX, targetY));
 	}
 	
 	private void finishAction()
@@ -303,8 +306,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	private void paintUnitDeploy(int xPos, int yPos, Unit unit1)
 	{
 		Animation deployAnimation = Animator.getDeployAnimation(unit1);
-		GridPane gridPane = Animator.getGridPane();
-		Cell cell = gridPane.getCell(xPos, yPos);
+		Cell cell = this.cellPanel.getCell(xPos, yPos);
 		deployAnimation.playAnimation(cell);
 	}
 	
@@ -318,7 +320,6 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			int yPos2, Unit unit2, CombatResult combatResult, CombatType combatType)
 	{
 		Animation combatAnimation;
-		GridPane gridPane = Animator.getGridPane();
 		switch(combatResult)
 		{
 		case UNIT1DESTROYED:
@@ -331,8 +332,8 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			combatAnimation = Animator.getSimpleCombatDrawAnimation(unit1);	
 		}
 		
-		Cell cell1 = gridPane.getCell(xPos, yPos);
-		Cell cell2 = gridPane.getCell(xPos2, yPos2);
+		Cell cell1 = this.cellPanel.getCell(xPos, yPos);
+		Cell cell2 = this.cellPanel.getCell(xPos2, yPos2);
 		combatAnimation.playTwoCellAnimation(cell1, cell2);
 	}
 	
@@ -346,9 +347,8 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		if (yPos != -1 && yPos != Main.GRIDHEIGHT)
 		{
 			Animation combatAnimation = Animator.getBaseAttackAnimation(unit1);
-			GridPane gridPane = Animator.getGridPane();
-			Cell cell = gridPane.getCell(xPos, yPos);
-			Cell baseCell = gridPane.getBaseCell(xPos, !unit1.isOwnedByPlayer1());
+			Cell cell = this.cellPanel.getCell(xPos, yPos);
+			Cell baseCell = this.cellPanel.getBaseCell(xPos, !unit1.isOwnedByPlayer1());
 			combatAnimation.playTwoCellAnimation(cell, baseCell);
 		}
 	}
@@ -376,7 +376,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void checkForDeployPoint(int x, int y)
 	{
-		if (this.gameGrid.getPlayer1DeploymentPoints()[x] == y && this.getGridPane().getCell(x, y).unit == null)
+		if (this.gameGrid.getPlayer1DeploymentPoints()[x] == y && this.cellPanel.getCell(x, y).unit == null)
 		{
 			this.gameGrid.deployUnit(this.unitToDeploy, x);
 		}
@@ -394,7 +394,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	{
 		for(int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			int paintedX = this.gridPane.getCell(i, 0).paintedX;
+			int paintedX = this.cellPanel.getCell(i, 0).paintedX;
 			if (x > paintedX && x < (paintedX + Main.CELLWIDTH))
 				return i;
 		}
@@ -405,7 +405,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	{
 		for(int i = 0; i < Main.GRIDHEIGHT; i++)
 		{
-			int paintedY = this.gridPane.getCell(0, i).paintedY;
+			int paintedY = this.cellPanel.getCell(0, i).paintedY;
 			if (y > paintedY && y < (paintedY + Main.CELLHEIGHT))
 				return i;
 		}

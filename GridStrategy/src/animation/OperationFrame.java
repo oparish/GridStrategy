@@ -39,7 +39,7 @@ public class OperationFrame extends Frame
 			removeOperation(cell);
 			break;
 		}
-		gridPane.repaintCell(cell);
+		gridPane.getCellPanel().repaintCell(cell);
 		this.pause();
 	}
 }
