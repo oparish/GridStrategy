@@ -343,7 +343,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			combatAnimation = Animator.getSimpleCombatDrawAnimation(unit1);	
 		}
 		
-		Cell cell1 = gridPane.getCell(xPos, xPos);
+		Cell cell1 = gridPane.getCell(xPos, yPos);
 		Cell cell2 = gridPane.getCell(xPos2, yPos2);
 		combatAnimation.playTwoCellAnimation(cell1, cell2);
 	}
