@@ -1,5 +1,5 @@
 package data;
 
 public enum AbilityType {
-	DEPLOYPOINT;
+	DEPLOYPOINT, ARTILLERY;
 }

@@ -30,6 +30,7 @@ import events.MyEventSpeaker;
 import events.OneUnitEvent;
 import events.TurnEvent;
 import events.TwoPositionEvent;
+import events.TwoUnitEvent;
 import ai.Action;
 import ai.ActivateAction;
 import ai.CPlayer;
@@ -134,16 +135,52 @@ public class GameGrid
 		return this.gridContents[x][y];
 	}
 	
-	public void activateAbility(int x, int y, AbilityType abilityType)
+	public void activateAbility(int x, int y, AbilityType abilityType, Unit unit)
 	{
 		switch(abilityType)
 		{
 		case DEPLOYPOINT:
 			this.newDeployPoint(x, y);
 			break;
+		case ARTILLERY:
+			this.fireArtillery(x, y, unit);
+			break;
 		default:
 		}
 		this.noteMove();
+	}
+	
+	private void fireArtillery(int x, int y, Unit unit)
+	{
+		int direction;
+		int endPoint;
+		
+		if (unit.isOwnedByPlayer1())
+		{
+			direction = -1;
+			endPoint = 0;
+		}
+		else
+		{
+			direction = 1;
+			endPoint = Main.GRIDHEIGHT - 1;
+		}
+		
+		for (int i = y + direction; (endPoint - i) * direction >= 0; i+=direction)
+		{
+			Unit unit2 = this.getUnitAt(x, i);
+			if (unit2 != null)
+			{
+				this.artilleryHit(x, y, x, i, unit, unit2);
+				break;
+			}
+		}
+	}
+	
+	private void artilleryHit(int sourceX, int sourceY, int targetX, int targetY, Unit unit1, Unit unit2)
+	{
+		this.destroyUnitAt(targetX, targetY);
+		this.considerEvent(new TwoUnitEvent(this, EventType.ARTILLERY_FIRING, sourceX, sourceY, unit1, targetX, targetY, unit2));
 	}
 	
 	private void newDeployPoint(int x, int y)
@@ -515,7 +552,7 @@ public class GameGrid
 			Unit unit = this.gridContents[x][i];
 			if (unit.isOwnedByPlayer1() == isPlayer1 && unit.getUnitType() == unitType)
 			{
-				this.activateAbility(x, i, unitType.getAbilityType());
+				this.activateAbility(x, i, unitType.getAbilityType(), unit);
 				break;
 			}
 		}

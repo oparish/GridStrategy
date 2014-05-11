@@ -2,16 +2,20 @@ package animation;
 
 import static animation.OperationType.ADD;
 import static animation.OperationType.REMOVE;
+import static panes.Effect.BATTLE;
+import static panes.Effect.PROJECTILE;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import data.Unit;
+import panes.Effect;
 import panes.GridPane;
 
 public class Animator 
 {
 	private static final int NO_PAUSE = 0;
+	private static final int TINY_PAUSE= 150;
 	private static final int SHORT_PAUSE = 333;
 	private static final int MEDIUM_PAUSE = 1000;
 	
@@ -78,8 +82,8 @@ public class Animator
 	public static AtomicAnimation getSimpleCombatDrawAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		EffectFrame effectFrame1 = new EffectFrame(SHORT_PAUSE);
-		EffectFrame effectFrame2 = new EffectFrame(SHORT_PAUSE);
+		EffectFrame effectFrame1 = new EffectFrame(SHORT_PAUSE, Effect.BATTLE);
+		EffectFrame effectFrame2 = new EffectFrame(SHORT_PAUSE, Effect.BATTLE);
 		OperationFrame combat1Frame = new OperationFrame(NO_PAUSE, unit, REMOVE);
 		OperationFrame combat2Frame = new OperationFrame(NO_PAUSE, unit, REMOVE);
 		frames.add(new FrameWithContext(effectFrame1, true));
@@ -92,8 +96,8 @@ public class Animator
 	public static AtomicAnimation getSimpleCombatUnit1DestroyedAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		EffectFrame effectFrame = new EffectFrame(SHORT_PAUSE);
-		OperationFrame combat1Frame = new OperationFrame(1000, unit, REMOVE);
+		EffectFrame effectFrame = new EffectFrame(SHORT_PAUSE, Effect.BATTLE);
+		OperationFrame combat1Frame = new OperationFrame(MEDIUM_PAUSE, unit, REMOVE);
 		frames.add(new FrameWithContext(effectFrame, true));
 		frames.add(new FrameWithContext(combat1Frame, true));
 		return new AtomicAnimation(frames);
@@ -102,8 +106,8 @@ public class Animator
 	public static AtomicAnimation getSimpleCombatUnit2DestroyedAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		EffectFrame effectFrame = new EffectFrame(SHORT_PAUSE);
-		OperationFrame combat1Frame = new OperationFrame(1000, unit, REMOVE);
+		EffectFrame effectFrame = new EffectFrame(SHORT_PAUSE, Effect.BATTLE);
+		OperationFrame combat1Frame = new OperationFrame(MEDIUM_PAUSE, unit, REMOVE);
 		frames.add(new FrameWithContext(effectFrame, false));
 		frames.add(new FrameWithContext(combat1Frame, false));
 		return new AtomicAnimation(frames);
@@ -114,7 +118,7 @@ public class Animator
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
 		OperationFrame removeFrame = new OperationFrame(NO_PAUSE, unit, REMOVE);
 		OperationFrame addFrame = new OperationFrame(SHORT_PAUSE,unit, ADD);
-		EffectFrame effectFrame = new EffectFrame(SHORT_PAUSE);
+		EffectFrame effectFrame = new EffectFrame(SHORT_PAUSE, BATTLE);
 		OperationFrame attackFrame = new OperationFrame(SHORT_PAUSE, unit, REMOVE);
 		frames.add(new FrameWithContext(removeFrame, true));
 		frames.add(new FrameWithContext(addFrame, false));
@@ -126,8 +130,33 @@ public class Animator
 	public static AtomicAnimation getDeployAnimation(Unit unit)
 	{
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		OperationFrame removeFrame = new OperationFrame(SHORT_PAUSE, unit, ADD);
-		frames.add(new FrameWithContext(removeFrame, true));
+		OperationFrame addFrame = new OperationFrame(SHORT_PAUSE, unit, ADD);
+		frames.add(new FrameWithContext(addFrame, true));
+		return new AtomicAnimation(frames);
+	}
+	
+	public static VerticalAnimationSeries getFiringAnimationSeries(Unit unit)
+	{
+		AtomicAnimation fireAnimation = Animator.getSimpleFireAnimation(unit);
+		return new VerticalAnimationSeries(fireAnimation);
+	}
+	
+	private static EffectPosition getInternalCellAnimationPosition(boolean isPlayer1, boolean isFirst)
+	{
+		if ((isPlayer1 && isFirst) || (!isPlayer1 && !isFirst))
+			return EffectPosition.BOTTOM;
+		else
+			return EffectPosition.TOP;
+	}
+	
+	private static AtomicAnimation getSimpleFireAnimation(Unit unit)
+	{
+		boolean isPlayer1 = unit.isOwnedByPlayer1();
+		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
+		EffectFrame part1Frame = new EffectFrame(TINY_PAUSE, PROJECTILE, Animator.getInternalCellAnimationPosition(isPlayer1, false));
+		EffectFrame part2Frame = new EffectFrame(TINY_PAUSE, PROJECTILE, Animator.getInternalCellAnimationPosition(isPlayer1, true));
+		frames.add(new FrameWithContext(part1Frame, true));
+		frames.add(new FrameWithContext(part2Frame, true));
 		return new AtomicAnimation(frames);
 	}
 }

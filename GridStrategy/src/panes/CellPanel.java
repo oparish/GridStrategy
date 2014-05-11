@@ -10,6 +10,7 @@ import java.util.Timer;
 
 import javax.swing.JPanel;
 
+import animation.EffectPosition;
 import animation.EffectTask;
 import main.Main;
 
@@ -185,6 +186,14 @@ public class CellPanel extends JPanel
 		Graphics2D g2d = (Graphics2D) this.getGraphics();
 		g2d.drawImage(image, cell.paintedX, cell.paintedY,
 					this);
+	}
+	
+	public void paintEffect(Cell cell, Effect effect, EffectPosition effectPosition)
+	{
+		BufferedImage image = effect.getImage();
+		Graphics2D g2d = (Graphics2D) this.getGraphics();
+		Double yValue = cell.paintedY + (effectPosition.getPositionNumber() * Main.CELLHEIGHT);
+		g2d.drawImage(image, cell.paintedX, yValue.intValue(), this);
 	}
 	
 	private class MyLine

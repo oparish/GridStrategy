@@ -6,7 +6,7 @@ import main.Main;
 
 public enum Effect
 {
-	BATTLE("BattleCloud");
+	BATTLE("BattleCloud"), PROJECTILE("ArtilleryShot");
 	
 	private BufferedImage image;
 	

@@ -37,6 +37,7 @@ import events.TwoUnitEvent;
 import animation.Animation;
 import animation.AnimationSeries;
 import animation.Animator;
+import animation.VerticalAnimationSeries;
 import buttons.ColumnButton;
 import buttons.ControlButton;
 import main.Main;
@@ -277,7 +278,19 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			case FINISH_ACTION:
 				this.finishAction();
 				break;
+			case ARTILLERY_FIRING:
+				this.paintFiringArtillery(xPos, yPos, xPos2, yPos2, unit1, unit2);
+				break;
 		}
+	}
+	
+	private void paintFiringArtillery(int sourceX, int sourceY, int targetX, int targetY, Unit unit1, Unit unit2)
+	{
+		int direction = unit1.isOwnedByPlayer1()?-1:1;
+		VerticalAnimationSeries fireAnimationSeries = Animator.getFiringAnimationSeries(unit1);
+		fireAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), sourceX, sourceY + direction, targetX, targetY);
+		Animation removeAnimation = Animator.getSimpleCombatUnit1DestroyedAnimation(unit2);
+		removeAnimation.playAnimation(this.gridPane.getCell(targetX, targetY));
 	}
 	
 	private void finishAction()
@@ -400,7 +413,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		if (abilityType != null)
 		{
 			this.switchScreenState(GameScreenState.STANDARD);
-			this.gameGrid.activateAbility(x, y, abilityType);
+			this.gameGrid.activateAbility(x, y, abilityType, unit);
 		}
 	}
 

@@ -12,6 +12,8 @@ import main.Main;
 
 public enum UnitType
 {
+	ARTILLERY("Player1Artillery", "Player2Artillery", 0, 0, 
+			new UnitCategory[]{}, AbilityType.ARTILLERY, true),
 	DEMOLISHER("Player1Demolisher", "Player2Demolisher", 3, 2, 
 			new UnitCategory[]{}, null, true),
 	INTERCEPTOR("Player1Interceptor", "Player2Interceptor", 2, 1, 

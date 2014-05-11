@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 
 import main.Main;
 import screens.GameScreen;
+import animation.EffectPosition;
 import buttons.ColumnButton;
 import data.GameGrid;
 import data.Unit;
@@ -133,6 +134,11 @@ public class GridPane extends JPanel
 	public void paintEffect(Cell cell, Effect effect)
 	{
 		this.cellPanel.paintEffect(cell, effect);
+	}
+	
+	public void paintEffect(Cell cell, Effect effect, EffectPosition effectPosition)
+	{
+		this.cellPanel.paintEffect(cell, effect, effectPosition);
 	}
 	
 	public Cell getCell(int x, int y)
