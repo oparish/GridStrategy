@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Timer;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import animation.EffectPosition;
@@ -157,14 +158,17 @@ public class CellPanel extends JPanel
 	
 	public void repaintCell(Cell cell)
 	{
-		BufferedImage image = cell.getImage();
-		Graphics2D g2d = (Graphics2D) this.getGraphics();
-		if (image != null)
-			g2d.drawImage(image, cell.paintedX, cell.paintedY, 
-				this);
-		else
-			g2d.clearRect(cell.paintedX, cell.paintedY, 
-					Main.CELLWIDTH, Main.CELLHEIGHT);
+		if (cell.paintedX != null)
+		{
+			BufferedImage image = cell.getImage();
+			Graphics2D g2d = (Graphics2D) this.getGraphics();
+			if (image != null)
+				g2d.drawImage(image, cell.paintedX, cell.paintedY, 
+					this);
+			else
+				g2d.clearRect(cell.paintedX, cell.paintedY, 
+						Main.CELLWIDTH, Main.CELLHEIGHT);
+		}
 	}
 	
 	public Cell getCell(int x, int y)
@@ -194,6 +198,32 @@ public class CellPanel extends JPanel
 		Graphics2D g2d = (Graphics2D) this.getGraphics();
 		Double yValue = cell.paintedY + (effectPosition.getPositionNumber() * Main.CELLHEIGHT);
 		g2d.drawImage(image, cell.paintedX, yValue.intValue(), this);
+	}
+	
+	public void showDeployPoints(Integer[] deployPositions)
+	{
+		for (int i = 0; i < deployPositions.length; i++)
+		{
+			Cell cell = this.gridInfo.cells[i][deployPositions[i]];
+			if (cell.unit == null)
+				this.paintImageIntoCell(cell, CellImage.ARROW);
+		}
+	}
+	
+	public void clearDeployPoints(Integer[] deployPositions)
+	{
+		for (int i = 0; i < deployPositions.length; i++)
+		{
+			Cell cell = this.gridInfo.cells[i][deployPositions[i]];
+			cell.cellImage = null;
+			this.repaintCell(cell);
+		}
+	}
+	
+	private void paintImageIntoCell(Cell cell, CellImage image)
+	{
+		cell.cellImage = image;
+		this.repaintCell(cell);
 	}
 	
 	private class MyLine

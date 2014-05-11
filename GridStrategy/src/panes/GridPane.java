@@ -20,7 +20,6 @@ import javax.swing.JPanel;
 import main.Main;
 import screens.GameScreen;
 import animation.EffectPosition;
-import buttons.ColumnButton;
 import data.GameGrid;
 import data.Unit;
 import events.EventType;
@@ -29,7 +28,6 @@ import events.MyEvent;
 @SuppressWarnings("serial")
 public class GridPane extends JPanel
 {	
-	private ColumnButtonPanel columnButtonPanel;
 	private CellPanel cellPanel;
 	private GridInfo gridInfo;
 	private GameScreen gameScreen;
@@ -44,7 +42,6 @@ public class GridPane extends JPanel
 		this.setupNumbers();
 		this.setupCells();
 		this.setupCellPanel();
-		this.setupColumnButtonPanel();
 	}
 	
 	private void setupCellPanel()
@@ -52,23 +49,6 @@ public class GridPane extends JPanel
 		this.cellPanel = new CellPanel(this.gridInfo);
 		this.cellPanel.addMouseListener(this.gameScreen);
 		this.add(this.cellPanel);
-	}
-	
-	private void setupColumnButtonPanel()
-	{
-		this.columnButtonPanel = new ColumnButtonPanel(this.gridInfo, 
-				this.gameScreen);
-		this.add(this.columnButtonPanel);
-	}
-	
-	public void disableColumnButtons()
-	{
-		this.columnButtonPanel.disableColumnButtons();
-	}
-	
-	public void enableValidColumnButtons()
-	{
-		this.columnButtonPanel.enableValidColumnButtons();
 	}
 	
 	private void setupNumbers()
@@ -139,6 +119,16 @@ public class GridPane extends JPanel
 	public void paintEffect(Cell cell, Effect effect, EffectPosition effectPosition)
 	{
 		this.cellPanel.paintEffect(cell, effect, effectPosition);
+	}
+	
+	public void showDeployPoints(Integer[] deployPositions)
+	{
+		this.cellPanel.showDeployPoints(deployPositions);
+	}
+	
+	public void clearDeployPoints(Integer[] deployPositions)
+	{
+		this.cellPanel.clearDeployPoints(deployPositions);
 	}
 	
 	public Cell getCell(int x, int y)

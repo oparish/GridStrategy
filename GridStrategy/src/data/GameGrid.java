@@ -38,7 +38,6 @@ import ai.ColumnSearchCondition;
 import ai.DeployAction;
 import ai.ObservationBatch;
 import ai.Spawner;
-import buttons.ColumnButton;
 import main.Main;
 
 public class GameGrid

@@ -11,6 +11,7 @@ public class Cell
 	public Integer paintedX;
 	public Integer paintedY;
 	public Unit unit;
+	public CellImage cellImage;
 	
 	public Cell(Integer X, Integer Y)
 	{
@@ -20,9 +21,11 @@ public class Cell
 	
 	public BufferedImage getImage()
 	{
-		if (unit == null)
-			return null;
-		else
+		if (unit != null)
 			return this.unit.getImage();
+		else if (this.cellImage != null)
+			return this.cellImage.getImage();
+		else
+			return null;
 	}
 }

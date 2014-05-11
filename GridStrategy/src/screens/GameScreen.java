@@ -38,7 +38,6 @@ import animation.Animation;
 import animation.AnimationSeries;
 import animation.Animator;
 import animation.VerticalAnimationSeries;
-import buttons.ColumnButton;
 import buttons.ControlButton;
 import main.Main;
 import panes.Cell;
@@ -57,7 +56,6 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	private GameScreenState screenState;
 	private GameGrid gameGrid;
 	private Unit unitToDeploy;
-
 
 	public GameScreen(GameGrid gameGrid)
 	{
@@ -135,19 +133,19 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void switchToComputerPlayingScreen()
 	{
-		this.gridPane.disableColumnButtons();
 		this.controlPane.disableControls();
+		this.gridPane.clearDeployPoints(this.getPlayer1DeploymentPoints());
 	}
 	
 	private void switchToStandardScreen()
 	{
-		this.gridPane.disableColumnButtons();
 		this.controlPane.runningPlayerOperation(false);
+		this.gridPane.clearDeployPoints(this.getPlayer1DeploymentPoints());
 	}
 	
 	private void switchToDeployingScreen()
 	{
-		this.gridPane.enableValidColumnButtons();
+		this.gridPane.showDeployPoints(this.getPlayer1DeploymentPoints());
 		this.controlPane.runningPlayerOperation(true);
 	}
 	
@@ -160,12 +158,6 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	{
 		this.unitToDeploy = new Unit(true, unitType);
 		this.switchScreenState(DEPLOYING_UNIT);
-	}
-	
-	public void deployUnit(ColumnButton columnButton)
-	{
-		int xpos = columnButton.getXPos();
-		this.gameGrid.deployUnit(this.unitToDeploy, xpos);
 	}
 	
 	public GridPane getGridPane() {
@@ -213,10 +205,6 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 					System.exit(0);
 				default:
 			}
-		}
-		else if (button instanceof ColumnButton)
-		{
-			this.deployUnit((ColumnButton) button);
 		}
 	}
 
@@ -371,6 +359,26 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		if (this.screenState == GameScreenState.ACTIVATING_ABILITY)
 		{
 			this.activateAbility(e.getX(), e.getY());
+		}
+		else if (this.screenState == GameScreenState.DEPLOYING_UNIT)
+		{
+			tryDeployingUnit(e.getX(), e.getY());
+		}
+	}
+	
+	private void tryDeployingUnit(int x, int y)
+	{
+		int cellX = this.getColumnFromPosition(x);
+		int cellY = this.getRowFromPosition(y);
+		if (cellX != -1 && cellY != -1)
+			this.checkForDeployPoint(cellX, cellY);
+	}
+	
+	private void checkForDeployPoint(int x, int y)
+	{
+		if (this.gameGrid.getPlayer1DeploymentPoints()[x] == y && this.getGridPane().getCell(x, y).unit == null)
+		{
+			this.gameGrid.deployUnit(this.unitToDeploy, x);
 		}
 	}
 	
