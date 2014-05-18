@@ -93,6 +93,9 @@ public class MessagePane extends List implements MyEventListener
 		case UNITBASEATTACK:
 			this.add("Base attacked from " + xPos + ", " + yPos);
 			break;
+		case SKIP_TURN:
+			this.add("Turn Skipped");
+			break;
 		}
 	}
 	

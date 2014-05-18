@@ -13,6 +13,7 @@ import ai.headers.ColumnConditionHeader;
 import ai.headers.ConditionHeader;
 import ai.headers.GateConditionHeader;
 import main.FileOperations;
+import data.GameGrid;
 import data.UnitType;
 
 @SuppressWarnings("unchecked")
@@ -117,4 +118,6 @@ public abstract class Action
 			this.defaultValue = defaultValue;
 		}
 	}
+	
+	public abstract boolean attemptAction(GameGrid gameGrid, boolean isPlayer1);
 }

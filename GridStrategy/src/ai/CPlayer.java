@@ -2,6 +2,7 @@ package ai;
 
 import java.util.ArrayList;
 
+import data.GameGrid;
 import main.FileOperations;
 import ai.headers.ActionHeader;
 import ai.headers.ColumnConditionHeader;
@@ -120,16 +121,18 @@ public class CPlayer
 		return actionHeader;
 	}
 	
-	public Action getAction(ObservationBatch observationBatch)
+	public boolean makeMove(ObservationBatch observationBatch, GameGrid gameGrid)
 	{
 		for(Rule rule : this.rules)
 		{
 			if (rule.getCondition().checkCondition(observationBatch))
 			{
-				return rule.getAction();
+				boolean result = rule.getAction().attemptAction(gameGrid, this.isPlayer1);
+				if (result)
+						return true;
 			}
 		}
-		return null;
+		return false;
 	}
 	
 	public int getNumberOfRules()

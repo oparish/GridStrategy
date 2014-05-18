@@ -469,14 +469,12 @@ public class GameGrid
 			currentCPlayer = this.cplayer2;
 		ObservationBatch observationBatch = new ObservationBatch(isPlayer1, 
 				this.gridContents);
-		Action action = currentCPlayer.getAction(observationBatch);
-		if (action != null)
+		
+		boolean result = currentCPlayer.makeMove(observationBatch, this);
+		if (!result)
 		{
-			this.takeAction(action, isPlayer1);
-		}
-		else
-		{
-			this.endOfTurn();
+			this.considerEvent(new TurnEvent(this, EventType.SKIP_TURN, isPlayer1));
+			this.noteMove();
 		}
 	}
 	
@@ -508,27 +506,11 @@ public class GameGrid
 		else
 		{
 			DeployAction action = new DeployAction(actionNumber, unitTypes[unitNumber]);
-			this.takeAction(action, this.isPlayer1Turn);
+			action.attemptAction(this, this.isPlayer1Turn);
 		}
 	}
 	
-	private void takeAction(Action action, boolean isPlayer1)
-	{
-		if (action instanceof DeployAction)
-		{
-			DeployAction deployAction = (DeployAction) action;
-			Unit unit = new Unit(isPlayer1, deployAction.getUnitType());
-			this.deployUnit(unit, deployAction.getColumnPos());
-		}
-		else if (action instanceof ActivateAction)
-		{
-			ActivateAction activateAction = (ActivateAction) action;
-			this.activateCplayerUnit(isPlayer1, activateAction.getUnitType(), activateAction.getColumnPos(), 
-					activateAction.getColumnSearchCondition());
-		}
-	}
-	
-	private void activateCplayerUnit(boolean isPlayer1, UnitType unitType, int x, ColumnSearchCondition searchCondition)
+	public boolean activateCplayerUnit(boolean isPlayer1, UnitType unitType, int x, ColumnSearchCondition searchCondition)
 	{
 		int start;
 		int end;
@@ -554,12 +536,14 @@ public class GameGrid
 			if (unit.isOwnedByPlayer1() == isPlayer1 && unit.getUnitType() == unitType)
 			{
 				this.activateAbility(x, i, unitType.getAbilityType(), unit);
-				break;
+				return true;
 			}
 		}
+		
+		return false;
 	}
 	
-	public void deployUnit(Unit unit, int columnPos)
+	public boolean deployUnit(Unit unit, int columnPos)
 	{
 		int deployPoint;
 		int end;
@@ -579,14 +563,21 @@ public class GameGrid
 			this.unitBaseAttack(unit);
 			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, columnPos, 
 					deployPoint, unit));
+			this.noteMove();
+			return true;
 		}
 		else if (this.gridContents[columnPos][deployPoint] == null)
 		{
 			considerEvent(new OneUnitEvent(this, DEPLOYING_UNIT, columnPos, 
 					deployPoint, unit));
 			this.gridContents[columnPos][deployPoint] = unit;
-		}	
-		this.noteMove();
+			this.noteMove();
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 	public void moveUnit(int xPos1, int yPos1, int xPos2, int yPos2)
