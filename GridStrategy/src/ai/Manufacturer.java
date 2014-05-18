@@ -81,8 +81,11 @@ public class Manufacturer
 		{
 			do
 			{
+				System.out.println("Making player");
 				cPlayer = Spawner.createBatchedCPlayer(false);
+				System.out.println("Player Made");
 				result = Main.getMain().startGameGridWithoutScreen(cPlayer, null);
+				
 			} while(result != GameResult.PLAYER1_WINS);
 			players[i] = cPlayer;
 			System.out.println("Player Found");
