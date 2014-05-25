@@ -22,6 +22,8 @@ public enum UnitType
 					new UnitCategory[]{}, DEPLOYPOINT),
 	BUNKER("Player1Bunker", "Player2Bunker", 0, 0, -1, new UnitCategory[]{FRONTLINE}, null);
 	
+	private static ArrayList<UnitType> deployableUnitTypes;
+	private static ArrayList<UnitType> activatableUnitTypes;
 	private BufferedImage image1;
 	private BufferedImage image2;
 	private final int speed;
@@ -29,6 +31,23 @@ public enum UnitType
 	private final UnitCategory[] categories;
 	private final AbilityType abilityType;
 	private final int cost;
+	
+	static
+	{
+		UnitType.deployableUnitTypes = new ArrayList<UnitType>();
+		for (UnitType unitType : UnitType.values())
+		{
+			if (unitType.cost != -1)
+				UnitType.deployableUnitTypes.add(unitType);
+		}
+		
+		UnitType.activatableUnitTypes = new ArrayList<UnitType>();
+		for (UnitType unitType : UnitType.values())
+		{
+			if (unitType.abilityType != null)
+				UnitType.activatableUnitTypes.add(unitType);
+		}
+	}
 	
 	public int getCost() {
 		return cost;
@@ -75,21 +94,13 @@ public enum UnitType
 		this.cost = cost;
 	}
 	
-	public static UnitType[] getDeployableUnitTypes()
+	public static ArrayList<UnitType> getDeployableUnitTypes()
 	{
-		ArrayList<UnitType> unitTypes = new ArrayList<UnitType>();
-		for (UnitType unitType : UnitType.values())
-		{
-			if (unitType.cost != -1)
-				unitTypes.add(unitType);
-		}
-		UnitType[] unitTypeArray = new UnitType[unitTypes.size()];
-		int i = 0;
-		for(UnitType unitType : unitTypes)
-		{
-			unitTypeArray[i] = unitType;
-			i++;
-		}
-		return unitTypeArray;
+		return UnitType.deployableUnitTypes;
+	}
+	
+	public static ArrayList<UnitType> getActivatableUnitTypes()
+	{
+		return UnitType.activatableUnitTypes;
 	}
 }

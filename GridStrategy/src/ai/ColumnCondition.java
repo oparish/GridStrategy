@@ -75,7 +75,7 @@ public class ColumnCondition extends Condition
 	
 	public ColumnCondition copyConditionWithNewColumn(int index)
 	{
-		ColumnCondition newCondition = new ColumnCondition(this.conditionFields, this.isPlayer1);
+		ColumnCondition newCondition = new ColumnCondition((HashMap<Condition.ConditionFieldName, Integer>) this.conditionFields.clone(), this.isPlayer1);
 		newCondition.setColumn(index);
 		return newCondition;
 	}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import ai.Condition.ConditionFieldName;
 import data.Unit;
 import data.UnitType;
 import main.Main;
@@ -117,38 +118,63 @@ public class Spawner
 		ArrayList<Rule> rules = new ArrayList<Rule>();
 		HashMap<ColumnConditionParameter, Boolean> parameters = new HashMap<ColumnConditionParameter, Boolean>();
 		parameters.put(ColumnConditionParameter.USECOLUMNCOUNT, true);
-		ColumnCondition[] conditions = Spawner.turnColumnConditionIntoBatch(Spawner.createColumnCondition(parameters, isPlayer1));
+		ColumnCondition[] conditions = Spawner.makeColumnConditionBatch(parameters, isPlayer1);
 		Action[] actions = createActionBatch();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
 			rules.add(new Rule(conditions[i], actions[i]));
 		}
+		
+		if (actions[0] instanceof DeployAction && ((DeployAction) actions[0]).getUnitType().getAbilityType() != null)
+		{
+			ColumnCondition[] activateConditions = 
+					Spawner.makeColumnConditionBatch(parameters, isPlayer1);
+			ActivateAction[] activateActions = Spawner.createActivateActionBatch(((DeployAction) actions[0]).getUnitType());
+			for (int i = 0; i < Main.GRIDWIDTH; i++)
+			{
+				rules.add(new Rule(activateConditions[i], activateActions[i]));
+			}
+		}
 		return rules;
 	}
 	
-	private static Action[] createActionBatch()
+	private static ActivateAction[] createActivateActionBatch(UnitType unitType)
 	{
-		Action[] actions = new Action[Main.GRIDWIDTH];
-		UnitType unitType = Spawner.randomUnitType();
-		ActionType actionType = Spawner.randomActionType();
-		ColumnSearchCondition columnSearchCondition = null;
-		if (actionType == ActionType.ACTIVATE_ACTION)
-			columnSearchCondition = Spawner.randomColumnSearchCondition();
+		ActivateAction[] actions = new ActivateAction[Main.GRIDWIDTH];
+		ColumnSearchCondition columnSearchCondition = Spawner.randomColumnSearchCondition();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			switch (actionType)
-			{
-			case DEPLOY_ACTION:
-				actions[i] = new DeployAction(i, unitType);
-				break;
-			case ACTIVATE_ACTION:
-				actions[i] = new ActivateAction(i, unitType, columnSearchCondition);
-				break;
-			default:
-				break;
-			}
+			actions[i] = new ActivateAction(i, unitType, columnSearchCondition);
 		}
 		return actions;
+	}
+	
+	private static DeployAction[] createDeployActionBatch()
+	{
+		DeployAction[] actions = new DeployAction[Main.GRIDWIDTH];
+		UnitType unitType = Spawner.randomUnitType();
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			actions[i] = new DeployAction(i, unitType);
+		}
+		return actions;
+	}
+	
+	
+	private static Action[] createActionBatch()
+	{
+		ActionType actionType = Spawner.randomActionType();
+		switch (actionType)
+		{
+		case DEPLOY_ACTION:
+			return Spawner.createDeployActionBatch();
+		case ACTIVATE_ACTION:
+			UnitType unitType = Spawner.randomUnitType();
+			return Spawner.createActivateActionBatch(unitType);
+		default:
+			return null;
+		}
+
 	}
 	
 	private static ArrayList<Rule> createDefaultRuleBatch(boolean isPlayer1)
@@ -165,18 +191,13 @@ public class Spawner
 		return rules;
 	}
 	
-	private static ColumnCondition[] turnColumnConditionIntoBatch(ColumnCondition originalCondition)
+	private static ColumnCondition[] makeColumnConditionBatch(HashMap<ColumnConditionParameter, Boolean> parameters, boolean isPlayer1)
 	{
 		ColumnCondition[] conditionBatch = new ColumnCondition[Main.GRIDWIDTH];
-		int originalIndex = originalCondition.getColumn();
-		for (int i = 0; i < originalIndex; i++)
+		conditionBatch[0] = Spawner.createColumnCondition(parameters, isPlayer1);
+		for (int i = 1; i < Main.GRIDWIDTH; i++)
 		{
-			conditionBatch[i] = originalCondition.copyConditionWithNewColumn(i);
-		}
-		conditionBatch[originalIndex] = originalCondition;
-		for (int i = originalIndex + 1; i < Main.GRIDWIDTH; i++)
-		{
-			conditionBatch[i] = originalCondition.copyConditionWithNewColumn(i);
+			conditionBatch[i] = conditionBatch[0].copyConditionWithNewColumn(i);
 		}
 		return conditionBatch;
 	}
@@ -208,7 +229,7 @@ public class Spawner
 		case DEPLOY_ACTION:
 			return new DeployAction(randomColumn(), randomUnitType());
 		case ACTIVATE_ACTION:
-			return new ActivateAction(randomColumn(), randomUnitType(), randomColumnSearchCondition());
+			return new ActivateAction(randomColumn(), randomActivatableUnitType(), randomColumnSearchCondition());
 		default:
 			return null;
 		}
@@ -240,9 +261,16 @@ public class Spawner
 	
 	private static UnitType randomUnitType()
 	{
-		UnitType[] unitTypes = UnitType.getDeployableUnitTypes();
-		int randTypeNumber = random.nextInt(unitTypes.length);
-		return unitTypes[randTypeNumber];
+		ArrayList<UnitType> unitTypes = UnitType.getDeployableUnitTypes();
+		int randTypeNumber = random.nextInt(unitTypes.size());
+		return unitTypes.get(randTypeNumber);
+	}
+	
+	private static UnitType randomActivatableUnitType()
+	{
+		ArrayList<UnitType> unitTypes = UnitType.getActivatableUnitTypes();
+		int randTypeNumber = random.nextInt(unitTypes.size());
+		return unitTypes.get(randTypeNumber);
 	}
 	
 	private static ColumnSearchCondition randomColumnSearchCondition()

@@ -34,7 +34,7 @@ public class DeployAction extends Action
 	
 	public String toString()
 	{
-		return ("		Action: " + this.getUnitType().toString() + ", " + this.getColumnPos());
+		return ("		Deploy Action: " + this.getUnitType().toString() + ", " + this.getColumnPos());
 	}
 	
 	public boolean attemptAction(GameGrid gameGrid, boolean isPlayer1)

@@ -523,15 +523,15 @@ public class GameGrid
 				possiblePositions.add(i);
 		}
 		int actionNumber = GameGrid.random.nextInt(possiblePositions.size() + 1);
-		UnitType[] unitTypes = UnitType.getDeployableUnitTypes();
-		int unitNumber = GameGrid.random.nextInt(unitTypes.length);
+		ArrayList<UnitType> unitTypes = UnitType.getDeployableUnitTypes();
+		int unitNumber = GameGrid.random.nextInt(unitTypes.size());
 		if (actionNumber == Main.GRIDWIDTH)
 		{
 			this.endOfTurn();
 		}
 		else
 		{
-			DeployAction action = new DeployAction(actionNumber, unitTypes[unitNumber]);
+			DeployAction action = new DeployAction(actionNumber, unitTypes.get(unitNumber));
 			boolean result = action.attemptAction(this, this.isPlayer1Turn);
 			if (!result)
 				this.noteMove();

@@ -33,7 +33,7 @@ public class ActivateAction extends DeployAction
 	
 	public String toString()
 	{
-		return super.toString() + ", " + this.getColumnSearchCondition().name();
+		return"		Activate Action: " + this.getUnitType().toString() + ", " + this.getColumnPos() + ", " + this.getColumnSearchCondition().name();
 	}
 	
 	public boolean attemptAction(GameGrid gameGrid, boolean isPlayer1)

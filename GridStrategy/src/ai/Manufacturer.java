@@ -20,6 +20,7 @@ public class Manufacturer
 		CPlayer winner = Manufacturer.pitPlayers(initialCplayers);
 		
 		FileOperations.saveFile("Test.ai", winner.toBytes());
+		System.out.println(winner);
 		System.out.println("Finish");
 		System.exit(0);
 	}
