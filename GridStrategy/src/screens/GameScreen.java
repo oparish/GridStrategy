@@ -57,6 +57,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	private InfoPane infoPane;
 	private GameScreenState screenState;
 	private GameGrid gameGrid;
+
 	private Unit unitToDeploy;
 
 	public GameScreen(GameGrid gameGrid)
@@ -79,6 +80,10 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		this.gameGrid.addEventListener(this);
 		this.gameGrid.addEventListener(this.messagePane);
 		this.gameGrid.addEventListener(this.infoPane);
+	}
+	
+	public GameGrid getGameGrid() {
+		return gameGrid;
 	}
 	
 	public Integer[] getPlayer1DeploymentPoints()

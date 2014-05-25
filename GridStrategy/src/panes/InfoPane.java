@@ -15,13 +15,15 @@ import main.Main;
 import events.MyEvent;
 import events.MyEventListener;
 import events.OneUnitEvent;
+import events.TurnEvent;
 
 public class InfoPane extends JPanel implements MyEventListener
 {
 	private GameGrid gameGrid;
 	private HPLabel player1HP;
 	private HPLabel player2HP;
-	
+	private CreditLabel player1Credit;
+	private CreditLabel player2Credit;
 	
 	public InfoPane(GameGrid gameGrid)
 	{
@@ -30,10 +32,14 @@ public class InfoPane extends JPanel implements MyEventListener
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.player1HP = new HPLabel(true, Main.PLAYER1_MAXHP);
 		this.player2HP = new HPLabel(false, Main.PLAYER2_MAXHP);
+		this.player1Credit = new CreditLabel(true, Main.PLAYER1_MAXCREDITS);
+		this.player2Credit = new CreditLabel(false, Main.PLAYER2_MAXCREDITS);
 		this.player1HP.setAlignmentX(CENTER_ALIGNMENT);
 		this.player2HP.setAlignmentX(CENTER_ALIGNMENT);
 		this.add(this.player1HP);
 		this.add(this.player2HP);
+		this.add(this.player1Credit);
+		this.add(this.player2Credit);
 		this.setBorder(new LineBorder(Color.BLACK));
 	}
 
@@ -44,9 +50,34 @@ public class InfoPane extends JPanel implements MyEventListener
 		{
 			case UNITBASEATTACK:
 				this.processBaseAttack((OneUnitEvent) event);
+				break;
+			case DEPLOYING_UNIT:
+				OneUnitEvent oneUnitEvent = (OneUnitEvent) event;
+				this.deployingUnit(oneUnitEvent);
+				this.changeCredits(oneUnitEvent.getUnit().isOwnedByPlayer1());
+				break;
+			case CREDITS_CHANGE:
+				this.changeCredits(((TurnEvent) event).isPlayer1());
+				break;
 			default:
 		}
 		
+	}
+	
+	private void changeCredits(boolean isPlayer1)
+	{
+		if (isPlayer1)
+			this.player1Credit.setSecondLabelText(this.gameGrid.getPlayer1Credits());
+		else
+			this.player2Credit.setSecondLabelText(this.gameGrid.getPlayer2Credits());
+	}
+	
+	private void deployingUnit(OneUnitEvent event)
+	{
+		if (event.getUnit().isOwnedByPlayer1())
+			this.player1Credit.setSecondLabelText(this.gameGrid.getPlayer1Credits());
+		else
+			this.player2Credit.setSecondLabelText(this.gameGrid.getPlayer2Credits());
 	}
 	
 	private void processBaseAttack(OneUnitEvent event)
@@ -57,30 +88,56 @@ public class InfoPane extends JPanel implements MyEventListener
 			this.player1HP.setSecondLabelText(this.gameGrid.getPlayer1HP());
 	}
 	
-	private class HPLabel extends JPanel
+	private abstract class PlayerInfoLabel extends JPanel
 	{
-		private static final String PLAYER = "Player ";
-		private static final String HP = " HP";
-		private static final String ONE = "One";
-		private static final String TWO = "Two";
+		protected static final String PLAYER = "Player ";
+		protected static final String ONE = "One";
+		protected static final String TWO = "Two";
+		protected JLabel firstLabel;
+		protected JLabel secondLabel;
 		
-		private JLabel firstLabel;
-		private JLabel secondLabel;
-		
-		HPLabel(boolean player1, int hp)
+		protected void setupLabels()
 		{
-			super();
-			this.firstLabel = new JLabel(PLAYER + (player1?ONE:TWO));
-			this.secondLabel = new JLabel(hp + HP);
 			this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 			this.add(firstLabel);
 			this.add(Box.createHorizontalGlue());
 			this.add(secondLabel);
 		}
+	}
+	
+	private class HPLabel extends PlayerInfoLabel
+	{
+		private static final String HP = " HP";		
+
+		
+		HPLabel(boolean player1, int hp)
+		{
+			this.firstLabel = new JLabel(PLAYER + (player1?ONE:TWO));
+			this.secondLabel = new JLabel(hp + HP);
+			this.setupLabels();
+		}
 		
 		private void setSecondLabelText(int hp)
 		{
 			this.secondLabel.setText(hp + HP);
+		}
+	}
+	
+	private class CreditLabel extends PlayerInfoLabel
+	{
+		private static final String CREDITS = " CREDITS";		
+
+		
+		CreditLabel(boolean player1, int hp)
+		{
+			this.firstLabel = new JLabel(PLAYER + (player1?ONE:TWO));
+			this.secondLabel = new JLabel(hp + CREDITS);
+			this.setupLabels();
+		}
+		
+		private void setSecondLabelText(int hp)
+		{
+			this.secondLabel.setText(hp + CREDITS);
 		}
 	}
 }

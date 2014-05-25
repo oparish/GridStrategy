@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import data.GameGrid;
 import main.FileOperations;
+import main.Main;
 import ai.headers.ActionHeader;
 import ai.headers.ColumnConditionHeader;
 import ai.headers.ConditionHeader;
@@ -123,11 +124,14 @@ public class CPlayer
 	
 	public boolean makeMove(ObservationBatch observationBatch, GameGrid gameGrid)
 	{
+		Main.debugOut("Making move: " + this.isPlayer1 );
 		for(Rule rule : this.rules)
 		{
 			if (rule.getCondition().checkCondition(observationBatch))
 			{
 				boolean result = rule.getAction().attemptAction(gameGrid, this.isPlayer1);
+				Main.debugOut(this.isPlayer1);
+				Main.debugOut("Result: " + result);
 				if (result)
 						return true;
 			}

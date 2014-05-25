@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import screens.GameScreen;
-
+import buttons.LabelledButtonPanel;
 import buttons.UnitButton;
 import main.Main;
 import data.UnitType;
@@ -13,6 +13,7 @@ import data.UnitType;
 @SuppressWarnings("serial")
 public class UnitDialog extends MyDialog implements ActionListener
 {
+	private static final String CREDITS = "Credits";
 	private static final int ROWLENGTH = 5;
 	private static final String SELECTUNIT = "Select a Unit";
 	
@@ -34,7 +35,10 @@ public class UnitDialog extends MyDialog implements ActionListener
 		for (UnitType unitType : UnitType.getDeployableUnitTypes())
 		{
 			UnitButton unitButton = new UnitButton(unitType);
-			this.add(unitButton, Main.getAnchoredConstraints(i, j));
+			LabelledButtonPanel unitPanel = new LabelledButtonPanel(unitButton, this.getCostLabelText(unitType.getCost()));
+			this.add(unitPanel, Main.getAnchoredConstraints(i, j));
+			if (unitType.getCost() > this.gameScreen.getGameGrid().getPlayer1Credits())
+				unitButton.setEnabled(false);
 			unitButton.addActionListener(this);
 			i++;
 			if (i >= ROWLENGTH)
@@ -43,6 +47,11 @@ public class UnitDialog extends MyDialog implements ActionListener
 				j++;
 			}
 		}
+	}
+	
+	private String getCostLabelText(int cost)
+	{
+		return cost + " " + CREDITS;
 	}
 
 	@Override

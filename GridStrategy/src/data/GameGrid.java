@@ -47,6 +47,8 @@ public class GameGrid
 	private final MyEventSpeaker speaker;
 	private int player1HP;
 	private int player2HP;
+	private int player1Credits;
+	private int player2Credits;
 	private Integer[] player1DeploymentPoints;
 	private Integer[] player2DeploymentPoints;
 	private Unit[][] gridContents;
@@ -62,6 +64,14 @@ public class GameGrid
 	private GameResult result;
 	private int stalemateCounter = 0;
 	private boolean firstBaseAttackMade = false;
+	
+	public int getPlayer1Credits() {
+		return player1Credits;
+	}
+	
+	public int getPlayer2Credits() {
+		return player2Credits;
+	}
 
 	public synchronized boolean isNextTurn() {
 		return nextTurn;
@@ -106,6 +116,8 @@ public class GameGrid
 		this.thread.start();
 		this.player1HP = Main.PLAYER1_MAXHP;
 		this.player2HP = Main.PLAYER2_MAXHP;
+		this.player1Credits = Main.PLAYER1_MAXCREDITS;
+		this.player2Credits = Main.PLAYER2_MAXCREDITS;
 		this.isPlayer1Turn = Main.PLAYER1STARTS;
 		this.gridContents = new Unit[Main.GRIDWIDTH][Main.GRIDHEIGHT];
 		this.setupDeploymentPoints();
@@ -234,10 +246,22 @@ public class GameGrid
 	
 	public void endOfTurn()
 	{
+		Main.debugOut("End of Turn");
 		this.considerEvent(new TurnEvent(this, NEXT_TURN, this.isPlayer1Turn));
 		this.movePlayerUnits();
 		this.checkForStalemate();
+		this.increaseCredits(this.isPlayer1Turn, Main.CREDITSPERTURN);
 		this.isPlayer1Turn = !this.isPlayer1Turn;
+		Main.debugOut("End of End of Turn");
+	}
+	
+	private void increaseCredits(boolean isPlayer1, int amount)
+	{
+		if (isPlayer1)
+			this.player1Credits += amount;
+		else
+			this.player2Credits += amount;
+		this.considerEvent(new TurnEvent(this, EventType.CREDITS_CHANGE, isPlayer1));
 	}
 	
 	private void checkForStalemate()
@@ -253,6 +277,7 @@ public class GameGrid
 	
 	private void declareStalemate()
 	{
+		Main.debugOut("Stalemate");
 		this.result = TIMED_OUT;
 		this.endGame();
 	}
@@ -462,6 +487,7 @@ public class GameGrid
 	
 	private void cPlayerTurn(boolean isPlayer1)
 	{
+		Main.debugOut("cplayerturn: " + isPlayer1);
 		CPlayer currentCPlayer;
 		if (isPlayer1)
 			currentCPlayer = this.cplayer1;
@@ -506,7 +532,9 @@ public class GameGrid
 		else
 		{
 			DeployAction action = new DeployAction(actionNumber, unitTypes[unitNumber]);
-			action.attemptAction(this, this.isPlayer1Turn);
+			boolean result = action.attemptAction(this, this.isPlayer1Turn);
+			if (!result)
+				this.noteMove();
 		}
 	}
 	
@@ -543,11 +571,34 @@ public class GameGrid
 		return false;
 	}
 	
+	private boolean attemptUnitPurchase(boolean isPlayer1, int cost)
+	{
+		if (isPlayer1)
+		{
+			if (cost > this.player1Credits)
+				return false;
+			else
+			{
+				this.player1Credits -= cost;
+				return true;
+			}
+		}
+		else
+			if (cost > this.player2Credits)
+				return false;
+			else
+			{
+				this.player2Credits -= cost;
+				return true;
+			}
+	}
+	
 	public boolean deployUnit(Unit unit, int columnPos)
 	{
 		int deployPoint;
 		int end;
-		if (unit.isOwnedByPlayer1())
+		boolean isPlayer1 = unit.isOwnedByPlayer1();
+		if (isPlayer1)
 		{
 			deployPoint = this.player1DeploymentPoints[columnPos];
 			end = -1;
@@ -557,7 +608,14 @@ public class GameGrid
 			deployPoint = this.player2DeploymentPoints[columnPos];
 			end = Main.GRIDHEIGHT;
 		}
+		
+		boolean purchaseResult = this.attemptUnitPurchase(isPlayer1, unit.getUnitType().getCost());
+		
+		if (!purchaseResult)
+			return false;
 			
+		Main.debugOut("Trying to place: " + unit);
+		
 		if (deployPoint == end)
 		{
 			this.unitBaseAttack(unit);
@@ -669,6 +727,8 @@ public class GameGrid
 	
 	private void checkTurnMoves()
 	{
+		Main.debugOut(this.isPlayer1Turn);
+		Main.debugOut(this.turnMoves);
 		if (this.turnMoves == Main.MOVESPERTURN)
 		{
 			if (!this.automatedMode && this.isPlayer1Turn)
@@ -682,7 +742,7 @@ public class GameGrid
 		}
 	}
 	
-	public void startGame(GameScreen gameScreen)
+	public GameResult startGame(GameScreen gameScreen)
 	{
 		this.automatedMode = false;
 		gameScreen.setVisible(true);
@@ -690,7 +750,9 @@ public class GameGrid
 		while (this.gameRunning)
 		{
 			this.startOfTurn();
+			Main.debugOut("Player Turn: " + this.isPlayer1Turn);
 		}
+		return this.result;
 	}
 	
 	public GameResult startGameWithoutScreen()

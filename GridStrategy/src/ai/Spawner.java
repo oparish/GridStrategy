@@ -211,7 +211,7 @@ public class Spawner
 	
 	private static UnitType randomUnitType()
 	{
-		UnitType[] unitTypes = UnitType.values();
+		UnitType[] unitTypes = UnitType.getDeployableUnitTypes();
 		int randTypeNumber = random.nextInt(unitTypes.length);
 		return unitTypes[randTypeNumber];
 	}

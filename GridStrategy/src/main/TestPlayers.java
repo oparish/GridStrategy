@@ -29,10 +29,8 @@ public class TestPlayers
 						ConditionType.EQUAL_TO, 2);
 		GateCondition gateCondition = new GateCondition(testCondition1, 
 				testCondition2, GateType.NOR, false);
-		Rule testRule = new Rule(gateCondition, standardTestSuccessAction());
-		rules.add(testRule);
 		rules.add(TestPlayers.standardTestFailureRule());
-		return new CPlayer(rules, false);
+		return new CPlayer(rules, true);
 	}
 	
 	private static Rule standardTestFailureRule()
@@ -64,7 +62,7 @@ public class TestPlayers
 	public static void main(String args[]) throws IOException
 	{
 		CPlayer cPlayer = new CPlayer(false, FileOperations.loadFile("test.ai"));
-		Main.getMain().startGameGridWithScreen(null, cPlayer);
+		Main.getMain().startGameGridWithScreen(unitsOnBoardTestPlayer(), null);
 //		CPlayer cPlayer = TestPlayers.unitsOnBoardTestPlayer();
 //		FileOperations.saveFile("test.ai", cPlayer.toBytes());
 	}

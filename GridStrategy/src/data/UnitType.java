@@ -12,15 +12,15 @@ import main.Main;
 
 public enum UnitType
 {
-	ARTILLERY("Player1Artillery", "Player2Artillery", 0, 0, 
-			new UnitCategory[]{}, AbilityType.ARTILLERY, true),
-	DEMOLISHER("Player1Demolisher", "Player2Demolisher", 3, 2, 
-			new UnitCategory[]{}, null, true),
-	INTERCEPTOR("Player1Interceptor", "Player2Interceptor", 2, 1, 
-			new UnitCategory[]{UnitCategory.INTERCEPTOR}, null, true),
-	DEPLOYER("Player1Deployer", "Player2Deployer", 1, 0, 
-					new UnitCategory[]{}, DEPLOYPOINT, true),
-	BUNKER("Player1Bunker", "Player2Bunker", 0, 0, new UnitCategory[]{FRONTLINE}, null, false);
+	ARTILLERY("Player1Artillery", "Player2Artillery", 0, 0, 1,
+			new UnitCategory[]{}, AbilityType.ARTILLERY),
+	DEMOLISHER("Player1Demolisher", "Player2Demolisher", 3, 2, 1,
+			new UnitCategory[]{}, null),
+	INTERCEPTOR("Player1Interceptor", "Player2Interceptor", 2, 1, 5,
+			new UnitCategory[]{UnitCategory.INTERCEPTOR}, null),
+	DEPLOYER("Player1Deployer", "Player2Deployer", 1, 0, 1,
+					new UnitCategory[]{}, DEPLOYPOINT),
+	BUNKER("Player1Bunker", "Player2Bunker", 0, 0, -1, new UnitCategory[]{FRONTLINE}, null);
 	
 	private BufferedImage image1;
 	private BufferedImage image2;
@@ -28,8 +28,12 @@ public enum UnitType
 	private final int baseDamage;
 	private final UnitCategory[] categories;
 	private final AbilityType abilityType;
-	private final boolean deployable;
+	private final int cost;
 	
+	public int getCost() {
+		return cost;
+	}
+
 	public AbilityType getAbilityType() {
 		return abilityType;
 	}
@@ -60,7 +64,7 @@ public enum UnitType
 	}
 	
 	private UnitType(String filename1, String filename2, int speed, 
-			int baseDamage, UnitCategory[] categories, AbilityType abilityType, boolean deployable)
+			int baseDamage, int cost, UnitCategory[] categories, AbilityType abilityType)
 	{
 		this.image1 = Main.loadImage(filename1);
 		this.image2 = Main.loadImage(filename2);
@@ -68,7 +72,7 @@ public enum UnitType
 		this.baseDamage = baseDamage;
 		this.categories = categories;
 		this.abilityType = abilityType;
-		this.deployable = deployable;
+		this.cost = cost;
 	}
 	
 	public static UnitType[] getDeployableUnitTypes()
@@ -76,7 +80,7 @@ public enum UnitType
 		ArrayList<UnitType> unitTypes = new ArrayList<UnitType>();
 		for (UnitType unitType : UnitType.values())
 		{
-			if (unitType.deployable == true)
+			if (unitType.cost != -1)
 				unitTypes.add(unitType);
 		}
 		UnitType[] unitTypeArray = new UnitType[unitTypes.size()];

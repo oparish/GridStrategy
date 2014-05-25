@@ -29,6 +29,9 @@ public class Main
 	
 	public final static int PLAYER1_MAXHP = 10;
 	public final static int PLAYER2_MAXHP = 10;
+	public final static int PLAYER1_MAXCREDITS = 10;
+	public final static int PLAYER2_MAXCREDITS = 10;
+	public final static int CREDITSPERTURN = 1;
 	public final static int GRIDWIDTH = 10;
 	public final static int GRIDHEIGHT = 10;
 	public final static int MOVESPERTURN = 1;
@@ -85,11 +88,11 @@ public class Main
 		return false;
 	}
 	
-	public void startGameGridWithScreen(CPlayer cPlayer1, CPlayer cPlayer2)
+	public GameResult startGameGridWithScreen(CPlayer cPlayer1, CPlayer cPlayer2)
 	{
 		this.gameGrid = new GameGrid(cPlayer1, cPlayer2);			
 		this.setupGameScreen();
-		this.gameGrid.startGame(Main.gameScreen);
+		return this.gameGrid.startGame(Main.gameScreen);
 	}
 	
 	public GameResult startGameGridWithoutScreen(CPlayer cPlayer1, CPlayer cPlayer2)
@@ -185,5 +188,23 @@ public class Main
 		gridPane.setCellContent(cellPanel.getCell(4, 4), testUnit);
 		gridPane.setCellContent(cellPanel.getCell(1, 5), testUnit);
 		gridPane.repaint();
+	}
+	
+	public static void debugOut(String message)
+	{
+		if (DEBUG)
+			System.out.println(message);
+	}
+	
+	public static void debugOut(boolean message)
+	{
+		if (DEBUG)
+			System.out.println(((Boolean) message).toString());
+	}
+	
+	public static void debugOut(int message)
+	{
+		if (DEBUG)
+			System.out.println(((Integer) message).toString());
 	}
 }
