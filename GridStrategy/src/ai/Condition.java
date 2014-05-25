@@ -7,6 +7,7 @@ import java.util.List;
 import ai.headers.ColumnConditionHeader;
 import ai.headers.ConditionHeader;
 import ai.headers.GateConditionHeader;
+import ai.headers.NoConditionHeader;
 import main.FileOperations;
 import main.Main;
 import data.UnitType;
@@ -24,6 +25,7 @@ public abstract class Condition
 		Condition.conditionFieldNames.put(GateCondition.class, new ConditionFieldName[]{ConditionFieldName.GATETYPE});
 		Condition.conditionFieldNames.put(ColumnCondition.class, new ConditionFieldName[]{ConditionFieldName.ROW, ConditionFieldName.COLUMN, ConditionFieldName.UNIT_TYPE, 
 			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE});
+		Condition.conditionFieldNames.put(NoCondition.class, new ConditionFieldName[]{});
 	}
 	
 	Condition(boolean isPlayer1)
@@ -53,14 +55,12 @@ public abstract class Condition
 	
 	public static Condition makeCondition(List<Integer> integers, boolean isPlayer1, ConditionHeader conditionHeader)
 	{
-		if (conditionHeader instanceof GateConditionHeader)
-		{
-			return new GateCondition(integers, isPlayer1, (GateConditionHeader) conditionHeader);
-		}
-		else
-		{
+		if (conditionHeader.getClass() == ColumnConditionHeader.class)
 			return new ColumnCondition(integers, isPlayer1, (ColumnConditionHeader) conditionHeader);
-		}
+		else if (conditionHeader.getClass() == GateConditionHeader.class)
+			return new GateCondition(integers, isPlayer1, (GateConditionHeader) conditionHeader);
+		else
+			return new NoCondition(isPlayer1);
 	}
 	
 	public static ConditionFieldName[] getConditionFieldNames(Class<? extends Condition> conditionClass)
@@ -115,7 +115,13 @@ public abstract class Condition
 		return bytes;
 	}
 	
-	public abstract ArrayList<Byte> getHeaderBytes();
+	public ArrayList<Byte> getHeaderBytes()
+	{
+		ArrayList<Byte> bytes = new ArrayList<Byte>();
+		byte condition = FileOperations.intToByte(CPlayer.getConditionClassOrdinal(this.getClass()));
+		bytes.add(condition);
+		return bytes;
+	}
 
 	
 	protected enum ConditionFieldName

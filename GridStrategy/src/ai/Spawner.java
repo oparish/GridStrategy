@@ -11,6 +11,7 @@ import main.Main;
 
 public class Spawner
 {
+	private static final ConditionClass[] randomConditionClasses = {ConditionClass.COLUMN, ConditionClass.GATE};
 	private static final int MIN_RULES = 3;
 	private static final int MAX_RULES = 10;
 	private static Random random;
@@ -41,6 +42,7 @@ public class Spawner
 		{
 			rules.addAll(createRuleBatch(isPlayer1));
 		}
+		rules.addAll(Spawner.createDefaultRuleBatch(isPlayer1));
 		return new CPlayer(rules, isPlayer1);
 	}
 	
@@ -112,27 +114,54 @@ public class Spawner
 	
 	private static ArrayList<Rule> createRuleBatch(boolean isPlayer1)
 	{
-		UnitType unitType = Spawner.randomUnitType();
 		ArrayList<Rule> rules = new ArrayList<Rule>();
 		HashMap<ColumnConditionParameter, Boolean> parameters = new HashMap<ColumnConditionParameter, Boolean>();
 		parameters.put(ColumnConditionParameter.USECOLUMNCOUNT, true);
 		ColumnCondition[] conditions = Spawner.turnColumnConditionIntoBatch(Spawner.createColumnCondition(parameters, isPlayer1));
+		Action[] actions = createActionBatch();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			Action action;
-			switch(randomActionType())
+			rules.add(new Rule(conditions[i], actions[i]));
+		}
+		return rules;
+	}
+	
+	private static Action[] createActionBatch()
+	{
+		Action[] actions = new Action[Main.GRIDWIDTH];
+		UnitType unitType = Spawner.randomUnitType();
+		ActionType actionType = Spawner.randomActionType();
+		ColumnSearchCondition columnSearchCondition = null;
+		if (actionType == ActionType.ACTIVATE_ACTION)
+			columnSearchCondition = Spawner.randomColumnSearchCondition();
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			switch (actionType)
 			{
 			case DEPLOY_ACTION:
-				action = new DeployAction(i, unitType);
+				actions[i] = new DeployAction(i, unitType);
 				break;
 			case ACTIVATE_ACTION:
-				action = new ActivateAction(i, unitType, randomColumnSearchCondition());
+				actions[i] = new ActivateAction(i, unitType, columnSearchCondition);
 				break;
 			default:
-				action = null;
+				break;
 			}
-			rules.add(new Rule(conditions[i], action));
 		}
+		return actions;
+	}
+	
+	private static ArrayList<Rule> createDefaultRuleBatch(boolean isPlayer1)
+	{
+		ArrayList<Rule> rules = new ArrayList<Rule>();
+		NoCondition noCondition = new NoCondition(isPlayer1);
+		UnitType unitType = Spawner.randomUnitType();
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			DeployAction deployAction = new DeployAction(i, unitType);
+			rules.add(new Rule(noCondition, deployAction));
+		}
+		
 		return rules;
 	}
 	
@@ -226,5 +255,10 @@ public class Spawner
 	private enum ColumnConditionParameter
 	{
 		USECOLUMNCOUNT, USEROWCOUNT, USEUNITTYPE;
+	}
+	
+	private enum ConditionClass
+	{
+		COLUMN, GATE, NO;
 	}
 }

@@ -233,12 +233,4 @@ public class ColumnCondition extends Condition
 		}
 		return units;
 	}
-	
-	public ArrayList<Byte> getHeaderBytes()
-	{
-		ArrayList<Byte> headerByteList = new ArrayList<Byte>();
-		byte condition = FileOperations.intToByte(CPlayer.getConditionClassOrdinal(this.getClass()));
-		headerByteList.add(condition);
-		return headerByteList;
-	}
 }
