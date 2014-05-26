@@ -195,6 +195,7 @@ public class Spawner
 	{
 		ColumnCondition[] conditionBatch = new ColumnCondition[Main.GRIDWIDTH];
 		conditionBatch[0] = Spawner.createColumnCondition(parameters, isPlayer1);
+		conditionBatch[0].setColumn(0);
 		for (int i = 1; i < Main.GRIDWIDTH; i++)
 		{
 			conditionBatch[i] = conditionBatch[0].copyConditionWithNewColumn(i);
