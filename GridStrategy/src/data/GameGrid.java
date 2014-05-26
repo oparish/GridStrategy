@@ -4,6 +4,7 @@ import static data.GameResult.PLAYER1_WINS;
 import static data.GameResult.PLAYER2_WINS;
 import static data.GameResult.TIMED_OUT;
 import static data.UnitCategory.FRONTLINE;
+import static data.UnitCategory.LOW;
 import static data.UnitType.BUNKER;
 import static events.CombatType.BASIC;
 import static events.EventType.COMBAT;
@@ -180,7 +181,7 @@ public class GameGrid
 		for (int i = y + direction; (endPoint - i) * direction >= 0; i+=direction)
 		{
 			Unit unit2 = this.getUnitAt(x, i);
-			if (unit2 != null)
+			if (unit2 != null && !unit2.getUnitType().hasCategory(LOW))
 			{
 				this.artilleryHit(x, y, x, i, unit, unit2);
 				break;

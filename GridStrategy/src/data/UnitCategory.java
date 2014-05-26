@@ -1,5 +1,5 @@
 package data;
 
 public enum UnitCategory {
-	INTERCEPTOR, FRONTLINE;
+	INTERCEPTOR, FRONTLINE, LOW;
 }
