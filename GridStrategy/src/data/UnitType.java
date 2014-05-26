@@ -21,7 +21,8 @@ public enum UnitType
 			new UnitCategory[]{UnitCategory.INTERCEPTOR}, null),
 	DEPLOYER("Player1Deployer", "Player2Deployer", 1, 0, 1,
 					new UnitCategory[]{}, DEPLOYPOINT),
-	BUNKER("Player1Bunker", "Player2Bunker", 0, 0, -1, new UnitCategory[]{FRONTLINE, LOW}, null);
+	BUNKER("Player1Bunker", "Player2Bunker", 0, 0, -1, new UnitCategory[]{FRONTLINE, LOW}, null),
+	SPEEDER("Player1Speeder", "Player2Speeder", 4, 1, 2, new UnitCategory[]{LOW}, null);
 	
 	private static ArrayList<UnitType> deployableUnitTypes;
 	private static ArrayList<UnitType> activatableUnitTypes;
