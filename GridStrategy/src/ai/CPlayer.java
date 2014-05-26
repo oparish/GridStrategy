@@ -8,6 +8,7 @@ import main.Main;
 import ai.headers.ActionHeader;
 import ai.headers.ColumnConditionHeader;
 import ai.headers.ConditionHeader;
+import ai.headers.CreditConditionHeader;
 import ai.headers.GateConditionHeader;
 import ai.headers.NoConditionHeader;
 import ai.headers.RuleHeader;
@@ -22,6 +23,7 @@ public class CPlayer
 		conditionClasses = new ArrayList<Class<? extends Condition>>();
 		conditionClasses.add(ColumnCondition.class);
 		conditionClasses.add(GateCondition.class);
+		conditionClasses.add(CreditCondition.class);
 		conditionClasses.add(NoCondition.class);
 		actionClasses = new ArrayList<Class<? extends Action>>();
 		actionClasses.add(DeployAction.class);
@@ -112,6 +114,10 @@ public class CPlayer
 		else if (conditionClass == ColumnCondition.class)
 		{
 			conditionHeader = new ColumnConditionHeader(conditionClass);
+		}
+		else if (conditionClass == CreditCondition.class)
+		{
+			conditionHeader = new CreditConditionHeader(conditionClass);
 		}
 		else
 		{

@@ -489,12 +489,19 @@ public class GameGrid
 	{
 		Main.debugOut("cplayerturn: " + isPlayer1);
 		CPlayer currentCPlayer;
+		int credits;
 		if (isPlayer1)
+		{
 			currentCPlayer = this.cplayer1;
+			credits = this.player1Credits;
+		}
 		else
+		{
 			currentCPlayer = this.cplayer2;
+			credits = this.player2Credits;
+		}
 		ObservationBatch observationBatch = new ObservationBatch(isPlayer1, 
-				this.gridContents);
+				this.gridContents, credits);
 		
 		boolean result = currentCPlayer.makeMove(observationBatch, this);
 		if (!result)

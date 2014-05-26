@@ -6,6 +6,7 @@ import java.util.List;
 
 import ai.headers.ColumnConditionHeader;
 import ai.headers.ConditionHeader;
+import ai.headers.CreditConditionHeader;
 import ai.headers.GateConditionHeader;
 import ai.headers.NoConditionHeader;
 import main.FileOperations;
@@ -24,6 +25,8 @@ public abstract class Condition
 		Condition.conditionFieldNames = new HashMap<Class<? extends Condition>, ConditionFieldName[]>();
 		Condition.conditionFieldNames.put(GateCondition.class, new ConditionFieldName[]{ConditionFieldName.GATETYPE});
 		Condition.conditionFieldNames.put(ColumnCondition.class, new ConditionFieldName[]{ConditionFieldName.ROW, ConditionFieldName.COLUMN, ConditionFieldName.UNIT_TYPE, 
+			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE});
+		Condition.conditionFieldNames.put(CreditCondition.class, new ConditionFieldName[]{ 
 			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE});
 		Condition.conditionFieldNames.put(NoCondition.class, new ConditionFieldName[]{});
 	}
@@ -59,6 +62,8 @@ public abstract class Condition
 			return new ColumnCondition(integers, isPlayer1, (ColumnConditionHeader) conditionHeader);
 		else if (conditionHeader.getClass() == GateConditionHeader.class)
 			return new GateCondition(integers, isPlayer1, (GateConditionHeader) conditionHeader);
+		else if (conditionHeader.getClass() == CreditConditionHeader.class)
+			return new CreditCondition(integers, isPlayer1, (CreditConditionHeader) conditionHeader);
 		else
 			return new NoCondition(isPlayer1);
 	}
