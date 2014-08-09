@@ -750,9 +750,9 @@ public class GameGrid
 		}
 	}
 	
-	public GameResult startGame(GameScreen gameScreen)
+	public GameResult startGame(GameScreen gameScreen, boolean automated)
 	{
-		this.automatedMode = false;
+		this.automatedMode = automated;
 		gameScreen.setVisible(true);
 		this.gameRunning = true;
 		while (this.gameRunning)

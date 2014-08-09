@@ -88,11 +88,11 @@ public class Main
 		return false;
 	}
 	
-	public GameResult startGameGridWithScreen(CPlayer cPlayer1, CPlayer cPlayer2)
+	public GameResult startGameGridWithScreen(CPlayer cPlayer1, CPlayer cPlayer2, boolean automated)
 	{
 		this.gameGrid = new GameGrid(cPlayer1, cPlayer2);			
 		this.setupGameScreen();
-		return this.gameGrid.startGame(Main.gameScreen);
+		return this.gameGrid.startGame(Main.gameScreen, automated);
 	}
 	
 	public GameResult startGameGridWithoutScreen(CPlayer cPlayer1, CPlayer cPlayer2)
@@ -134,7 +134,7 @@ public class Main
 //		while (Main.currentOpponent == null)
 //		{
 			//CPlayer testPlayer = TestPlayers.unitsOnBoardTestPlayer();
-			main.startGameGridWithScreen(null, readPlayer);
+			main.startGameGridWithScreen(null, readPlayer, false);
 
 //		}
 //		Main.main.startGameGrid(null, Main.getCurrentOpponent());
