@@ -4,6 +4,7 @@ import panes.Cell;
 import panes.CellPanel;
 import panes.Effect;
 import panes.GridPane;
+import panes.PaintArea;
 
 public class EffectFrame extends Frame
 {
@@ -24,7 +25,7 @@ public class EffectFrame extends Frame
 		this.effectPosition = effectPosition;
 	}
 	
-	public void playFrame(Cell cell)
+	public void playFrame(PaintArea cell)
 	{
 		GridPane gridPane = Animator.getGridPane();
 		CellPanel cellPanel = gridPane.getCellPanel();

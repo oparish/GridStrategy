@@ -2,6 +2,7 @@ package animation;
 
 import panes.Cell;
 import panes.GridPane;
+import panes.PaintArea;
 
 public abstract class Frame
 {	
@@ -29,6 +30,6 @@ protected int milliseconds;
 		}
 	}
 	
-	public abstract void playFrame(Cell cell);
+	public abstract void playFrame(PaintArea cell);
 
 }

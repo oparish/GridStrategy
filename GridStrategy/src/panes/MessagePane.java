@@ -12,6 +12,9 @@ import javax.swing.text.JTextComponent;
 import data.Unit;
 import main.Main;
 import events.CombatEvent;
+import events.EventBase;
+import events.EventCell;
+import events.EventLocation;
 import events.EventType;
 import events.MyEvent;
 import events.MyEventListener;
@@ -32,7 +35,7 @@ public class MessagePane extends List implements MyEventListener
 	public void receiveEvent(MyEvent event) {
 		if (event instanceof OneUnitEvent)
 		{
-			if (Main.DEBUG && !Main.checkDebugColumns(((OneUnitEvent) event).getXpos1()))
+			if (Main.DEBUG && !Main.checkDebugColumns(((OneUnitEvent) event).getEventLocation().getColumn()))
 				return;
 		}
 		
@@ -41,26 +44,30 @@ public class MessagePane extends List implements MyEventListener
 		if (Main.DEBUG && !Main.checkDebugEventType(type))
 			return;
 		
-		Integer xPos = null;
-		Integer yPos = null;
-		Integer xPos2 = null;
-		Integer yPos2 = null;
+		EventLocation eventLocation = null;
+		EventLocation eventLocation2 = null;
 		String unit = null;
 		String unit2 = null;
+		Integer xPos = null;
+		Integer xPos2 = null;
+		String yPos = null;
+		String yPos2 = null;
 		
 		if (event instanceof OneUnitEvent)
 		{
 			OneUnitEvent oneUnitEvent = (OneUnitEvent) event;
-			xPos = oneUnitEvent.getXpos1();
-			yPos = oneUnitEvent.getYPos1();
+			eventLocation = oneUnitEvent.getEventLocation();
 			unit = oneUnitEvent.getUnit().toString();
+			xPos = eventLocation.getColumn();
+			yPos = this.getYText(eventLocation);
 		}
 		
 		if (event instanceof TwoPositionEvent)
 		{
 			TwoPositionEvent twoPositionEvent = (TwoPositionEvent) event;
-			xPos2 = twoPositionEvent.getXPos2();
-			yPos2 = twoPositionEvent.getYPos2();
+			eventLocation2 = twoPositionEvent.getEventLocation2();
+			xPos2 = eventLocation2.getColumn();	
+			yPos2 = this.getYText(eventLocation2);
 		}
 
 		if (event instanceof TwoUnitEvent)
@@ -69,7 +76,6 @@ public class MessagePane extends List implements MyEventListener
 			unit2 = twoUnitEvent.getUnit2().toString();
 		}
 		
-			
 		switch(type)
 		{
 		case NEXT_TURN:
@@ -96,6 +102,22 @@ public class MessagePane extends List implements MyEventListener
 		case SKIP_TURN:
 			this.add("Turn Skipped");
 			break;
+		}
+	}
+	
+	private String getYText(EventLocation eventLocation)
+	{
+		if (eventLocation instanceof EventBase)
+		{
+			EventBase eventBase = (EventBase) eventLocation;
+			if (eventBase.isPlayer1())
+				return "Player 1 Base";
+			else
+				return "Player 2 Base";
+		}
+		else
+		{
+			return String.valueOf(((EventCell) eventLocation).getRow());
 		}
 	}
 	

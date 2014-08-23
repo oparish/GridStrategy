@@ -34,6 +34,10 @@ public class GridPane extends JPanel
 	}
 
 	private GridInfo gridInfo;
+	public GridInfo getGridInfo() {
+		return gridInfo;
+	}
+
 	private GameScreen gameScreen;
 	
 	public GridPane(GameScreen gameScreen)

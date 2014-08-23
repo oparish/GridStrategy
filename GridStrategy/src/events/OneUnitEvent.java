@@ -1,32 +1,31 @@
 package events;
 
 import static events.EventType.DEPLOYING_UNIT;
+import panes.PaintArea;
 import data.Unit;
 
 public class OneUnitEvent extends MyEvent
 {
 	private final Unit unit;
-	private final int xPos1;
-	private final int yPos1;
-	
-	public int getYPos1() {
-		return yPos1;
+	private final EventLocation eventLocation;
+
+	public EventLocation getEventLocation() {
+		return eventLocation;
 	}
 
 	public Unit getUnit() {
 		return unit;
 	}
 	
-	public int getXpos1() {
-		return xPos1;
-	}
-
-	public OneUnitEvent(Object source, EventType type, int xPos1, 
-			int yPos1, Unit unit)
+	public OneUnitEvent(Object source, EventType type, EventLocation eventLocation, Unit unit)
 	{
 		super(source, type);
 		this.unit = unit;
-		this.xPos1 = xPos1;
-		this.yPos1 = yPos1;
+		this.eventLocation = eventLocation;
+	}
+	
+	public OneUnitEvent(Object source, EventType type, int xPos, int yPos, Unit unit)
+	{
+		this(source, type, new EventCell(xPos, yPos), unit);
 	}
 }

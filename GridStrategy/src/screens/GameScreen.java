@@ -27,6 +27,9 @@ import dialogs.UnitDialog;
 import events.CombatEvent;
 import events.CombatResult;
 import events.CombatType;
+import events.EventBase;
+import events.EventCell;
+import events.EventLocation;
 import events.MyEvent;
 import events.MyEventListener;
 import events.MyEventSpeaker;
@@ -43,9 +46,11 @@ import main.Main;
 import panes.Cell;
 import panes.CellPanel;
 import panes.ControlPane;
+import panes.GridInfo;
 import panes.GridPane;
 import panes.InfoPane;
 import panes.MessagePane;
+import panes.PaintArea;
 
 @SuppressWarnings("serial")
 public class GameScreen extends JFrame implements ActionListener, MyEventListener, MouseListener
@@ -219,11 +224,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	@Override
 	public void receiveEvent(MyEvent event)
 	{
-		Integer xPos = null;
-		Integer yPos = null; 
+		EventLocation eventLocation1 = null;
 		Unit unit1 = null;
-		Integer xPos2 = null;
-		Integer yPos2 = null;
+		EventLocation eventLocation2 = null;
 		Unit unit2 = null;
 		Boolean isPlayer1Turn = null;
 		
@@ -233,17 +236,17 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		{
 			OneUnitEvent oneUnitEvent = (OneUnitEvent) event;
 			unit1 = oneUnitEvent.getUnit();
-			xPos = oneUnitEvent.getXpos1();
-			yPos = oneUnitEvent.getYPos1();
+			eventLocation1 = oneUnitEvent.getEventLocation();
 			if (event instanceof TwoPositionEvent)
 			{
 				TwoPositionEvent twoPositionEvent = (TwoPositionEvent) event;
-				xPos2 = twoPositionEvent.getXPos2();
-				yPos2 = twoPositionEvent.getYPos2();
+				eventLocation2 = twoPositionEvent.getEventLocation2();
 				if (event instanceof TwoUnitEvent)
 					unit2 = ((TwoUnitEvent) event).getUnit2();
 			}
 		}
+		
+
 		
 		switch(event.getType())
 		{
@@ -254,39 +257,45 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 				showNewTurn(isPlayer1Turn);
 				break;
 			case DEPLOYING_UNIT:
-				paintUnitDeploy(xPos, yPos, unit1);
+				paintUnitDeploy(eventLocation1, unit1);
 				break;
-			case MOVING_UNIT:
-				paintUnitMove(xPos, yPos, unit1, xPos2, yPos2);
+			case UNITBASEATTACK:
+				paintBaseAttack(eventLocation1, unit1);
 				break;
 			case PLACE_DEPLOY_POINT:
-				paintDeployPoint(xPos, yPos, unit1);
+				paintDeployPoint(eventLocation1, unit1);
+				break;
+			case MOVING_UNIT:
+				paintUnitMove(eventLocation1, unit1, eventLocation2);
 				break;
 			case COMBAT:
 				CombatEvent combatEvent = (CombatEvent) event;
-				paintCombat(xPos, yPos, unit1, xPos2, yPos2, unit2, 
+				paintCombat(eventLocation1, unit1, eventLocation2, unit2, 
 						combatEvent.getCombatResult(), 
 						combatEvent.getCombatType());
-				break;
-			case UNITBASEATTACK:
-				paintBaseAttack(xPos, yPos, unit1);
 				break;
 			case FINISH_ACTION:
 				this.finishAction();
 				break;
 			case ARTILLERY_FIRING:
-				this.paintFiringArtillery(xPos, yPos, xPos2, yPos2, unit1, unit2);
+				this.paintFiringArtillery(eventLocation1, eventLocation2, unit1, unit2);
 				break;
 		}
 	}
 	
-	private void paintFiringArtillery(int sourceX, int sourceY, int targetX, int targetY, Unit unit1, Unit unit2)
+	private void paintDeployPoint(EventLocation eventLocation1, Unit unit1)
+	{
+		
+	}
+	
+	private void paintFiringArtillery(EventLocation eventLocation1, EventLocation eventLocation2, Unit unit1, Unit unit2)
 	{
 		int direction = unit1.isOwnedByPlayer1()?-1:1;
 		VerticalAnimationSeries fireAnimationSeries = Animator.getFiringAnimationSeries(unit1);
-		fireAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), sourceX, sourceY + direction, targetX, targetY);
+		fireAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), eventLocation1, eventLocation2);
 		Animation removeAnimation = Animator.getSimpleCombatUnit1DestroyedAnimation(unit2);
-		removeAnimation.playAnimation(this.cellPanel.getCell(targetX, targetY));
+		PaintArea targetArea = this.getPaintAreaFromEventLocation(eventLocation2);
+		removeAnimation.playAnimation(targetArea);
 	}
 	
 	private void finishAction()
@@ -308,21 +317,33 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			this.startComputerTurn();
 	}
 	
-	private void paintUnitDeploy(int xPos, int yPos, Unit unit1)
+	private void paintUnitDeploy(EventLocation eventLocation, Unit unit1)
 	{
 		Animation deployAnimation = Animator.getDeployAnimation(unit1);
-		Cell cell = this.cellPanel.getCell(xPos, yPos);
-		deployAnimation.playAnimation(cell);
+		PaintArea paintArea = this.getPaintAreaFromEventLocation(eventLocation);
+		deployAnimation.playAnimation(paintArea);
 	}
 	
-	private void paintUnitMove(int xPos, int yPos, Unit unit1, int xPos2, int yPos2)
+	private void paintBaseAttack(EventLocation eventLocation, Unit unit1)
+	{
+		Animation baseAttackAnimation = Animator.getBaseAttackAnimation(unit1);
+		PaintArea paintArea = this.getPaintAreaFromEventLocation(eventLocation);
+		baseAttackAnimation.playAnimation(paintArea);
+	}
+	
+	private void paintUnitMove(EventLocation eventLocation1, Unit unit1, EventLocation eventLocation2)
 	{
 		AnimationSeries moveAnimationSeries = Animator.getMoveAnimationSeries(unit1);
-		moveAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), xPos, yPos, xPos2, yPos2);
+		moveAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), eventLocation1, eventLocation2);
 	}
 	
-	private void paintCombat(int xPos, int yPos, Unit unit1, int xPos2, 
-			int yPos2, Unit unit2, CombatResult combatResult, CombatType combatType)
+	private PaintArea getPaintAreaFromEventLocation(EventLocation eventLocation)
+	{
+		GridInfo gridInfo = this.gridPane.getGridInfo();
+		return gridInfo.getPaintAreaFromEventLocation(eventLocation);
+	}
+	
+	private void paintCombat(EventLocation eventLocation1, Unit unit1, EventLocation eventLocation2, Unit unit2, CombatResult combatResult, CombatType combatType)
 	{
 		Animation combatAnimation;
 		switch(combatResult)
@@ -337,62 +358,34 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			combatAnimation = Animator.getSimpleCombatDrawAnimation(unit1);	
 		}
 		
-		Cell cell1 = this.cellPanel.getCell(xPos, yPos);
-		Cell cell2 = this.cellPanel.getCell(xPos2, yPos2);
-		combatAnimation.playTwoCellAnimation(cell1, cell2);
-	}
-	
-	private void paintDeployPoint(int xPos, int yPos, Unit unit1)
-	{
-		
-	}
-	
-	private void paintBaseAttack(int xPos, int yPos, Unit unit1)
-	{
-		if (yPos != -1 && yPos != Main.GRIDHEIGHT)
-		{
-			Animation combatAnimation = Animator.getBaseAttackAnimation(unit1);
-			Cell cell = this.cellPanel.getCell(xPos, yPos);
-			Cell baseCell = this.cellPanel.getBaseCell(xPos, !unit1.isOwnedByPlayer1());
-			combatAnimation.playTwoCellAnimation(cell, baseCell);
-		}
+		PaintArea paintArea1 = this.getPaintAreaFromEventLocation(eventLocation1);
+		PaintArea paintArea2 = this.getPaintAreaFromEventLocation(eventLocation2);
+		combatAnimation.playTwoCellAnimation(paintArea1, paintArea2);
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
-		if (this.screenState == GameScreenState.ACTIVATING_ABILITY)
+		int column = this.getColumnFromPosition(e.getX());
+		int row = this.getRowFromPosition(e.getY());
+		PaintArea paintArea = this.gridPane.getGridInfo().getDeployPointPaintArea(column, row);
+		if (this.screenState == GameScreenState.ACTIVATING_ABILITY && paintArea instanceof Cell)
 		{
-			this.activateAbility(e.getX(), e.getY());
+			this.checkForAbility((Cell) paintArea, column, row);
 		}
 		else if (this.screenState == GameScreenState.DEPLOYING_UNIT)
 		{
-			tryDeployingUnit(e.getX(), e.getY());
+			this.checkForDeployPoint(column, row);
 		}
-	}
-	
-	private void tryDeployingUnit(int x, int y)
-	{
-		int cellX = this.getColumnFromPosition(x);
-		int cellY = this.getRowFromPosition(y);
-		if (cellX != -1 && cellY != -1)
-			this.checkForDeployPoint(cellX, cellY);
 	}
 	
 	private void checkForDeployPoint(int x, int y)
 	{
-		if (this.gameGrid.getPlayer1DeploymentPoints()[x] == y && this.cellPanel.getCell(x, y).unit == null)
-		{
+		if (this.gameGrid.getPlayer1DeploymentPoints()[x] == y && (y == -1 || this.cellPanel.getCell(x, y).unit == null))
+		{			
+			this.cellPanel.clearDeployPoints(this.getPlayer1DeploymentPoints());
 			this.gameGrid.deployUnit(this.unitToDeploy, x);
 		}
-	}
-	
-	private void activateAbility(int x, int y)
-	{
-		int cellX = this.getColumnFromPosition(x);
-		int cellY = this.getRowFromPosition(y);
-		if (cellX != -1 && cellY != -1)
-			this.checkForAbility(cellX, cellY);
 	}
 	
 	private int getColumnFromPosition(int x)
@@ -417,16 +410,15 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		return -1;
 	}
 	
-	public void checkForAbility(int x, int y)
+	public void checkForAbility(Cell cell, int x, int y)
 	{
-		Unit unit = this.gameGrid.getUnitAt(x, y);
-		if (unit == null)
+		if (cell.unit == null)
 			return;
-		AbilityType abilityType = unit.getUnitType().getAbilityType();
+		AbilityType abilityType = cell.unit.getUnitType().getAbilityType();
 		if (abilityType != null)
 		{
 			this.switchScreenState(GameScreenState.STANDARD);
-			this.gameGrid.activateAbility(x, y, abilityType, unit);
+			this.gameGrid.activateAbility(x, y, abilityType, cell.unit);
 		}
 	}
 

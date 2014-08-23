@@ -23,6 +23,8 @@ import screens.GameScreen;
 import events.CombatEvent;
 import events.CombatResult;
 import events.CombatType;
+import events.EventBase;
+import events.EventCell;
 import events.EventType;
 import events.FinishActionEvent;
 import events.MyEvent;
@@ -382,8 +384,10 @@ public class GameGrid
 				this.moveUnit(moveAttempt.column, currentScreenPos, moveAttempt.column, end);
 			unitBaseAttack(moveAttempt.unit);
 			this.destroyUnitAt(moveAttempt.column, end);
-			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, moveAttempt.column, 
-					end, moveAttempt.unit));
+			EventBase eventBase = new EventBase(moveAttempt.column, !moveAttempt.unit.isOwnedByPlayer1());
+			EventCell eventCell = new EventCell(moveAttempt.column, end);
+			considerEvent(new TwoPositionEvent(this, MOVING_UNIT, eventCell, moveAttempt.unit, eventBase));
+			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, eventBase, moveAttempt.unit));
 		}
 		else
 		{
@@ -616,24 +620,26 @@ public class GameGrid
 			deployPoint = this.player2DeploymentPoints[columnPos];
 			end = Main.GRIDHEIGHT;
 		}
-		
-		boolean purchaseResult = this.attemptUnitPurchase(isPlayer1, unit.getUnitType().getCost());
-		
-		if (!purchaseResult)
-			return false;
 			
 		Main.debugOut("Trying to place: " + unit);
 		
 		if (deployPoint == end)
 		{
+			boolean purchaseResult = this.attemptUnitPurchase(isPlayer1, unit.getUnitType().getCost());	
+			if (!purchaseResult)
+				return false;
 			this.unitBaseAttack(unit);
-			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, columnPos, 
-					deployPoint, unit));
+			EventBase eventBase = new EventBase(columnPos, !isPlayer1);
+			considerEvent(new OneUnitEvent(this, DEPLOYING_UNIT, eventBase, unit));
+			considerEvent(new OneUnitEvent(this, UNITBASEATTACK, eventBase, unit));
 			this.noteMove();
 			return true;
 		}
 		else if (this.gridContents[columnPos][deployPoint] == null)
 		{
+			boolean purchaseResult = this.attemptUnitPurchase(isPlayer1, unit.getUnitType().getCost());	
+			if (!purchaseResult)
+				return false;
 			considerEvent(new OneUnitEvent(this, DEPLOYING_UNIT, columnPos, 
 					deployPoint, unit));
 			this.gridContents[columnPos][deployPoint] = unit;

@@ -2,6 +2,7 @@ package animation;
 
 import panes.Cell;
 import panes.GridPane;
+import panes.PaintArea;
 import data.Unit;
 
 public class OperationFrame extends Frame
@@ -26,9 +27,17 @@ public class OperationFrame extends Frame
 		Animator.getGridPane().deleteCellContent(cell);
 	}
 	
-	public void playFrame(Cell cell)
+	public void playFrame(PaintArea paintArea)
 	{
+		if (!(paintArea instanceof Cell))
+		{
+			System.out.println("Trying to run an operation frame with a non-cell paint area.");
+			return;
+		}
+		
+		Cell cell = (Cell) paintArea;
 		GridPane gridPane = Animator.getGridPane();
+		
 		switch(this.operationType)
 		{
 		default:

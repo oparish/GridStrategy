@@ -124,16 +124,20 @@ public class CellPanel extends JPanel
 	
 	private void drawEndZoneCells(Graphics2D g2d, Integer xpos, Integer ypos)
 	{
-		for (Cell[] cellColumn : new Cell[][]{this.gridInfo.player1BaseCells, this.gridInfo.player2BaseCells})
+		for (PaintArea[] cellColumn : new PaintArea[][]{this.gridInfo.player1BaseCells, this.gridInfo.player2BaseCells})
 		{
-			for (Cell cell : cellColumn)
+			for (PaintArea paintArea : cellColumn)
 			{
-				cell.paintedX = cell.baseX + xpos;
-				cell.paintedY = cell.baseY + ypos;
-				if (cell.unit != null)
+				paintArea.paintedX = paintArea.baseX + xpos;
+				paintArea.paintedY = paintArea.baseY + ypos;
+				if (paintArea instanceof Cell)
 				{
-					g2d.drawImage(cell.getImage(), cell.paintedX, cell.paintedY, 
-							this);
+					Cell cell2 = (Cell) paintArea;
+					if (cell2.unit != null)
+					{
+						g2d.drawImage(paintArea.getImage(), paintArea.paintedX, paintArea.paintedY, 
+								this);
+					}
 				}
 			}
 		}
@@ -156,7 +160,7 @@ public class CellPanel extends JPanel
 		this.drawEndZoneCells(g2d, xpos, ypos);
 	}
 	
-	public void repaintCell(Cell cell)
+	public void repaintCell(PaintArea cell)
 	{
 		if (cell.paintedX != null)
 		{
@@ -176,7 +180,7 @@ public class CellPanel extends JPanel
 		return this.gridInfo.cells[x][y];
 	}
 	
-	public Cell getBaseCell(int x, boolean player1)
+	public PaintArea getBaseCell(int x, boolean player1)
 	{
 		if (player1)
 			return this.gridInfo.player1BaseCells[x];
@@ -184,15 +188,15 @@ public class CellPanel extends JPanel
 			return this.gridInfo.player2BaseCells[x];	
 	}
 	
-	public void paintEffect(Cell cell, Effect effect)
+	public void paintEffect(PaintArea paintArea, Effect effect)
 	{
 		BufferedImage image = effect.getImage();
 		Graphics2D g2d = (Graphics2D) this.getGraphics();
-		g2d.drawImage(image, cell.paintedX, cell.paintedY,
+		g2d.drawImage(image, paintArea.paintedX, paintArea.paintedY,
 					this);
 	}
 	
-	public void paintEffect(Cell cell, Effect effect, EffectPosition effectPosition)
+	public void paintEffect(PaintArea cell, Effect effect, EffectPosition effectPosition)
 	{
 		BufferedImage image = effect.getImage();
 		Graphics2D g2d = (Graphics2D) this.getGraphics();
@@ -204,9 +208,9 @@ public class CellPanel extends JPanel
 	{
 		for (int i = 0; i < deployPositions.length; i++)
 		{
-			Cell cell = this.gridInfo.cells[i][deployPositions[i]];
-			if (cell.unit == null)
-				this.paintImageIntoCell(cell, CellImage.ARROW);
+			PaintArea paintArea = this.gridInfo.getDeployPointPaintArea(i, deployPositions[i]);
+			if (!(paintArea instanceof Cell) || ((Cell) paintArea).unit == null)
+				this.paintImageIntoCell(paintArea, CellImage.ARROW);
 		}
 	}
 	
@@ -214,16 +218,16 @@ public class CellPanel extends JPanel
 	{
 		for (int i = 0; i < deployPositions.length; i++)
 		{
-			Cell cell = this.gridInfo.cells[i][deployPositions[i]];
-			cell.cellImage = null;
-			this.repaintCell(cell);
+			PaintArea paintArea = this.gridInfo.getDeployPointPaintArea(i, deployPositions[i]);
+			paintArea.cellImage = null;
+			this.repaintCell(paintArea);
 		}
 	}
 	
-	private void paintImageIntoCell(Cell cell, CellImage image)
+	private void paintImageIntoCell(PaintArea paintArea, CellImage image)
 	{
-		cell.cellImage = image;
-		this.repaintCell(cell);
+		paintArea.cellImage = image;
+		this.repaintCell(paintArea);
 	}
 	
 	private class MyLine

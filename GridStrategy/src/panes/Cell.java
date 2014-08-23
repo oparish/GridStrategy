@@ -4,19 +4,13 @@ import java.awt.image.BufferedImage;
 
 import data.Unit;
 
-public class Cell
+public class Cell extends PaintArea
 {
-	public Integer baseX;
-	public Integer baseY;
-	public Integer paintedX;
-	public Integer paintedY;
 	public Unit unit;
-	public CellImage cellImage;
 	
 	public Cell(Integer X, Integer Y)
 	{
-		this.baseX = X;
-		this.baseY = Y;
+		super(X, Y);
 	}
 	
 	public BufferedImage getImage()

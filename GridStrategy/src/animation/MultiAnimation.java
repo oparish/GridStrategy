@@ -3,6 +3,7 @@ package animation;
 import java.util.ArrayList;
 
 import panes.Cell;
+import panes.PaintArea;
 
 public class MultiAnimation extends Animation
 {
@@ -14,7 +15,7 @@ public class MultiAnimation extends Animation
 	}
 	
 	@Override
-	public void playAnimation(Cell cell) 
+	public void playAnimation(PaintArea cell) 
 	{
 		for (Animation animation : animations)
 		{
@@ -23,7 +24,7 @@ public class MultiAnimation extends Animation
 	}
 
 	@Override
-	public void playTwoCellAnimation(Cell cell1, Cell cell2)
+	public void playTwoCellAnimation(PaintArea cell1, PaintArea cell2)
 	{
 		for (Animation animation : animations)
 		{

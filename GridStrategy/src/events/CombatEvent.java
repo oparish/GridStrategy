@@ -15,6 +15,15 @@ public class CombatEvent extends TwoUnitEvent
 		return combatType;
 	}
 
+	public CombatEvent(Object source, EventType type, EventLocation eventLocation1, 
+			Unit unit1, Unit unit2, EventLocation eventLocation2, CombatType combatType,
+			CombatResult combatResult)
+	{
+		super(source, type, eventLocation1, unit1, eventLocation2, unit2);
+		this.combatType = combatType;
+		this.combatResult = combatResult;
+	}
+	
 	public CombatEvent(Object source, EventType type, int xPos, int yPos, 
 			Unit unit1, Unit unit2, int xPos2, int yPos2, CombatType combatType,
 			CombatResult combatResult)

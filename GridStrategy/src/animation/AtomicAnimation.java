@@ -3,6 +3,7 @@ package animation;
 import java.util.ArrayList;
 
 import panes.Cell;
+import panes.PaintArea;
 
 public class AtomicAnimation extends Animation
 {
@@ -13,7 +14,7 @@ public class AtomicAnimation extends Animation
 		this.frames = frames;
 	}
 	
-	public void playAnimation(Cell cell)
+	public void playAnimation(PaintArea cell)
 	{
 		Animator.startAnimation(this);
 		for (FrameWithContext frameWithContext : frames)
@@ -23,7 +24,7 @@ public class AtomicAnimation extends Animation
 		Animator.endAnimation();
 	}
 	
-	public void playTwoCellAnimation(Cell cell1, Cell cell2)
+	public void playTwoCellAnimation(PaintArea cell1, PaintArea cell2)
 	{
 		Animator.startAnimation(this);
 		for (FrameWithContext frameWithContext : frames)

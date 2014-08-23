@@ -116,12 +116,8 @@ public class Animator
 	public static AtomicAnimation getBaseAttackAnimation(Unit unit)
 	{	
 		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
-		OperationFrame removeFrame = new OperationFrame(NO_PAUSE, unit, REMOVE);
-		OperationFrame addFrame = new OperationFrame(SHORT_PAUSE,unit, ADD);
 		EffectFrame effectFrame = new EffectFrame(SHORT_PAUSE, BATTLE);
 		OperationFrame attackFrame = new OperationFrame(SHORT_PAUSE, unit, REMOVE);
-		frames.add(new FrameWithContext(removeFrame, true));
-		frames.add(new FrameWithContext(addFrame, false));
 		frames.add(new FrameWithContext(effectFrame, false));
 		frames.add(new FrameWithContext(attackFrame, false));
 		return new AtomicAnimation(frames);

@@ -15,14 +15,14 @@ public enum UnitType
 {
 	ARTILLERY("Player1Artillery", "Player2Artillery", 0, 0, 1,
 			new UnitCategory[]{}, AbilityType.ARTILLERY),
-	DEMOLISHER("Player1Demolisher", "Player2Demolisher", 3, 2, 1,
+	DEMOLISHER("Player1Demolisher", "Player2Demolisher", 3, 2, 5,
 			new UnitCategory[]{}, null),
 	INTERCEPTOR("Player1Interceptor", "Player2Interceptor", 2, 1, 5,
 			new UnitCategory[]{UnitCategory.INTERCEPTOR}, null),
 	DEPLOYER("Player1Deployer", "Player2Deployer", 1, 0, 1,
 					new UnitCategory[]{}, DEPLOYPOINT),
 	BUNKER("Player1Bunker", "Player2Bunker", 0, 0, -1, new UnitCategory[]{FRONTLINE, LOW}, null),
-	SPEEDER("Player1Speeder", "Player2Speeder", 4, 1, 2, new UnitCategory[]{LOW}, null);
+	SPEEDER("Player1Speeder", "Player2Speeder", 4, 1, 3, new UnitCategory[]{LOW}, null);
 	
 	private static ArrayList<UnitType> deployableUnitTypes;
 	private static ArrayList<UnitType> activatableUnitTypes;
