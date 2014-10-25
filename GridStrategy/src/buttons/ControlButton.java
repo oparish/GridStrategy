@@ -10,9 +10,9 @@ public class ControlButton extends JButton
 {
 	private static final int CONTROLBUTTONWIDTH = 120;
 	private static final int CONTROLBUTTONHEIGHT = 30;
-	ButtonType buttonType;
+	ControlButtonType buttonType;
 	
-	public ControlButton(ButtonType buttonType, ActionListener listener)
+	public ControlButton(ControlButtonType buttonType, ActionListener listener)
 	{
 		super(buttonType.getText());
 		this.buttonType = buttonType;
@@ -21,7 +21,7 @@ public class ControlButton extends JButton
 		this.addActionListener(listener);
 	}
 	
-	public ButtonType getButtonType() {
+	public ControlButtonType getButtonType() {
 		return buttonType;
 	}
 }

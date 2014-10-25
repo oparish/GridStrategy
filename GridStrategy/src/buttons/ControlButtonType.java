@@ -1,6 +1,6 @@
 package buttons;
 
-public enum ButtonType
+public enum ControlButtonType
 {
 	NEXT_TURN("Next Turn"), MAIN_MENU("Main Menu"), DEPLOY_UNIT("Deploy Unit"), ACTIVATE_ABILITY("Activate Ability"),
 	CANCEL("Cancel"), QUIT("Quit");
@@ -15,7 +15,7 @@ public enum ButtonType
 		this.text = text;
 	}
 
-	private ButtonType(String text)
+	private ControlButtonType(String text)
 	{
 		this.text = text;
 	}

@@ -1,17 +1,17 @@
 package panes;
 
-import static buttons.ButtonType.ACTIVATE_ABILITY;
-import static buttons.ButtonType.CANCEL;
-import static buttons.ButtonType.DEPLOY_UNIT;
-import static buttons.ButtonType.MAIN_MENU;
-import static buttons.ButtonType.NEXT_TURN;
-import static buttons.ButtonType.QUIT;
+import static buttons.ControlButtonType.ACTIVATE_ABILITY;
+import static buttons.ControlButtonType.CANCEL;
+import static buttons.ControlButtonType.DEPLOY_UNIT;
+import static buttons.ControlButtonType.MAIN_MENU;
+import static buttons.ControlButtonType.NEXT_TURN;
+import static buttons.ControlButtonType.QUIT;
 
 import java.awt.GridBagLayout;
 
 import javax.swing.JPanel;
 
-import buttons.ButtonType;
+import buttons.ControlButtonType;
 import buttons.ControlButton;
 import main.Main;
 import screens.GameScreen;
