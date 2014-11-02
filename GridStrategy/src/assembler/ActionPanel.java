@@ -20,12 +20,12 @@ public class ActionPanel extends JPanel
 		super();
 		this.setLayout(new GridLayout(4, 2));
 		this.add(new JLabel(ConditionSpinnerType.ACTION_TYPE.getText()));
-		this.add(new EnumSpinner(ActionType.values()));
+		this.add(new EnumBox(ActionType.values()));
 		this.add(new JLabel(ConditionSpinnerType.COLUMN.getText()));
 		this.add(new NumberSpinner(ConditionSpinnerType.NUMBER, 0, Main.GRIDWIDTH));
 		this.add(new JLabel(ConditionSpinnerType.UNIT_TYPE.getText()));
-		this.add(new EnumSpinner(UnitType.values()));
+		this.add(new EnumBox(UnitType.values()));
 		this.add(new JLabel(ConditionSpinnerType.CONDITION_TYPE.getText()));
-		this.add(new EnumSpinner(ColumnSearchCondition.values()));
+		this.add(new EnumBox(ColumnSearchCondition.values()));
 	}
 }

@@ -1,10 +1,16 @@
 package main;
 
+import java.awt.Component;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+
+import ai.CPlayer;
 
 public class FileOperations {
 
@@ -36,6 +42,15 @@ public class FileOperations {
 		}
 		fileInputStream.close();
 		return integers;
+	}
+	
+	public static CPlayer loadCPlayer(Component component, boolean isPlayer1) throws IOException
+	{
+		JFileChooser fc = new JFileChooser(".");
+		fc.showOpenDialog(component);
+		String filename = fc.getSelectedFile().getName();
+		ArrayList<Integer> integers = FileOperations.loadFile(filename);
+		return new CPlayer(isPlayer1, integers);
 	}
 	
 	public static Byte intToByte(int number)
