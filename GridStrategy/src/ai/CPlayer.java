@@ -61,6 +61,10 @@ public class CPlayer
 	}
 	
 	private final ArrayList<Rule> rules;
+	public ArrayList<Rule> getRules() {
+		return rules;
+	}
+
 	private final boolean isPlayer1;
 	
 	public CPlayer(ArrayList<Rule> rules, boolean isPlayer1)

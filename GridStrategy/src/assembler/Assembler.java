@@ -21,7 +21,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener
 		super();
 		CPlayer cPlayer = FileOperations.loadCPlayer(this, true);
 		this.setLayout(new GridLayout(1,2));
-		this.add(new ListPanel(this));
+		this.add(new ListPanel(this, cPlayer));
 		this.add(new RulePanel(this));
 		this.setSize(1200, 500);
 	}
