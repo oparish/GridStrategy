@@ -4,12 +4,16 @@ import javax.swing.JComboBox;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerNumberModel;
 
-public class EnumBox extends JComboBox
+public class EnumBox<T> extends JComboBox
 {
 
-	public EnumBox(Object[] spinnerValues)
+	public EnumBox(T[] spinnerValues)
 	{
 		super(spinnerValues);
 	}
 
+	public void setEnumValue(T value)
+	{
+		this.setSelectedItem(value);
+	}
 }

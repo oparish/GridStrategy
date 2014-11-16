@@ -10,19 +10,27 @@ import javax.swing.JList;
 import javax.swing.JWindow;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import ai.CPlayer;
+import ai.Rule;
 import main.FileOperations;
 
-public class Assembler extends JFrame implements ActionListener, ChangeListener
+public class Assembler extends JFrame implements ActionListener, ChangeListener, ListSelectionListener
 {
+	ListPanel listPanel;
+	RulePanel rulePanel;
+	
 	public Assembler() throws IOException
 	{
 		super();
 		CPlayer cPlayer = FileOperations.loadCPlayer(this, true);
 		this.setLayout(new GridLayout(1,2));
-		this.add(new ListPanel(this, cPlayer));
-		this.add(new RulePanel(this));
+		this.listPanel = new ListPanel(this, cPlayer);
+		this.add(this.listPanel);
+		this.rulePanel = new RulePanel(this);
+		this.add(this.rulePanel);
 		this.setSize(1200, 500);
 	}
 	
@@ -43,8 +51,8 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener
 
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+	public void actionPerformed(ActionEvent e)
+	{
 		
 	}
 
@@ -52,6 +60,21 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener
 	@Override
 	public void stateChanged(ChangeEvent arg0) {
 		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void valueChanged(ListSelectionEvent e)
+	{
+		AssemblerList<?> list = ((AssemblerList<?>) e.getSource());
+		AssemblerListType type = list.getType();
+		switch(type)
+		{
+			case RULE:
+				this.rulePanel.changeSelectedRule((Rule) list.getSelectedValue());
+				break;
+		}
 		
 	}
 }

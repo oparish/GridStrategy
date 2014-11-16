@@ -7,6 +7,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeListener;
 
+import ai.Condition;
+
 public class ConditionPanel extends JPanel
 {
 	public ConditionPanel(ChangeListener listener)
@@ -16,5 +18,10 @@ public class ConditionPanel extends JPanel
 		this.add(new List());
 		this.add(new List());
 		this.add(new ConditionFieldPanel(listener));
+	}
+	
+	public void changeCondition(Condition condition)
+	{
+		
 	}
 }
