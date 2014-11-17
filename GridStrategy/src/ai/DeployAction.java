@@ -22,16 +22,6 @@ public class DeployAction extends Action
 		super(integers);
 	}
 	
-	public UnitType getUnitType() {
-		int value = this.actionFields.get(ActionFieldName.UNITTYPE);
-		return UnitType.values()[value];
-	}
-	
-	public void setUnitType(UnitType unitType)
-	{
-		this.actionFields.put(ActionFieldName.UNITTYPE, unitType.ordinal());
-	}
-	
 	public String toString()
 	{
 		return ("		Deploy Action: " + this.getUnitType().toString() + ", " + this.getColumnPos());

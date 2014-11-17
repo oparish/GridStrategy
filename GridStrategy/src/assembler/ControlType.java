@@ -1,6 +1,6 @@
 package assembler;
 
-public enum ConditionSpinnerType 
+public enum ControlType 
 {
 	COLUMN("Column"), UNIT_TYPE("Unit Type"), NUMBER("Number"), ROW("Row"), CONDITION_TYPE("Condition Type"), UNIT_PLAYER("Unit Player"), 
 	ACTION_TYPE("Action Type");
@@ -11,7 +11,7 @@ public enum ConditionSpinnerType
 		return text;
 	}
 
-	private ConditionSpinnerType(String text)
+	private ControlType(String text)
 	{
 		this.text = text;
 	}

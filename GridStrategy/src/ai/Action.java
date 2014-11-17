@@ -46,6 +46,16 @@ public abstract class Action
 		}
 	}
 	
+	public UnitType getUnitType() {
+		int value = this.actionFields.get(ActionFieldName.UNITTYPE);
+		return UnitType.values()[value];
+	}
+	
+	public void setUnitType(UnitType unitType)
+	{
+		this.actionFields.put(ActionFieldName.UNITTYPE, unitType.ordinal());
+	}
+	
 	public static ActionFieldName[] getActionFieldNames(Class<? extends Action> actionClass)
 	{
 		return Action.actionFieldNames.get(actionClass);

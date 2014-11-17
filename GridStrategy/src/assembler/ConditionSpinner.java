@@ -6,9 +6,9 @@ import javax.swing.SpinnerNumberModel;
 
 public class ConditionSpinner extends JSpinner
 {
-	ConditionSpinnerType spinnerType;
+	ControlType spinnerType;
 	
-	public ConditionSpinner(ConditionSpinnerType spinnerType, AbstractSpinnerModel abstractSpinnerModel)
+	public ConditionSpinner(ControlType spinnerType, AbstractSpinnerModel abstractSpinnerModel)
 	{
 		super(abstractSpinnerModel);
 		this.spinnerType = spinnerType;

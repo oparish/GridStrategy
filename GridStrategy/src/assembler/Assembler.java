@@ -49,18 +49,19 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 	}
 
-
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		
+		Object source = e.getSource();
+		this.rulePanel.processPanelControlEvent(source);
 	}
 
 
 	@Override
-	public void stateChanged(ChangeEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void stateChanged(ChangeEvent e)
+	{
+		Object source = e.getSource();
+		this.rulePanel.processPanelControlEvent(source);	
 	}
 
 

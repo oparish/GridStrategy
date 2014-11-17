@@ -11,13 +11,21 @@ import ai.Condition;
 
 public class ConditionPanel extends JPanel
 {
-	public ConditionPanel(ChangeListener listener)
+	private ConditionFieldPanel conditionFieldPanel;
+	
+	public ConditionPanel(Assembler assembler)
 	{
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		this.add(new List());
 		this.add(new List());
-		this.add(new ConditionFieldPanel(listener));
+		this.conditionFieldPanel = new ConditionFieldPanel(assembler);
+		this.add(this.conditionFieldPanel);
+	}
+	
+	public ConditionFieldPanel getConditionFieldPanel()
+	{
+		return this.conditionFieldPanel;
 	}
 	
 	public void changeCondition(Condition condition)

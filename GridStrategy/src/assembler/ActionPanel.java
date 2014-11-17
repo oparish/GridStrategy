@@ -21,26 +21,33 @@ import main.Main;
 
 public class ActionPanel extends JPanel
 {
-	private final EnumBox<ActionType> actionTypeBox;
+	private final JLabel actionTypeBox;
 	private final EnumBox<UnitType> unitTypeBox;
 	private final EnumBox<ColumnSearchCondition> conditionBox;
 	private final NumberSpinner positionSpinner;
 	
-	public ActionPanel(ChangeListener listener)
+	public ActionPanel(Assembler assembler)
 	{
 		super();
 		this.setLayout(new GridBagLayout());
-		this.actionTypeBox = new EnumBox<ActionType>(ActionType.values());
-		this.setupRow(ConditionSpinnerType.ACTION_TYPE, this.actionTypeBox, 0);
+		this.actionTypeBox = new JLabel("");
+		this.setupRow(ControlType.ACTION_TYPE, this.actionTypeBox, 0);
 		
-		this.positionSpinner = new NumberSpinner(ConditionSpinnerType.NUMBER, 0, Main.GRIDWIDTH);
-		this.setupRow(ConditionSpinnerType.COLUMN, this.positionSpinner, 1);
+		this.positionSpinner = new NumberSpinner(0, Main.GRIDWIDTH, ControlType.COLUMN, PanelType.ACTION, assembler);
+		this.setupRow(ControlType.COLUMN, this.positionSpinner, 1);
 
-		this.unitTypeBox = new EnumBox<UnitType>(UnitType.values());
-		this.setupRow(ConditionSpinnerType.UNIT_TYPE, this.unitTypeBox, 2);
+		this.unitTypeBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.ACTION, assembler);
+		this.setupRow(ControlType.UNIT_TYPE, this.unitTypeBox, 2);
 		
-		this.conditionBox = new EnumBox<ColumnSearchCondition>(ColumnSearchCondition.values());
-		this.setupRow(ConditionSpinnerType.CONDITION_TYPE, this.conditionBox, 3);
+		this.conditionBox = new EnumBox<ColumnSearchCondition>(ColumnSearchCondition.values(), ControlType.CONDITION_TYPE, PanelType.ACTION, assembler);
+		this.setupRow(ControlType.CONDITION_TYPE, this.conditionBox, 3);
+	}
+	
+	public void enableBoxes()
+	{
+		this.actionTypeBox.setEnabled(true);
+		this.positionSpinner.setEnabled(true);
+		this.unitTypeBox.setEnabled(true);
 	}
 	
 	public void changeAction(Action action)
@@ -54,7 +61,7 @@ public class ActionPanel extends JPanel
 		{
 			type = ActionType.ACTIVATE_ACTION;
 		}
-		this.actionTypeBox.setEnumValue(type);
+		this.actionTypeBox.setText(type.name());
 	}
 	
 	public void changePosition(int position)
@@ -88,7 +95,7 @@ public class ActionPanel extends JPanel
 		return c;
 	}
 	
-	private void setupRow(ConditionSpinnerType conditionSpinnerType, JComponent component, int y)
+	private void setupRow(ControlType conditionSpinnerType, JComponent component, int y)
 	{
 		this.add(new JLabel(conditionSpinnerType.getText()), this.getGridBagConstraints(0, y, 1));
 		this.add(component, this.getGridBagConstraints(1, y, 2));
