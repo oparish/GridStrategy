@@ -32,4 +32,16 @@ public class NumberSpinner extends ConditionSpinner implements PanelControl
 	public PanelType getPanelType() {
 		return panelType;
 	}
+	
+	private boolean dirty;
+	
+	public void setDirty(boolean dirty)
+	{
+		this.dirty = dirty;
+	}
+	
+	public boolean getDirty()
+	{
+		return this.dirty;
+	}
 }

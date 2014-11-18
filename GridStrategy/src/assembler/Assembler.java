@@ -29,7 +29,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.setLayout(new GridLayout(1,2));
 		this.listPanel = new ListPanel(this, cPlayer);
 		this.add(this.listPanel);
-		this.rulePanel = new RulePanel(this);
+		this.rulePanel = new RulePanel(this, this.listPanel);
 		this.add(this.rulePanel);
 		this.setSize(1200, 500);
 	}
@@ -68,14 +68,16 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	@Override
 	public void valueChanged(ListSelectionEvent e)
 	{
-		AssemblerList<?> list = ((AssemblerList<?>) e.getSource());
-		AssemblerListType type = list.getType();
-		switch(type)
+		if (e.getValueIsAdjusting())
 		{
-			case RULE:
-				this.rulePanel.changeSelectedRule((Rule) list.getSelectedValue());
-				break;
+			AssemblerList<?> list = ((AssemblerList<?>) e.getSource());
+			AssemblerListType type = list.getType();
+			switch(type)
+			{
+				case RULE:
+					this.rulePanel.changeSelectedRule((Rule) list.getSelectedValue(), list.getSelectedIndex());
+					break;
+			}
 		}
-		
 	}
 }

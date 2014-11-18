@@ -18,16 +18,24 @@ import ai.Rule;
 
 public class ListPanel extends JPanel
 {	
+	private AssemblerList<Rule> ruleList;
+	
 	public ListPanel(Assembler assembler, CPlayer cPlayer)
 	{
 		super();
 		this.setLayout(new GridLayout(2, 1));
 		ArrayList<Rule> rules = cPlayer.getRules();
-		AssemblerList<Rule> testList = new AssemblerList<Rule>(rules.toArray(new Rule[rules.size()]), AssemblerListType.RULE);
-		testList.setCellRenderer(new RuleListCellRenderer());
-		testList.addListSelectionListener(assembler);
-		this.add(new JScrollPane(testList));
+		this.ruleList = new AssemblerList<Rule>(rules.toArray(new Rule[rules.size()]), AssemblerListType.RULE);
+		ruleList.setCellRenderer(new RuleListCellRenderer());
+		ruleList.addListSelectionListener(assembler);
+		this.add(new JScrollPane(ruleList));
 		this.add(new ButtonPanel(assembler));
+	}
+	
+	public void setListIndex(int index)
+	{
+		System.out.println(index);
+		this.ruleList.setSelectedIndex(index);
 	}
 	
 	private class RuleListCellRenderer implements ListCellRenderer<Rule>

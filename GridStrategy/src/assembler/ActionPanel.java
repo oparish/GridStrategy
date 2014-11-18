@@ -21,7 +21,7 @@ import main.Main;
 
 public class ActionPanel extends JPanel
 {
-	private final JLabel actionTypeBox;
+	private final JLabel actionTypeLabel;
 	private final EnumBox<UnitType> unitTypeBox;
 	private final EnumBox<ColumnSearchCondition> conditionBox;
 	private final NumberSpinner positionSpinner;
@@ -30,8 +30,8 @@ public class ActionPanel extends JPanel
 	{
 		super();
 		this.setLayout(new GridBagLayout());
-		this.actionTypeBox = new JLabel("");
-		this.setupRow(ControlType.ACTION_TYPE, this.actionTypeBox, 0);
+		this.actionTypeLabel = new JLabel("");
+		this.setupRow(ControlType.ACTION_TYPE, this.actionTypeLabel, 0);
 		
 		this.positionSpinner = new NumberSpinner(0, Main.GRIDWIDTH, ControlType.COLUMN, PanelType.ACTION, assembler);
 		this.setupRow(ControlType.COLUMN, this.positionSpinner, 1);
@@ -43,9 +43,16 @@ public class ActionPanel extends JPanel
 		this.setupRow(ControlType.CONDITION_TYPE, this.conditionBox, 3);
 	}
 	
+	public boolean isDirty()
+	{
+		if (unitTypeBox.getDirty() || conditionBox.getDirty() || positionSpinner.getDirty())
+			return true;
+		else
+			return false;
+	}
+	
 	public void enableBoxes()
 	{
-		this.actionTypeBox.setEnabled(true);
 		this.positionSpinner.setEnabled(true);
 		this.unitTypeBox.setEnabled(true);
 	}
@@ -61,7 +68,10 @@ public class ActionPanel extends JPanel
 		{
 			type = ActionType.ACTIVATE_ACTION;
 		}
-		this.actionTypeBox.setText(type.name());
+		this.actionTypeLabel.setText(type.name());
+		this.positionSpinner.setDirty(false);
+		this.unitTypeBox.setDirty(false);
+		this.conditionBox.setDirty(false);
 	}
 	
 	public void changePosition(int position)
