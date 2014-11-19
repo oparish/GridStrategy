@@ -13,19 +13,13 @@ public class ConditionPanel extends JPanel
 {
 	private ConditionFieldPanel conditionFieldPanel;
 	
-	public ConditionPanel(Assembler assembler)
+	public ConditionPanel(ConditionFieldPanel conditionFieldPanel)
 	{
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		this.add(new List());
 		this.add(new List());
-		this.conditionFieldPanel = new ConditionFieldPanel(assembler);
-		this.add(this.conditionFieldPanel);
-	}
-	
-	public ConditionFieldPanel getConditionFieldPanel()
-	{
-		return this.conditionFieldPanel;
+		this.add(conditionFieldPanel);
 	}
 	
 	public void changeCondition(Condition condition)

@@ -4,32 +4,51 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JWindow;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import data.UnitType;
+import ai.Action;
+import ai.ActivateAction;
 import ai.CPlayer;
+import ai.ColumnSearchCondition;
+import ai.DeployAction;
 import ai.Rule;
 import main.FileOperations;
 
 public class Assembler extends JFrame implements ActionListener, ChangeListener, ListSelectionListener
 {
-	ListPanel listPanel;
 	RulePanel rulePanel;
+	AssemblerList<Rule> ruleList;
+	private Rule selectedRule;
+	private ConditionPanel conditionPanel;
+	private ConditionFieldPanel conditionFieldPanel;
+	private ActionPanel actionPanel;
+	private ListPanel listPanel;
+	private boolean changingRule;
+	private int selectedListIndex;
 	
 	public Assembler() throws IOException
 	{
 		super();
 		CPlayer cPlayer = FileOperations.loadCPlayer(this, true);
 		this.setLayout(new GridLayout(1,2));
-		this.listPanel = new ListPanel(this, cPlayer);
+		ArrayList<Rule> rules = cPlayer.getRules();
+		this.ruleList = new AssemblerList<Rule>(rules.toArray(new Rule[rules.size()]), AssemblerListType.RULE);
+		this.listPanel = new ListPanel(this, this.ruleList);
+		this.actionPanel = new ActionPanel(this);
+		this.conditionFieldPanel = new ConditionFieldPanel(this);
+		this.conditionPanel = new ConditionPanel(this.conditionFieldPanel);
 		this.add(this.listPanel);
-		this.rulePanel = new RulePanel(this, this.listPanel);
+		this.rulePanel = new RulePanel(this, this.conditionPanel, this.actionPanel);
 		this.add(this.rulePanel);
 		this.setSize(1200, 500);
 	}
@@ -48,12 +67,117 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			e.printStackTrace();
 		}
 	}
+	
+	private void changeAction(PanelControl panelControl, ControlType controlType)
+	{
+		Action action = this.selectedRule.getAction();
+		boolean changed;
+		switch(controlType)
+		{
+		case COLUMN:
+			changed = ((NumberSpinner) panelControl).getNumber() != action.getColumnPos();
+			break;
+		case UNIT_TYPE:
+			changed = ((EnumBox<UnitType>) panelControl).getEnumValue() != action.getUnitType();
+			break;
+		case CONDITION_TYPE:
+			changed = ((EnumBox<ColumnSearchCondition>) panelControl).getEnumValue() != ((ActivateAction) action).getColumnSearchCondition();
+			break;
+		default:
+			changed = true;
+		}
+		panelControl.setDirty(changed);
+	}
+	
+	private void completeActionChange(PanelControl panelControl, ControlType controlType)
+	{
+		Action action = this.selectedRule.getAction();
+		switch(controlType)
+		{
+		case COLUMN:
+			action.setColumnPos(((NumberSpinner) panelControl).getNumber());
+			break;
+		case UNIT_TYPE:
+			action.setUnitType(((EnumBox<UnitType>) panelControl).getEnumValue());
+			break;
+		case CONDITION_TYPE:
+			((ActivateAction) action).setColumnSearchCondition(((EnumBox<ColumnSearchCondition>) panelControl).getEnumValue());
+			break;
+		}
+	}
+	
+	public void processPanelControlEvent(Object source)
+	{
+		if (source instanceof PanelControl && !this.changingRule)
+		{
+			PanelControl panelControl = (PanelControl) source;
+			ControlType controlType = panelControl.getControlType();
+			PanelType panelType = panelControl.getPanelType();
+			switch(panelType)
+			{
+				case ACTION:
+					this.changeAction(panelControl, controlType);
+					break;
+				case CONDITION:
+					this.changeCondition(panelControl, controlType);
+					break;
+			}
+		}
+	}
+	
+	private void changeCondition(PanelControl panelControl, ControlType controlType)
+	{
+		
+	}
+	
+	private boolean showOptionPane(String title, String message)
+	{
+		return JOptionPane.showOptionDialog(this, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, 
+				null, new String[]{"Yes", "No"}, null) == 0;
+	}
+	
+	public void changeSelectedRule(Rule rule, int index)
+	{
+		if (this.changingRule)
+			return;
+		this.changingRule = true;
+		if (this.actionPanel.isDirty())
+		{
+			boolean result = this.showOptionPane("Action Changed", "Really cancel action changes?");
+			if (!result)
+			{
+				this.ruleList.setSelectedIndex(this.selectedListIndex);
+				this.changingRule = false;
+				return;
+			}
+		}
+
+		this.selectedRule = rule;
+		this.conditionPanel.changeCondition(rule.getCondition());
+		DeployAction action = (DeployAction) rule.getAction();
+		this.actionPanel.changeAction(action);
+		this.actionPanel.changePosition(action.getColumnPos());
+		this.actionPanel.changeUnitTypeBox(action.getUnitType());
+		if (action instanceof ActivateAction)
+		{
+			ActivateAction activateAction = (ActivateAction) action;
+			this.actionPanel.changeConditionBox(activateAction.getColumnSearchCondition());
+		}
+		else
+		{
+			this.actionPanel.disablePositionBox();
+		}
+		this.changingRule = false;
+		this.actionPanel.enableBoxes();
+		this.conditionFieldPanel.enableBoxes();
+		this.selectedListIndex = index;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
 		Object source = e.getSource();
-		this.rulePanel.processPanelControlEvent(source);
+		this.processPanelControlEvent(source);
 	}
 
 
@@ -61,7 +185,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	public void stateChanged(ChangeEvent e)
 	{
 		Object source = e.getSource();
-		this.rulePanel.processPanelControlEvent(source);	
+		this.processPanelControlEvent(source);	
 	}
 
 
@@ -75,7 +199,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			switch(type)
 			{
 				case RULE:
-					this.rulePanel.changeSelectedRule((Rule) list.getSelectedValue(), list.getSelectedIndex());
+					this.changeSelectedRule((Rule) list.getSelectedValue(), list.getSelectedIndex());
 					break;
 			}
 		}
