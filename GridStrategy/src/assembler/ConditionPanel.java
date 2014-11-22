@@ -21,9 +21,4 @@ public class ConditionPanel extends JPanel
 		this.add(new List());
 		this.add(conditionFieldPanel);
 	}
-	
-	public void changeCondition(Condition condition)
-	{
-		
-	}
 }

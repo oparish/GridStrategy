@@ -2,6 +2,7 @@ package assembler;
 
 import java.awt.event.ActionListener;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerNumberModel;
@@ -49,5 +50,28 @@ public class EnumBox<T> extends JComboBox implements PanelControl
 	public boolean getDirty()
 	{
 		return this.dirty;
+	}
+
+	private JCheckBox checkbox;
+	
+	@Override
+	public void addCheckBox(JCheckBox checkbox)
+	{
+		this.checkbox = checkbox;
+	}
+	
+	public void setValue(T value)
+	{
+		if (value == null)
+		{
+			this.checkbox.setSelected(false);
+			this.setEnabled(false);
+		}
+		else
+		{
+			this.checkbox.setSelected(true);
+			this.setEnumValue(value);
+			this.setEnabled(true);
+		}
 	}
 }

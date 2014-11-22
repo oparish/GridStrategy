@@ -2,6 +2,7 @@ package assembler;
 
 import java.awt.event.ActionListener;
 
+import javax.swing.JCheckBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeListener;
@@ -43,5 +44,29 @@ public class NumberSpinner extends ConditionSpinner implements PanelControl
 	public boolean getDirty()
 	{
 		return this.dirty;
+	}
+
+	public void setValue(Integer value)
+	{
+		if (value == null)
+		{
+			this.checkbox.setSelected(false);
+			this.setEnabled(false);
+		}
+		else
+		{
+			super.setValue(value);
+			if (this.checkbox != null)
+				this.checkbox.setSelected(true);
+			this.setEnabled(true);
+		}
+	}
+	
+	private JCheckBox checkbox;
+	
+	@Override
+	public void addCheckBox(JCheckBox checkbox)
+	{
+		this.checkbox = checkbox;
 	}
 }

@@ -3,11 +3,14 @@ package assembler;
 import java.awt.GridLayout;
 
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeListener;
 
+import ai.ColumnCondition;
 import ai.Condition;
 import ai.ConditionType;
 import data.UnitType;
@@ -25,34 +28,51 @@ public class ConditionFieldPanel extends JPanel
 	public ConditionFieldPanel(Assembler assembler)
 	{
 		super();
-		this.setLayout(new GridLayout(6, 2));
-		this.add(new JLabel(ControlType.COLUMN.getText()));
+		this.setLayout(new GridLayout(7, 3));
+		
 		this.columnSpinner = new NumberSpinner(0, Main.GRIDWIDTH - 1, ControlType.COLUMN, PanelType.CONDITION, assembler);
-		this.add(this.columnSpinner);
-		this.add(new JLabel(ControlType.UNIT_TYPE.getText()));
 		this.unitBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.CONDITION, assembler);
-		this.add(this.unitBox);
-		this.add(new JLabel(ControlType.NUMBER.getText()));
 		this.numberSpinner = new NumberSpinner(0, Main.GRIDHEIGHT, ControlType.NUMBER, PanelType.CONDITION, assembler);
-		this.add(this.numberSpinner);
-		this.add(new JLabel(ControlType.ROW.getText()));
 		this.rowSpinner = new NumberSpinner(0, Main.GRIDHEIGHT - 1, ControlType.ROW, PanelType.CONDITION, assembler);
-		this.add(this.rowSpinner);	
-		this.add(new JLabel(ControlType.CONDITION_TYPE.getText()));
 		this.conditionBox = new EnumBox<ConditionType>(ConditionType.values(), ControlType.CONDITION_TYPE, PanelType.CONDITION, assembler);
-		this.add(this.conditionBox);		
-		this.add(new JLabel("Player"));
 		this.playerBox = new EnumBox<Object>(new Object[]{"Self", "Enemy"}, ControlType.UNIT_PLAYER, PanelType.CONDITION, assembler);
-		this.add(this.playerBox);	
+		
+		this.addControl("Test", new JLabel("Test"), false);
+		this.addControl(ControlType.COLUMN.getText(), this.columnSpinner, true);
+		this.addControl(ControlType.UNIT_TYPE.getText(), this.unitBox, true);
+		this.addControl(ControlType.NUMBER.getText(), this.numberSpinner, false);
+		this.addControl(ControlType.ROW.getText(), this.rowSpinner, true);
+		this.addControl(ControlType.CONDITION_TYPE.getText(), this.conditionBox, true);
+		this.addControl("Player", this.playerBox, true);
 	}
 	
-	public void enableBoxes()
+	public void changeCondition(Condition condition)
 	{
-		this.columnSpinner.setEnabled(true);
-		this.unitBox.setEnabled(true);
-		this.numberSpinner.setEnabled(true);
-		this.rowSpinner.setEnabled(true);
-		this.conditionBox.setEnabled(true);
-		this.playerBox.setEnabled(true);
+		if (condition instanceof ColumnCondition)
+		{
+			ColumnCondition columnCondition = (ColumnCondition) condition;
+			this.numberSpinner.setValue(columnCondition.getNumber());
+			this.columnSpinner.setValue(columnCondition.getColumn());
+			this.unitBox.setValue(columnCondition.getUnitType());
+			this.rowSpinner.setValue(columnCondition.getRow());
+			this.conditionBox.setValue(columnCondition.getConditionType());
+			this.playerBox.setValue(columnCondition.getUnitPlayer());
+		}
+	}
+		
+	private void addControl(String text, JComponent control, boolean checkBox)
+	{
+		this.add(new JLabel(text));
+		this.add(control);
+		if (checkBox)
+		{
+			JCheckBox checkbox = new JCheckBox();
+			this.add(checkbox);
+			((PanelControl) control).addCheckBox(checkbox);
+		}
+		else
+		{
+			this.add(new JPanel());
+		}
 	}
 }

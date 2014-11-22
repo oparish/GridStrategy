@@ -153,7 +153,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 
 		this.selectedRule = rule;
-		this.conditionPanel.changeCondition(rule.getCondition());
+		this.conditionFieldPanel.changeCondition(rule.getCondition());
 		DeployAction action = (DeployAction) rule.getAction();
 		this.actionPanel.changeAction(action);
 		this.actionPanel.changePosition(action.getColumnPos());
@@ -169,7 +169,6 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 		this.changingRule = false;
 		this.actionPanel.enableBoxes();
-		this.conditionFieldPanel.enableBoxes();
 		this.selectedListIndex = index;
 	}
 
