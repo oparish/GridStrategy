@@ -233,4 +233,10 @@ public class ColumnCondition extends Condition
 		}
 		return units;
 	}
+
+	@Override
+	public String getConditionClassName()
+	{
+		return "Column Condition";
+	}
 }

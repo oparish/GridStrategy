@@ -17,9 +17,7 @@ import ai.CPlayer;
 import ai.Rule;
 
 public class ListPanel extends JPanel
-{	
-	private AssemblerList<Rule> ruleList;
-	
+{		
 	public ListPanel(Assembler assembler, AssemblerList<Rule> ruleList)
 	{
 		super();

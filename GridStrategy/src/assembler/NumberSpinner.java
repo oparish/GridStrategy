@@ -48,6 +48,8 @@ public class NumberSpinner extends ConditionSpinner implements PanelControl
 
 	public void setValue(Integer value)
 	{
+		if (this.checkbox != null)
+			this.checkbox.setEnabled(true);
 		if (value == null)
 		{
 			this.checkbox.setSelected(false);
@@ -60,6 +62,13 @@ public class NumberSpinner extends ConditionSpinner implements PanelControl
 				this.checkbox.setSelected(true);
 			this.setEnabled(true);
 		}
+	}
+	
+	public void switchEnabled(boolean value)
+	{
+		this.setEnabled(value);
+		if (this.checkbox != null)
+			this.checkbox.setEnabled(value);
 	}
 	
 	private JCheckBox checkbox;

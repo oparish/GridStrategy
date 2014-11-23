@@ -102,6 +102,7 @@ public abstract class Condition
 	protected abstract boolean runCheck(ObservationBatch observationBatch);
 	
 	public abstract String toString(int depth);
+	public abstract String getConditionClassName();
 	
 	public ArrayList<Byte> toBytes()
 	{

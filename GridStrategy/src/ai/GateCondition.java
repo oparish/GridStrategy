@@ -12,8 +12,16 @@ public class GateCondition extends Condition
 {	
 	private final static ConditionFieldName[] conditionFieldNames = {ConditionFieldName.GATETYPE};
 	private final Condition condition1;
+	public Condition getCondition1() {
+		return condition1;
+	}
+
 	private final Condition condition2;
 	
+	public Condition getCondition2() {
+		return condition2;
+	}
+
 	public GateCondition(Condition condition1, Condition condition2, 
 			GateType gateType, boolean isPlayer1)
 	{
@@ -87,5 +95,11 @@ public class GateCondition extends Condition
 		headerByteList.addAll(this.condition1.getHeaderBytes());
 		headerByteList.addAll(this.condition2.getHeaderBytes());
 		return headerByteList;
+	}
+	
+	@Override
+	public String getConditionClassName()
+	{
+		return "Gate Condition";
 	}
 }

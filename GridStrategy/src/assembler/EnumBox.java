@@ -60,6 +60,12 @@ public class EnumBox<T> extends JComboBox implements PanelControl
 		this.checkbox = checkbox;
 	}
 	
+	public void switchEnabled(boolean value)
+	{
+		this.setEnabled(value);
+		this.checkbox.setEnabled(value);
+	}
+	
 	public void setValue(T value)
 	{
 		if (value == null)

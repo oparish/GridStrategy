@@ -23,6 +23,12 @@ public class AssemblerList<T> extends JList<T>
 		this.type = type;
 	}
 	
+	public AssemblerList(AssemblerListType type)
+	{
+		super();
+		this.type = type;
+	}
+	
 	public static JLabel getSelectedLabel(String text)
 	{
 		JLabel label = new JLabel(text);

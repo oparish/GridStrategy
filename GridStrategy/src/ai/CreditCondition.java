@@ -64,5 +64,11 @@ public class CreditCondition extends Condition
 		return "		" + "Credit Condition: " + this.getConditionType() + 
 				", Number: " + this.getNumber();
 	}
+	
+	@Override
+	public String getConditionClassName()
+	{
+		return "Credit Condition";
+	}
 
 }

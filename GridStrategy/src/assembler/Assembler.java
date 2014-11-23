@@ -1,5 +1,7 @@
 package assembler;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +22,9 @@ import ai.Action;
 import ai.ActivateAction;
 import ai.CPlayer;
 import ai.ColumnSearchCondition;
+import ai.Condition;
 import ai.DeployAction;
+import ai.GateCondition;
 import ai.Rule;
 import main.FileOperations;
 
@@ -40,19 +44,28 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	{
 		super();
 		CPlayer cPlayer = FileOperations.loadCPlayer(this, true);
-		this.setLayout(new GridLayout(1,2));
+		this.setLayout(new GridBagLayout());
 		ArrayList<Rule> rules = cPlayer.getRules();
 		this.ruleList = new AssemblerList<Rule>(rules.toArray(new Rule[rules.size()]), AssemblerListType.RULE);
 		this.listPanel = new ListPanel(this, this.ruleList);
 		this.actionPanel = new ActionPanel(this);
 		this.conditionFieldPanel = new ConditionFieldPanel(this);
 		this.conditionPanel = new ConditionPanel(this.conditionFieldPanel);
-		this.add(this.listPanel);
+		this.add(this.listPanel, this.getGridBagConstraints(0, 0, 1));
 		this.rulePanel = new RulePanel(this, this.conditionPanel, this.actionPanel);
-		this.add(this.rulePanel);
-		this.setSize(1200, 500);
+		this.add(this.rulePanel, this.getGridBagConstraints(1, 0, 1));
+		this.setSize(2400, 500);
 	}
 	
+	private GridBagConstraints getGridBagConstraints(int x, int y, int width)
+	{
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridwidth = width;
+		c.gridy = y;
+		c.gridx = x;
+		c.fill = GridBagConstraints.VERTICAL;
+		return c;
+	}
 	
 	public static void main(String args[])
 	{
@@ -153,7 +166,13 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 
 		this.selectedRule = rule;
-		this.conditionFieldPanel.changeCondition(rule.getCondition());
+		Condition condition = rule.getCondition();
+		this.conditionFieldPanel.changeCondition(condition);
+		if (condition instanceof GateCondition)
+			this.conditionPanel.updateGateList((GateCondition) condition);
+		else
+			this.conditionPanel.clearGateList();
+		
 		DeployAction action = (DeployAction) rule.getAction();
 		this.actionPanel.changeAction(action);
 		this.actionPanel.changePosition(action.getColumnPos());
