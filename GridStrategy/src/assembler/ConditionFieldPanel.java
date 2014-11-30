@@ -53,7 +53,7 @@ public class ConditionFieldPanel extends JPanel
 	}
 	
 	public void changeCondition(Condition condition)
-	{
+	{	
 		if (condition instanceof GateCondition)
 			this.conditionTypeLabel.setText("Gate Condition " + ((GateCondition) condition).getGateType().name());
 		else

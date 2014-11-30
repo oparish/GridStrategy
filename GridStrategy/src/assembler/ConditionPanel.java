@@ -24,13 +24,14 @@ public class ConditionPanel extends JPanel
 	private AssemblerList<Condition> hierarchyList;
 	private AssemblerList<Condition> gateList;
 	
-	public ConditionPanel(ConditionFieldPanel conditionFieldPanel)
+	public ConditionPanel(Assembler assembler, ConditionFieldPanel conditionFieldPanel)
 	{
 		super();
 		this.setLayout(new GridLayout(1, 3));
 		this.hierarchyList = new AssemblerList<Condition>(new Condition[]{}, AssemblerListType.CONDITION);
 		this.gateList = new AssemblerList<Condition>(new Condition[]{}, AssemblerListType.CONDITION);
 		this.gateList.setCellRenderer(new GateListCellRenderer());
+		this.gateList.addListSelectionListener(assembler);
 		this.add(new JScrollPane(this.hierarchyList));
 		this.add(new JScrollPane(this.gateList));
 		this.add(conditionFieldPanel);
