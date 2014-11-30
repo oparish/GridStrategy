@@ -2,5 +2,5 @@ package assembler;
 
 public enum AssemblerListType 
 {
-	RULE, CONDITION;
+	RULE, GATE, HIERARCHY;
 }

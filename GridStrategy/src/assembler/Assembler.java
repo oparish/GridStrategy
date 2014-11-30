@@ -33,12 +33,12 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	RulePanel rulePanel;
 	AssemblerList<Rule> ruleList;
 	private Rule selectedRule;
+	private Condition selectedCondition;
 	private ConditionPanel conditionPanel;
 	private ConditionFieldPanel conditionFieldPanel;
 	private ActionPanel actionPanel;
 	private ListPanel listPanel;
-	private boolean changingRule;
-	private boolean changingCondition;
+	private boolean changingControls;
 	private int selectedListIndex;
 	
 	public Assembler() throws IOException
@@ -122,7 +122,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	
 	public void processPanelControlEvent(Object source)
 	{
-		if (source instanceof PanelControl && !this.changingRule)
+		if (source instanceof PanelControl && !this.changingControls)
 		{
 			PanelControl panelControl = (PanelControl) source;
 			ControlType controlType = panelControl.getControlType();
@@ -152,16 +152,12 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	
 	private void changeSelectedRule(Rule rule, int index)
 	{
-		if (this.changingRule)
-			return;
-		this.changingRule = true;
 		if (this.actionPanel.isDirty())
 		{
 			boolean result = this.showOptionPane("Action Changed", "Really cancel action changes?");
 			if (!result)
 			{
 				this.ruleList.setSelectedIndex(this.selectedListIndex);
-				this.changingRule = false;
 				return;
 			}
 		}
@@ -183,22 +179,19 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		{
 			this.actionPanel.disablePositionBox();
 		}
-		this.changingRule = false;
+		this.conditionPanel.clearHierarchyList();
 		this.actionPanel.enableBoxes();
 		this.selectedListIndex = index;
 	}
 	
 	private void changeSelectedCondition(Condition condition)
 	{
-		if (this.changingCondition)
-			return;
-		this.changingCondition = true;
+		this.selectedCondition = condition;
 		this.conditionFieldPanel.changeCondition(condition);
 		if (condition instanceof GateCondition)
 			this.conditionPanel.updateGateList((GateCondition) condition);
 		else
 			this.conditionPanel.clearGateList();
-		this.changingCondition = false;
 	}
 
 	@Override
@@ -220,6 +213,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	@Override
 	public void valueChanged(ListSelectionEvent e)
 	{
+		if (this.changingControls)
+			return;
+		this.changingControls = true;
 		if (e.getValueIsAdjusting())
 		{
 			AssemblerList<?> list = ((AssemblerList<?>) e.getSource());
@@ -229,10 +225,16 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 				case RULE:
 					this.changeSelectedRule((Rule) list.getSelectedValue(), list.getSelectedIndex());
 					break;
-				case CONDITION:
+				case GATE:
+					this.conditionPanel.addToHierarchyList(this.selectedCondition);
 					this.changeSelectedCondition((Condition) list.getSelectedValue());
+					break;
+				case HIERARCHY:
+					this.changeSelectedCondition((Condition) list.getSelectedValue());
+					this.conditionPanel.truncateHierarchyList(list.getSelectedIndex());
 					break;
 			}
 		}
+		this.changingControls = false;
 	}
 }
