@@ -174,8 +174,6 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		default:
 			changed = true;
 		}
-		System.out.println(panelControl);
-		System.out.println(changed);
 		panelControl.setDirty(changed);
 	}
 	
