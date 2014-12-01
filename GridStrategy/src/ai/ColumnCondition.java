@@ -12,7 +12,7 @@ import main.Main;
 import data.Unit;
 import data.UnitType;
 
-public class ColumnCondition extends Condition
+public class ColumnCondition extends Condition implements NumberCondition
 {		
 	public Integer getRow() {
 		return this.conditionFields.get(ConditionFieldName.ROW);

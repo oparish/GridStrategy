@@ -28,7 +28,7 @@ public class ConditionFieldPanel extends JPanel
 	private NumberSpinner numberSpinner;
 	private NumberSpinner rowSpinner;
 	private EnumBox<ConditionType> conditionBox;
-	private EnumBox<Object> playerBox;
+	private EnumBox<PlayerEnum> playerBox;
 	
 	public ConditionFieldPanel(Assembler assembler)
 	{
@@ -41,7 +41,7 @@ public class ConditionFieldPanel extends JPanel
 		this.numberSpinner = new NumberSpinner(0, Main.GRIDHEIGHT, ControlType.NUMBER, PanelType.CONDITION, assembler);
 		this.rowSpinner = new NumberSpinner(0, Main.GRIDHEIGHT - 1, ControlType.ROW, PanelType.CONDITION, assembler);
 		this.conditionBox = new EnumBox<ConditionType>(ConditionType.values(), ControlType.CONDITION_TYPE, PanelType.CONDITION, assembler);
-		this.playerBox = new EnumBox<Object>(new Object[]{"Self", "Enemy"}, ControlType.UNIT_PLAYER, PanelType.CONDITION, assembler);
+		this.playerBox = new EnumBox<PlayerEnum>(PlayerEnum.values(), ControlType.UNIT_PLAYER, PanelType.CONDITION, assembler);
 		
 		this.addControl("Test", this.conditionTypeLabel, false);
 		this.addControl(ControlType.COLUMN.getText(), this.columnSpinner, true);
@@ -67,7 +67,10 @@ public class ConditionFieldPanel extends JPanel
 			this.unitBox.setValue(columnCondition.getUnitType());
 			this.rowSpinner.setValue(columnCondition.getRow());
 			this.conditionBox.setValue(columnCondition.getConditionType());
-			this.playerBox.setValue(columnCondition.getUnitPlayer());
+			if (columnCondition.getUnitPlayer())
+				this.playerBox.setValue(PlayerEnum.ONE);
+			else
+				this.playerBox.setValue(PlayerEnum.TWO);
 		}
 		else if (condition instanceof GateCondition)
 		{

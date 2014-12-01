@@ -21,10 +21,13 @@ import data.UnitType;
 import ai.Action;
 import ai.ActivateAction;
 import ai.CPlayer;
+import ai.ColumnCondition;
 import ai.ColumnSearchCondition;
 import ai.Condition;
+import ai.ConditionType;
 import ai.DeployAction;
 import ai.GateCondition;
+import ai.NumberCondition;
 import ai.Rule;
 import main.FileOperations;
 
@@ -141,7 +144,39 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	
 	private void changeCondition(PanelControl panelControl, ControlType controlType)
 	{
-		
+		Condition condition = this.selectedRule.getCondition();
+		boolean changed;
+		switch(controlType)
+		{
+		case COLUMN:
+			changed = ((NumberSpinner) panelControl).getNumber() != ((ColumnCondition) condition).getColumn();
+			break;
+		case UNIT_TYPE:
+			changed = ((EnumBox<UnitType>) panelControl).getEnumValue() != ((ColumnCondition) condition).getUnitType();
+			break;
+		case NUMBER:
+			changed = ((NumberSpinner) panelControl).getNumber() != ((NumberCondition) condition).getNumber();
+			break;
+		case ROW:
+			changed = ((NumberSpinner) panelControl).getNumber() != ((ColumnCondition) condition).getRow();
+			break;
+		case CONDITION_TYPE:
+			changed = ((EnumBox<ConditionType>) panelControl).getEnumValue() != ((ColumnCondition) condition).getConditionType();
+			break;
+		case UNIT_PLAYER:
+			PlayerEnum player;
+			if (((ColumnCondition) condition).getUnitPlayer())
+				player = PlayerEnum.ONE;
+			else
+				player = PlayerEnum.TWO;
+			changed = ((EnumBox<PlayerEnum>) panelControl).getEnumValue() != player;
+			break;
+		default:
+			changed = true;
+		}
+		System.out.println(panelControl);
+		System.out.println(changed);
+		panelControl.setDirty(changed);
 	}
 	
 	private boolean showOptionPane(String title, String message)

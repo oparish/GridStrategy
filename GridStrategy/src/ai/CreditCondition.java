@@ -4,7 +4,7 @@ import java.util.List;
 
 import ai.headers.CreditConditionHeader;
 
-public class CreditCondition extends Condition
+public class CreditCondition extends Condition implements NumberCondition
 {	
 	public CreditCondition(boolean isPlayer1, int amount, ConditionType conditionType)
 	{
@@ -35,7 +35,7 @@ public class CreditCondition extends Condition
 		}
 	}
 
-	public int getNumber()
+	public Integer getNumber()
 	{
 		return this.conditionFields.get(ConditionFieldName.NUMBER);
 	}
