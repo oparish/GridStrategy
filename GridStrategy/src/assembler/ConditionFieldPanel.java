@@ -1,6 +1,9 @@
 package assembler;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -29,6 +32,7 @@ public class ConditionFieldPanel extends JPanel
 	private NumberSpinner rowSpinner;
 	private EnumBox<ConditionType> conditionBox;
 	private EnumBox<PlayerEnum> playerBox;
+	private HashMap<PanelControl, AssemblerCheckBox> controlMap;
 	
 	public ConditionFieldPanel(Assembler assembler)
 	{
@@ -43,13 +47,14 @@ public class ConditionFieldPanel extends JPanel
 		this.conditionBox = new EnumBox<ConditionType>(ConditionType.values(), ControlType.CONDITION_TYPE, PanelType.CONDITION, assembler);
 		this.playerBox = new EnumBox<PlayerEnum>(PlayerEnum.values(), ControlType.UNIT_PLAYER, PanelType.CONDITION, assembler);
 		
-		this.addControl("Test", this.conditionTypeLabel, false);
-		this.addControl(ControlType.COLUMN.getText(), this.columnSpinner, true);
-		this.addControl(ControlType.UNIT_TYPE.getText(), this.unitBox, true);
-		this.addControl(ControlType.NUMBER.getText(), this.numberSpinner, false);
-		this.addControl(ControlType.ROW.getText(), this.rowSpinner, true);
-		this.addControl(ControlType.CONDITION_TYPE.getText(), this.conditionBox, true);
-		this.addControl("Player", this.playerBox, true);
+		this.controlMap = new HashMap<PanelControl, AssemblerCheckBox>();
+		this.addControl(assembler, "Test", this.conditionTypeLabel, false);
+		this.addControl(assembler, ControlType.COLUMN.getText(), this.columnSpinner, true);
+		this.addControl(assembler, ControlType.UNIT_TYPE.getText(), this.unitBox, true);
+		this.addControl(assembler, ControlType.NUMBER.getText(), this.numberSpinner, false);
+		this.addControl(assembler, ControlType.ROW.getText(), this.rowSpinner, true);
+		this.addControl(assembler, ControlType.CONDITION_TYPE.getText(), this.conditionBox, true);
+		this.addControl(assembler, "Player", this.playerBox, true);
 	}
 	
 	public void changeCondition(Condition condition)
@@ -61,6 +66,7 @@ public class ConditionFieldPanel extends JPanel
 		
 		if (condition instanceof ColumnCondition)
 		{
+			this.switchAllControls(true);
 			ColumnCondition columnCondition = (ColumnCondition) condition;
 			this.numberSpinner.setValue(columnCondition.getNumber());
 			this.columnSpinner.setValue(columnCondition.getColumn());
@@ -98,15 +104,18 @@ public class ConditionFieldPanel extends JPanel
 		this.playerBox.switchEnabled(value);
 	}
 		
-	private void addControl(String text, JComponent control, boolean checkBox)
+	private void addControl(Assembler assembler, String text, JComponent control, boolean checkBox)
 	{
 		this.add(new JLabel(text));
 		this.add(control);
 		if (checkBox)
 		{
-			JCheckBox checkbox = new JCheckBox();
+			PanelControl panelControl = (PanelControl) control;
+			AssemblerCheckBox checkbox = new AssemblerCheckBox(panelControl);
 			this.add(checkbox);
-			((PanelControl) control).addCheckBox(checkbox);
+			checkbox.addActionListener(assembler);
+			panelControl.addCheckBox(checkbox);
+			this.controlMap.put(panelControl, checkbox);
 		}
 		else
 		{

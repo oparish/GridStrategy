@@ -140,6 +140,11 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 					break;
 			}
 		}
+		else if (source instanceof AssemblerCheckBox && !this.changingControls)
+		{
+			AssemblerCheckBox fieldCheckBox = (AssemblerCheckBox) source;
+			fieldCheckBox.getPanelControl().setEnabled(fieldCheckBox.isSelected());
+		}
 	}
 	
 	private void changeCondition(PanelControl panelControl, ControlType controlType)
