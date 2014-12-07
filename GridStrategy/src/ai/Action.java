@@ -46,6 +46,23 @@ public abstract class Action
 		}
 	}
 	
+	public static Action getActionExample(Class<? extends Action> actionClass)
+	{
+		if (actionClass == DeployAction.class)
+		{
+			return new DeployAction(0, UnitType.ARTILLERY);
+		}
+		else if (actionClass == ActivateAction.class)
+		{
+			return new ActivateAction(0, UnitType.ARTILLERY, ColumnSearchCondition.FURTHEST_FROM_START);
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	
 	public UnitType getUnitType() {
 		int value = this.actionFields.get(ActionFieldName.UNITTYPE);
 		return UnitType.values()[value];
@@ -54,6 +71,22 @@ public abstract class Action
 	public void setUnitType(UnitType unitType)
 	{
 		this.actionFields.put(ActionFieldName.UNITTYPE, unitType.ordinal());
+	}
+	
+	public static String getActionClassName(Class<? extends Action> actionClass)
+	{
+		if (actionClass == DeployAction.class)
+		{
+			return "Deploy Action";
+		}
+		else if (actionClass == ActivateAction.class)
+		{
+			return "Activate Action";
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	public static ActionFieldName[] getActionFieldNames(Class<? extends Action> actionClass)

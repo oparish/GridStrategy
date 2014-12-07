@@ -51,16 +51,18 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	private boolean changingControls;
 	private int selectedListIndex;
 	private List<Condition> hierarchyContents = new ArrayList<Condition>();
+	private List<Rule> ruleListContents = new ArrayList<Rule>();
 	
 	public Assembler() throws IOException
 	{
 		super();
 		CPlayer cPlayer = FileOperations.loadCPlayer(this, true);
 		this.setLayout(new GridBagLayout());
-		ArrayList<Rule> rules = cPlayer.getRules();
+		this.ruleListContents = cPlayer.getRules();
 		this.setupHierarchyList();
 		this.setupGateList();
-		this.ruleList = new AssemblerList<Rule>(rules.toArray(new Rule[rules.size()]), AssemblerListType.RULE);
+		this.ruleList = new AssemblerList<Rule>(this.ruleListContents.toArray(new Rule[this.ruleListContents.size()]), 
+				AssemblerListType.RULE);
 		this.listPanel = new ListPanel(this, this.ruleList);
 		this.actionPanel = new ActionPanel(this);
 		this.conditionFieldPanel = new ConditionFieldPanel(this);
@@ -204,11 +206,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 		else if (source instanceof AssemblerButton)
 		{
-			if (this.selectedCondition != null)
-				this.processButtonPress((AssemblerButton) source);
-			else
-				JOptionPane.showMessageDialog(new JFrame(), "You must select a condition first.", "No selected condition.",
-				        JOptionPane.ERROR_MESSAGE);
+			processButtonPress((AssemblerButton) source);
 		}
 	}
 	
@@ -217,8 +215,20 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		switch(assemblerButton.getButtonType())
 		{
 		case CHANGE_CONDITION:
-			NewConditionDialog newConditionDialog = new NewConditionDialog(this);
-			newConditionDialog.setVisible(true);
+			if (this.selectedCondition != null)
+			{
+				NewConditionDialog newConditionDialog = new NewConditionDialog(this);
+				newConditionDialog.setVisible(true);
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(new JFrame(), "You must select a condition first.", "No selected condition.",
+				        JOptionPane.ERROR_MESSAGE);
+			}
+			break;
+		case ADD_RULE:
+			AddRuleDialog addRuleDialog = new AddRuleDialog(this);
+			addRuleDialog.setVisible(true);
 			break;
 		}
 	}
@@ -245,6 +255,12 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 		this.changeSelectedCondition(newCondition);
 		this.changingControls = false;
+	}
+	
+	public void addRule(Rule rule)
+	{
+		this.ruleListContents.add(rule);
+		this.ruleList.setListData(this.ruleListContents.toArray(new Rule[this.ruleListContents.size()]));
 	}
 	
 	private void changeCondition(PanelControl panelControl, ControlType controlType)

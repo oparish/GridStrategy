@@ -22,23 +22,28 @@ import ai.Rule;
 
 public class NewConditionDialog extends JDialog implements ActionListener
 {
-	private JButton okButton;
-	private JButton cancelButton;
-	private AssemblerList conditionOptions;
-	private Assembler assembler;
+	protected JButton okButton;
+	protected JButton cancelButton;
+	protected AssemblerList conditionOptions;
+	protected Assembler assembler;
 	
 	NewConditionDialog(Assembler assembler)
 	{
 		super(assembler, true);
 		this.setLayout(new GridBagLayout());
-		this.setupAssemblerList();
-		this.setupOKButton();
-		this.setupCancelButton();
 		this.setSize(500, 500);
 		this.assembler = assembler;
+		this.setupContents();
 	}
 	
-	private void setupOKButton()
+	protected void setupContents()
+	{
+		this.setupConditionList(2);
+		this.setupOKButton();
+		this.setupCancelButton();
+	}
+	
+	protected void setupOKButton()
 	{
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -48,7 +53,7 @@ public class NewConditionDialog extends JDialog implements ActionListener
 		this.add(this.okButton, gridBagConstraints);
 	}
 	
-	private void setupCancelButton()
+	protected void setupCancelButton()
 	{
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 1;
@@ -58,13 +63,13 @@ public class NewConditionDialog extends JDialog implements ActionListener
 		this.add(this.cancelButton, gridBagConstraints);
 	}
 	
-	private void setupAssemblerList()
+	protected void setupConditionList(int width)
 	{
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
-		gridBagConstraints.gridwidth = 2;
+		gridBagConstraints.gridwidth = width;
 		this.conditionOptions = new AssemblerList<Class<? extends Condition>>(new Class[]{ColumnCondition.class, GateCondition.class, CreditCondition.class, NoCondition.class}, AssemblerListType.CONDITIONCLASSES);
 		this.conditionOptions.setCellRenderer(new ConditionOptionsCellRenderer());
 		this.add(new JScrollPane(this.conditionOptions), gridBagConstraints);
