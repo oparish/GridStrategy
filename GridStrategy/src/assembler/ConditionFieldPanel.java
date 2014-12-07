@@ -32,12 +32,12 @@ public class ConditionFieldPanel extends JPanel
 	private NumberSpinner rowSpinner;
 	private EnumBox<ConditionType> conditionBox;
 	private EnumBox<PlayerEnum> playerBox;
-	private HashMap<PanelControl, AssemblerCheckBox> controlMap;
+	private EnumBox<GateType> gateBox;
 	
 	public ConditionFieldPanel(Assembler assembler)
 	{
 		super();
-		this.setLayout(new GridLayout(7, 3));
+		this.setLayout(new GridLayout(8, 3));
 		
 		this.conditionTypeLabel = new JLabel("                   ");
 		this.columnSpinner = new NumberSpinner(0, Main.GRIDWIDTH - 1, ControlType.COLUMN, PanelType.CONDITION, assembler);
@@ -46,23 +46,21 @@ public class ConditionFieldPanel extends JPanel
 		this.rowSpinner = new NumberSpinner(0, Main.GRIDHEIGHT - 1, ControlType.ROW, PanelType.CONDITION, assembler);
 		this.conditionBox = new EnumBox<ConditionType>(ConditionType.values(), ControlType.CONDITION_TYPE, PanelType.CONDITION, assembler);
 		this.playerBox = new EnumBox<PlayerEnum>(PlayerEnum.values(), ControlType.UNIT_PLAYER, PanelType.CONDITION, assembler);
+		this.gateBox = new EnumBox<GateType>(GateType.values(), ControlType.GATE_TYPE, PanelType.CONDITION, assembler);
 		
-		this.controlMap = new HashMap<PanelControl, AssemblerCheckBox>();
 		this.addControl(assembler, "Test", this.conditionTypeLabel, false);
 		this.addControl(assembler, ControlType.COLUMN.getText(), this.columnSpinner, true);
 		this.addControl(assembler, ControlType.UNIT_TYPE.getText(), this.unitBox, true);
 		this.addControl(assembler, ControlType.NUMBER.getText(), this.numberSpinner, false);
 		this.addControl(assembler, ControlType.ROW.getText(), this.rowSpinner, true);
 		this.addControl(assembler, ControlType.CONDITION_TYPE.getText(), this.conditionBox, true);
+		this.addControl(assembler, ControlType.GATE_TYPE.getText(), this.gateBox, false);
 		this.addControl(assembler, "Player", this.playerBox, true);
 	}
 	
 	public void changeCondition(Condition condition)
 	{	
-		if (condition instanceof GateCondition)
-			this.conditionTypeLabel.setText("Gate Condition " + ((GateCondition) condition).getGateType().name());
-		else
-			this.conditionTypeLabel.setText(condition.getConditionClassName());
+		this.conditionTypeLabel.setText(condition.getConditionClassName());
 		
 		if (condition instanceof ColumnCondition)
 		{
@@ -73,6 +71,7 @@ public class ConditionFieldPanel extends JPanel
 			this.unitBox.setValue(columnCondition.getUnitType());
 			this.rowSpinner.setValue(columnCondition.getRow());
 			this.conditionBox.setValue(columnCondition.getConditionType());
+			this.gateBox.switchEnabled(false);
 			if (columnCondition.getUnitPlayer())
 				this.playerBox.setValue(PlayerEnum.ONE);
 			else
@@ -81,6 +80,7 @@ public class ConditionFieldPanel extends JPanel
 		else if (condition instanceof GateCondition)
 		{
 			this.switchAllControls(false);
+			this.gateBox.setValue(((GateCondition) condition).getGateType());
 		}
 		else if (condition instanceof CreditCondition)
 		{
@@ -102,6 +102,7 @@ public class ConditionFieldPanel extends JPanel
 		this.rowSpinner.switchEnabled(value);
 		this.conditionBox.switchEnabled(value);
 		this.playerBox.switchEnabled(value);
+		this.gateBox.switchEnabled(value);
 	}
 		
 	private void addControl(Assembler assembler, String text, JComponent control, boolean checkBox)
@@ -115,7 +116,6 @@ public class ConditionFieldPanel extends JPanel
 			this.add(checkbox);
 			checkbox.addActionListener(assembler);
 			panelControl.addCheckBox(checkbox);
-			this.controlMap.put(panelControl, checkbox);
 		}
 		else
 		{

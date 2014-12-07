@@ -31,6 +31,7 @@ import ai.Condition;
 import ai.ConditionType;
 import ai.DeployAction;
 import ai.GateCondition;
+import ai.GateType;
 import ai.NumberCondition;
 import ai.Rule;
 import main.FileOperations;
@@ -266,6 +267,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			break;
 		case CONDITION_TYPE:
 			changed = ((EnumBox<ConditionType>) panelControl).getEnumValue() != ((ColumnCondition) condition).getConditionType();
+			break;
+		case GATE_TYPE:
+			changed = ((EnumBox<GateType>) panelControl).getEnumValue() != ((GateCondition) condition).getGateType();
 			break;
 		case UNIT_PLAYER:
 			PlayerEnum player;
