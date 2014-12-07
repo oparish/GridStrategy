@@ -10,7 +10,11 @@ import ai.headers.RuleHeader;
 
 public class Rule
 {
-	private final Condition condition;
+	private Condition condition;
+	public void setCondition(Condition condition) {
+		this.condition = condition;
+	}
+
 	private final Action action;
 	
 	public Rule(Condition condition, Action action)

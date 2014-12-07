@@ -11,12 +11,20 @@ import main.FileOperations;
 public class GateCondition extends Condition
 {	
 	private final static ConditionFieldName[] conditionFieldNames = {ConditionFieldName.GATETYPE};
-	private final Condition condition1;
+	private Condition condition1;
+	public void setCondition1(Condition condition1) {
+		this.condition1 = condition1;
+	}
+
+	public void setCondition2(Condition condition2) {
+		this.condition2 = condition2;
+	}
+
 	public Condition getCondition1() {
 		return condition1;
 	}
 
-	private final Condition condition2;
+	private Condition condition2;
 	
 	public Condition getCondition2() {
 		return condition2;
@@ -97,9 +105,4 @@ public class GateCondition extends Condition
 		return headerByteList;
 	}
 	
-	@Override
-	public String getConditionClassName()
-	{
-		return "Gate Condition";
-	}
 }

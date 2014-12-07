@@ -1,5 +1,6 @@
 package assembler;
 
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -7,11 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JWindow;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -35,6 +39,8 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 {
 	RulePanel rulePanel;
 	AssemblerList<Rule> ruleList;
+	private AssemblerList<Condition> hierarchyList;
+	private AssemblerList<Condition> gateList;
 	private Rule selectedRule;
 	private Condition selectedCondition;
 	private ConditionPanel conditionPanel;
@@ -43,6 +49,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	private ListPanel listPanel;
 	private boolean changingControls;
 	private int selectedListIndex;
+	private List<Condition> hierarchyContents = new ArrayList<Condition>();
 	
 	public Assembler() throws IOException
 	{
@@ -50,15 +57,49 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		CPlayer cPlayer = FileOperations.loadCPlayer(this, true);
 		this.setLayout(new GridBagLayout());
 		ArrayList<Rule> rules = cPlayer.getRules();
+		this.setupHierarchyList();
+		this.setupGateList();
 		this.ruleList = new AssemblerList<Rule>(rules.toArray(new Rule[rules.size()]), AssemblerListType.RULE);
 		this.listPanel = new ListPanel(this, this.ruleList);
 		this.actionPanel = new ActionPanel(this);
 		this.conditionFieldPanel = new ConditionFieldPanel(this);
-		this.conditionPanel = new ConditionPanel(this, this.conditionFieldPanel);
+		this.conditionPanel = new ConditionPanel(this.conditionFieldPanel, this.hierarchyList, this.gateList);
 		this.add(this.listPanel, this.getGridBagConstraints(0, 0, 1));
 		this.rulePanel = new RulePanel(this, this.conditionPanel, this.actionPanel);
 		this.add(this.rulePanel, this.getGridBagConstraints(1, 0, 1));
 		this.setSize(2400, 500);
+	}
+	
+	public void addToHierarchyList(Condition condition)
+	{
+		hierarchyContents.add(condition);
+		Condition[] conditions = new Condition[hierarchyContents.size()];
+		this.hierarchyContents.toArray(conditions);
+		this.hierarchyList.setListData(conditions);
+	}
+	
+	public void truncateHierarchyList(int index)
+	{
+		Condition[] conditions = new Condition[index];
+		this.hierarchyContents = hierarchyContents.subList(0, index);
+		this.hierarchyContents.toArray(conditions);
+		this.hierarchyList.setListData(conditions);
+	}
+	
+	public void updateGateList(GateCondition gateCondition)
+	{
+		this.gateList.setListData(new Condition[]{gateCondition.getCondition1(), gateCondition.getCondition2()});
+	}
+	
+	public void clearHierarchyList()
+	{
+		this.hierarchyContents.clear();
+		this.hierarchyList.setListData(new Condition[]{});
+	}
+	
+	public void clearGateList()
+	{
+		this.gateList.setListData(new Condition[]{});
 	}
 	
 	private GridBagConstraints getGridBagConstraints(int x, int y, int width)
@@ -83,6 +124,21 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	private void setupHierarchyList()
+	{
+		this.hierarchyList = new AssemblerList<Condition>(new Condition[]{}, AssemblerListType.HIERARCHY);
+		this.hierarchyList.setCellRenderer(new ConditionListCellRenderer());
+		this.hierarchyList.addListSelectionListener(this);
+	}
+	
+	private void setupGateList()
+	{
+		
+		this.gateList = new AssemblerList<Condition>(new Condition[]{}, AssemblerListType.GATE);
+		this.gateList.setCellRenderer(new ConditionListCellRenderer());
+		this.gateList.addListSelectionListener(this);
 	}
 	
 	private void changeAction(PanelControl panelControl, ControlType controlType)
@@ -145,6 +201,49 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			AssemblerCheckBox fieldCheckBox = (AssemblerCheckBox) source;
 			fieldCheckBox.getPanelControl().setEnabled(fieldCheckBox.isSelected());
 		}
+		else if (source instanceof AssemblerButton)
+		{
+			if (this.selectedCondition != null)
+				this.processButtonPress((AssemblerButton) source);
+			else
+				JOptionPane.showMessageDialog(new JFrame(), "You must select a condition first.", "No selected condition.",
+				        JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private void processButtonPress(AssemblerButton assemblerButton)
+	{
+		switch(assemblerButton.getButtonType())
+		{
+		case CHANGE_CONDITION:
+			NewConditionDialog newConditionDialog = new NewConditionDialog(this);
+			newConditionDialog.setVisible(true);
+			break;
+		}
+	}
+	
+	public void changeCondition(Condition newCondition)
+	{
+		this.changingControls = true;
+		int contentsSize = hierarchyContents.size();
+		if (contentsSize == 0)
+		{
+			this.selectedRule.setCondition(newCondition);
+		}
+		else
+		{
+			GateCondition ownerCondition = (GateCondition) hierarchyContents.get(contentsSize - 1);
+			if (ownerCondition.getCondition1() == this.selectedCondition)
+			{
+				ownerCondition.setCondition1(newCondition);
+			}
+			else
+			{
+				ownerCondition.setCondition2(newCondition);
+			}
+		}
+		this.changeSelectedCondition(newCondition);
+		this.changingControls = false;
 	}
 	
 	private void changeCondition(PanelControl panelControl, ControlType controlType)
@@ -217,7 +316,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		{
 			this.actionPanel.disablePositionBox();
 		}
-		this.conditionPanel.clearHierarchyList();
+		this.clearHierarchyList();
 		this.actionPanel.enableBoxes();
 		this.selectedListIndex = index;
 	}
@@ -227,9 +326,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.selectedCondition = condition;
 		this.conditionFieldPanel.changeCondition(condition);
 		if (condition instanceof GateCondition)
-			this.conditionPanel.updateGateList((GateCondition) condition);
+			this.updateGateList((GateCondition) condition);
 		else
-			this.conditionPanel.clearGateList();
+			this.clearGateList();
 	}
 
 	@Override
@@ -264,15 +363,34 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 					this.changeSelectedRule((Rule) list.getSelectedValue(), list.getSelectedIndex());
 					break;
 				case GATE:
-					this.conditionPanel.addToHierarchyList(this.selectedCondition);
+					this.addToHierarchyList(this.selectedCondition);
 					this.changeSelectedCondition((Condition) list.getSelectedValue());
 					break;
 				case HIERARCHY:
 					this.changeSelectedCondition((Condition) list.getSelectedValue());
-					this.conditionPanel.truncateHierarchyList(list.getSelectedIndex());
+					this.truncateHierarchyList(list.getSelectedIndex());
 					break;
 			}
 		}
 		this.changingControls = false;
+	}
+	
+	private class ConditionListCellRenderer implements ListCellRenderer<Condition>
+	{
+		@Override
+		public Component getListCellRendererComponent(
+				JList<? extends Condition> arg0, Condition condition, int index, boolean selected,
+				boolean arg4)
+		{
+			String text = condition.getConditionClassName();
+			if (selected)
+			{
+				return AssemblerList.getSelectedLabel(text);
+			}
+			else
+			{
+				return new JLabel(text);
+			}
+		}
 	}
 }

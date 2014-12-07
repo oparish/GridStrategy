@@ -14,6 +14,10 @@ public class AssemblerButton extends JButton
 	
 	private AssemblerButtonType buttonType;
 	
+	public AssemblerButtonType getButtonType() {
+		return buttonType;
+	}
+
 	public AssemblerButton(AssemblerButtonType buttonType, ActionListener listener)
 	{
 		super(buttonType.getText());

@@ -23,10 +23,4 @@ public class NoCondition extends Condition
 	{
 		return "No Condition";
 	}
-	
-	@Override
-	public String getConditionClassName()
-	{
-		return "No Condition";
-	}
 }

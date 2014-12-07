@@ -102,7 +102,11 @@ public abstract class Condition
 	protected abstract boolean runCheck(ObservationBatch observationBatch);
 	
 	public abstract String toString(int depth);
-	public abstract String getConditionClassName();
+	
+	public  String getConditionClassName()
+	{
+		return Condition.getConditionClassName(this.getClass());
+	}
 	
 	public ArrayList<Byte> toBytes()
 	{
@@ -129,6 +133,53 @@ public abstract class Condition
 		return bytes;
 	}
 
+	public static String getConditionClassName(Class conditionClass)
+	{
+		if (conditionClass == ColumnCondition.class)
+		{
+			return "Column Condition";
+		}
+		else if (conditionClass == GateCondition.class)
+		{
+			return "Gate Condition";
+		}
+		else if (conditionClass == CreditCondition.class)
+		{
+			return "Credit Condition";
+		}
+		else if (conditionClass == NoCondition.class)
+		{
+			return "No Condition";
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	public static Condition getConditionExample(Class conditionClass)
+	{
+		if (conditionClass == ColumnCondition.class)
+		{
+			return new ColumnCondition(ConditionType.EQUAL_TO, 0, true);
+		}
+		else if (conditionClass == GateCondition.class)
+		{
+			return new GateCondition(new NoCondition(true), new NoCondition(true), GateType.AND, true);
+		}
+		else if (conditionClass == CreditCondition.class)
+		{
+			return new CreditCondition(true, 0, ConditionType.EQUAL_TO);
+		}
+		else if (conditionClass == NoCondition.class)
+		{
+			return new NoCondition(true);
+		}
+		else
+		{
+			return null;
+		}
+	}	
 	
 	protected enum ConditionFieldName
 	{
