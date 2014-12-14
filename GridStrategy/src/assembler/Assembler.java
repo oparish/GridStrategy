@@ -210,10 +210,46 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 	}
 	
+	private void moveRule(boolean up)
+	{
+		int oldIndex = this.ruleList.getSelectedIndex();
+		Rule[] oldContents = this.ruleList.getContents();
+		int oldLength = oldContents.length;
+		if ((oldIndex != 0 || !up) && (oldIndex != (oldLength - 1) || up))
+		{
+			int newIndex = up ? oldIndex - 1 : oldIndex + 1;
+
+			Rule[] newContents = new Rule[oldLength];
+			for (int i = 0; i < oldLength; i++)
+			{
+				if (i == newIndex)
+				{
+					newContents[oldIndex] = oldContents[newIndex];
+				}
+				else if (i == oldIndex)
+				{
+					newContents[newIndex] = oldContents[oldIndex];
+				}
+				else
+				{
+					newContents[i] = oldContents[i];
+				}
+			}
+			this.ruleList.setListData(newContents);
+			this.ruleList.setSelectedIndex(newIndex);
+		}
+	}
+	
 	private void processButtonPress(AssemblerButton assemblerButton)
 	{
 		switch(assemblerButton.getButtonType())
 		{
+		case MOVE_UP:
+			this.moveRule(true);
+			break;
+		case MOVE_DOWN:
+			this.moveRule(false);
+			break;
 		case CHANGE_CONDITION:
 			if (this.selectedCondition != null)
 			{

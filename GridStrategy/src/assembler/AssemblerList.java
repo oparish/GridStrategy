@@ -11,6 +11,11 @@ import ai.Rule;
 
 public class AssemblerList<T> extends JList<T>
 {
+	private T[] contents;
+	public T[] getContents() {
+		return contents;
+	}
+
 	private final AssemblerListType type;
 	
 	public AssemblerListType getType() {
@@ -21,6 +26,7 @@ public class AssemblerList<T> extends JList<T>
 	{
 		super(objects);
 		this.type = type;
+		this.contents = objects;
 	}
 	
 	public AssemblerList(AssemblerListType type)
@@ -36,5 +42,12 @@ public class AssemblerList<T> extends JList<T>
 		label.setBackground(Color.BLACK);
 		label.setForeground(Color.WHITE);
 		return label;
+	}
+	
+	@Override
+	public void setListData(T[] listData)
+	{
+		super.setListData(listData);
+		this.contents = listData;
 	}
 }
