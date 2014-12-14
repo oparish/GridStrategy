@@ -21,17 +21,18 @@ import main.Main;
 
 public class ActionPanel extends JPanel
 {
-	private final JLabel actionTypeLabel;
+	private final EnumBox<ActionType> actionTypeBox;
 	private final EnumBox<UnitType> unitTypeBox;
 	private final EnumBox<ColumnSearchCondition> conditionBox;
 	private final NumberSpinner positionSpinner;
+	private HashMap<ControlType, PanelControl> controlMap;
 	
 	public ActionPanel(Assembler assembler)
 	{
 		super();
 		this.setLayout(new GridBagLayout());
-		this.actionTypeLabel = new JLabel("");
-		this.setupRow(ControlType.ACTION_TYPE, this.actionTypeLabel, 0);
+		this.actionTypeBox = new EnumBox<ActionType>(ActionType.values(), ControlType.ACTION_TYPE, PanelType.ACTION, assembler);
+		this.setupRow(ControlType.ACTION_TYPE, this.actionTypeBox, 0);
 		
 		this.positionSpinner = new NumberSpinner(0, Main.GRIDWIDTH, ControlType.COLUMN, PanelType.ACTION, assembler);
 		this.setupRow(ControlType.COLUMN, this.positionSpinner, 1);
@@ -41,18 +42,41 @@ public class ActionPanel extends JPanel
 		
 		this.conditionBox = new EnumBox<ColumnSearchCondition>(ColumnSearchCondition.values(), ControlType.CONDITION_TYPE, PanelType.ACTION, assembler);
 		this.setupRow(ControlType.CONDITION_TYPE, this.conditionBox, 3);
+		
+		this.setupControlMap();
 	}
 	
 	public boolean isDirty()
 	{
-		if (unitTypeBox.getDirty() || conditionBox.getDirty() || positionSpinner.getDirty())
+		if (unitTypeBox.getDirty() || conditionBox.getDirty() || positionSpinner.getDirty() || this.actionTypeBox.getDirty())
 			return true;
 		else
 			return false;
 	}
 	
+	public void changeEnabledControls(ActionType actionType)
+	{
+		if (actionType == ActionType.ACTIVATE_ACTION)
+		{
+			this.conditionBox.setEnabled(true);
+		}
+		else
+		{
+			this.conditionBox.setEnabled(false);
+		}
+	}
+	
+	public void setNotDirty()
+	{
+		this.actionTypeBox.setDirty(false);
+		this.positionSpinner.setDirty(false);
+		this.unitTypeBox.setDirty(false);
+		this.conditionBox.setDirty(false);
+	}
+	
 	public void enableBoxes()
 	{
+		this.actionTypeBox.setEnabled(true);
 		this.positionSpinner.setEnabled(true);
 		this.unitTypeBox.setEnabled(true);
 	}
@@ -68,10 +92,8 @@ public class ActionPanel extends JPanel
 		{
 			type = ActionType.ACTIVATE_ACTION;
 		}
-		this.actionTypeLabel.setText(type.name());
-		this.positionSpinner.setDirty(false);
-		this.unitTypeBox.setDirty(false);
-		this.conditionBox.setDirty(false);
+		this.actionTypeBox.setEnumValue(type);
+		this.setNotDirty();
 	}
 	
 	public void changePosition(int position)
@@ -109,5 +131,19 @@ public class ActionPanel extends JPanel
 	{
 		this.add(new JLabel(conditionSpinnerType.getText()), this.getGridBagConstraints(0, y, 1));
 		this.add(component, this.getGridBagConstraints(1, y, 2));
+	}
+	
+	private void setupControlMap()
+	{
+		this.controlMap = new HashMap<ControlType, PanelControl>();
+		controlMap.put(ControlType.UNIT_TYPE, this.unitTypeBox);
+		controlMap.put(ControlType.CONDITION_TYPE, this.conditionBox);
+		controlMap.put(ControlType.COLUMN, this.positionSpinner);
+		controlMap.put(ControlType.ACTION_TYPE, this.actionTypeBox);
+	}
+	
+	public HashMap<ControlType, PanelControl> getControls()
+	{
+		return this.controlMap;
 	}
 }

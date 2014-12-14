@@ -9,7 +9,7 @@ import buttons.ControlButtonType;
 
 public class AssemblerButton extends JButton
 {
-	private static final int ASSEMBLERBUTTONWIDTH = 120;
+	private static final int ASSEMBLERBUTTONWIDTH = 150;
 	private static final int ASSEMBLERBUTTONHEIGHT = 30;
 	
 	private AssemblerButtonType buttonType;

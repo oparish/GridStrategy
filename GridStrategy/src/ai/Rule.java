@@ -15,8 +15,12 @@ public class Rule
 		this.condition = condition;
 	}
 
-	private final Action action;
+	private Action action;
 	
+	public void setAction(Action action) {
+		this.action = action;
+	}
+
 	public Rule(Condition condition, Action action)
 	{
 		this.condition = condition;

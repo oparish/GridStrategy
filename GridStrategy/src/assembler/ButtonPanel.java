@@ -1,5 +1,6 @@
 package assembler;
 
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
@@ -11,7 +12,7 @@ public class ButtonPanel extends JPanel
 	public ButtonPanel(ActionListener actionListener)
 	{
 		super();
-		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		this.setLayout(new GridLayout(2, 5));
 		for (AssemblerButtonType buttonType : AssemblerButtonType.values())
 		{
 			this.add(new AssemblerButton(buttonType, actionListener));
