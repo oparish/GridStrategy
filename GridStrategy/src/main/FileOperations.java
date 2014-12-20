@@ -14,6 +14,8 @@ import ai.CPlayer;
 
 public class FileOperations {
 
+	private static String lastCPlayer;
+	
 	public static void saveFile(String fileName, ArrayList<Byte> bytes) 
 			throws IOException
 	{
@@ -27,6 +29,29 @@ public class FileOperations {
 		}
 		fileOutputStream.write(rawBytes);
 		fileOutputStream.close();
+	}
+	
+	public static void saveCPlayer(ArrayList<Byte> bytes, Component component) 
+			throws IOException
+	{
+		if (FileOperations.lastCPlayer != null)
+		{
+			FileOperations.saveFile(FileOperations.lastCPlayer, bytes);
+		}
+		else
+		{
+			FileOperations.saveCPlayerAs(bytes, component); 
+		}
+	}
+	
+	public static void saveCPlayerAs(ArrayList<Byte> bytes, Component component) 
+			throws IOException
+	{
+		JFileChooser fc = new JFileChooser(".");
+		fc.showSaveDialog(component);
+		String filename = fc.getSelectedFile().getName();
+		FileOperations.lastCPlayer = filename;
+		FileOperations.saveFile(filename, bytes);
 	}
 	
 	public static ArrayList<Integer> loadFile(String fileName) 
@@ -49,6 +74,7 @@ public class FileOperations {
 		JFileChooser fc = new JFileChooser(".");
 		fc.showOpenDialog(component);
 		String filename = fc.getSelectedFile().getName();
+		FileOperations.lastCPlayer = filename;
 		ArrayList<Integer> integers = FileOperations.loadFile(filename);
 		return new CPlayer(isPlayer1, integers);
 	}

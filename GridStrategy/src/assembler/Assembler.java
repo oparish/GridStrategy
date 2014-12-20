@@ -45,6 +45,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 {
 	RulePanel rulePanel;
 	AssemblerList<Rule> ruleList;
+	private CPlayer cPlayer;
 	private AssemblerList<Condition> hierarchyList;
 	private AssemblerList<Condition> gateList;
 	private Rule selectedRule;
@@ -61,7 +62,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	public Assembler() throws IOException
 	{
 		super();
-		CPlayer cPlayer = FileOperations.loadCPlayer(this, true);
+		this.cPlayer = FileOperations.loadCPlayer(this, true);
 		this.setLayout(new GridBagLayout());
 		this.ruleListContents = cPlayer.getRules();
 		this.setupHierarchyList();
@@ -287,17 +288,38 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 	}
 	
+	private void saveCPlayer(boolean as)
+	{
+		this.saveAction();
+		this.saveCondition();
+		try
+		{
+			if (as)
+				FileOperations.saveCPlayerAs(this.cPlayer.toBytes(), this);
+			else
+				FileOperations.saveCPlayer(this.cPlayer.toBytes(), this);
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	private void processButtonPress(AssemblerButton assemblerButton)
 	{
 		switch(assemblerButton.getButtonType())
 		{
 		case SAVE_ACTION:
-			if (this.selectedRule != null)
-				this.saveAction();
+			this.saveAction();
 			break;
 		case SAVE_CONDITION:
-			if (this.selectedCondition != null)
-				this.saveCondition();
+			this.saveCondition();
+			break;
+		case SAVE_FILE:
+			this.saveCPlayer(false);
+			break;
+		case SAVE_FILE_AS:
+			this.saveCPlayer(true);
 			break;
 		case MOVE_UP:
 			this.moveRule(true);
@@ -326,6 +348,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	
 	private void saveCondition()
 	{
+		if (this.selectedCondition == null)
+			return;
+		
 		Condition newCondition;
 		
 		HashMap<ControlType, PanelControl> controlMap = this.conditionFieldPanel.getControls();
@@ -521,6 +546,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	
 	private void saveAction()
 	{
+		if (this.selectedRule == null)
+			return;
+			
 		Action newAction;
 		
 		HashMap<ControlType, PanelControl> controlMap = this.actionPanel.getControls();
@@ -534,8 +562,10 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		
 		for (Entry<ControlType, PanelControl> entry : controlMap.entrySet())
 		{
-			if (entry.getKey() != ControlType.ACTION_TYPE)
-				this.completeActionChange(entry.getValue(), entry.getKey(), newAction);
+			PanelControl control = entry.getValue();
+			
+			if (control.isEnabled() && entry.getKey() != ControlType.ACTION_TYPE)
+				this.completeActionChange(control, entry.getKey(), newAction);
 		}
 		this.selectedRule.setAction(newAction);
 		this.actionPanel.setNotDirty();
