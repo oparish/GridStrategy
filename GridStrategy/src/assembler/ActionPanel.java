@@ -81,6 +81,14 @@ public class ActionPanel extends JPanel
 		this.unitTypeBox.setEnabled(true);
 	}
 	
+	public void disableControls()
+	{
+		this.actionTypeBox.setEnabled(false);
+		this.positionSpinner.setEnabled(false);
+		this.unitTypeBox.setEnabled(false);
+		this.conditionBox.setEnabled(false);
+	}
+	
 	public void changeAction(Action action)
 	{
 		ActionType type;

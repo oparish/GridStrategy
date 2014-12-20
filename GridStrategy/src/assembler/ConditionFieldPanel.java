@@ -101,6 +101,17 @@ public class ConditionFieldPanel extends JPanel
 		this.gateBox.setDirty(false);
 	}
 	
+	public void disableControls()
+	{
+		this.columnSpinner.setEnabled(false);
+		this.unitBox.setEnabled(false);
+		this.numberSpinner.setEnabled(false);
+		this.rowSpinner.setEnabled(false);
+		this.conditionBox.setEnabled(false);
+		this.playerBox.setEnabled(false);
+		this.gateBox.setEnabled(false);
+	}
+	
 	public void changeCondition(Condition condition)
 	{	
 		this.conditionTypeLabel.setText(condition.getConditionClassName());

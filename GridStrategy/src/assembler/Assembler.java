@@ -64,7 +64,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		super();
 		this.cPlayer = FileOperations.loadCPlayer(this, true);
 		this.setLayout(new GridBagLayout());
-		this.ruleListContents = cPlayer.getRules();
+		this.ruleListContents = this.cPlayer.getRules();
 		this.setupHierarchyList();
 		this.setupGateList();
 		this.ruleList = new AssemblerList<Rule>(this.ruleListContents.toArray(new Rule[this.ruleListContents.size()]), 
@@ -309,6 +309,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	{
 		switch(assemblerButton.getButtonType())
 		{
+		case LOAD:
+			this.loadCPlayer();
+			break;
 		case SAVE_ACTION:
 			this.saveAction();
 			break;
@@ -542,6 +545,23 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			}
 		}
 		this.changingControls = false;
+	}
+	
+	private void loadCPlayer()
+	{
+		try {
+			this.cPlayer = FileOperations.loadCPlayer(this, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.ruleListContents = this.cPlayer.getRules();
+		this.ruleList.setListData(this.ruleListContents.toArray(new Rule[this.ruleListContents.size()]));
+		this.selectedRule = null;
+		this.selectedCondition = null;
+		this.clearHierarchyList();
+		this.clearGateList();
+		this.actionPanel.disableControls();
+		this.conditionFieldPanel.disableControls();
 	}
 	
 	private void saveAction()
