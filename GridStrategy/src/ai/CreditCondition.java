@@ -48,7 +48,7 @@ public class CreditCondition extends Condition implements NumberCondition
 			return ConditionType.values()[value];
 	}
 	
-	public void setNumber(int value)
+	public void setNumber(Integer value)
 	{
 		this.conditionFields.put(ConditionFieldName.NUMBER, value);
 	}

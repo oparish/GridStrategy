@@ -52,7 +52,7 @@ public class ColumnCondition extends Condition implements NumberCondition
 		this.conditionFields.put(ConditionFieldName.COLUMN, column);
 	}
 	
-	public void setNumber(int number)
+	public void setNumber(Integer number)
 	{
 		this.conditionFields.put(ConditionFieldName.NUMBER, number);
 	}

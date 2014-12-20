@@ -210,7 +210,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			((ColumnCondition)condition).setUnitType(((EnumBox<UnitType>) panelControl).getEnumValue());
 			break;
 		case NUMBER:
-			((ColumnCondition)condition).setNumber(((NumberSpinner) panelControl).getNumber());
+			((NumberCondition)condition).setNumber(((NumberSpinner) panelControl).getNumber());
 			break;
 		case ROW:
 			((ColumnCondition)condition).setRow(((NumberSpinner) panelControl).getNumber());
