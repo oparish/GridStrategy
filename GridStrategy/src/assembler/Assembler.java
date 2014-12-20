@@ -384,25 +384,32 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	{
 		Condition condition = this.selectedRule.getCondition();
 		boolean changed;
+		Integer number;
 		switch(controlType)
 		{
 		case COLUMN:
-			changed = ((NumberSpinner) panelControl).getNumber() != ((ColumnCondition) condition).getColumn();
+			number = ((ColumnCondition) condition).getColumn();
+			changed =  number == null || number != ((NumberSpinner) panelControl).getNumber();
 			break;
 		case UNIT_TYPE:
-			changed = ((EnumBox<UnitType>) panelControl).getEnumValue() != ((ColumnCondition) condition).getUnitType();
+			UnitType unitType  = ((ColumnCondition) condition).getUnitType();
+			changed = unitType == null || ((EnumBox<UnitType>) panelControl).getEnumValue() != unitType;
 			break;
 		case NUMBER:
-			changed = ((NumberSpinner) panelControl).getNumber() != ((NumberCondition) condition).getNumber();
+			number = ((NumberCondition) condition).getNumber();
+			changed = number == null || ((NumberSpinner) panelControl).getNumber() != number;
 			break;
 		case ROW:
-			changed = ((NumberSpinner) panelControl).getNumber() != ((ColumnCondition) condition).getRow();
+			number = ((ColumnCondition) condition).getRow();
+			changed = number== null || ((NumberSpinner) panelControl).getNumber() != number;
 			break;
 		case CONDITION_TYPE:
-			changed = ((EnumBox<ConditionType>) panelControl).getEnumValue() != ((ColumnCondition) condition).getConditionType();
+			ConditionType conditionType = ((ColumnCondition) condition).getConditionType();
+			changed = conditionType == null || ((EnumBox<ConditionType>) panelControl).getEnumValue() != conditionType;
 			break;
 		case GATE_TYPE:
-			changed = ((EnumBox<GateType>) panelControl).getEnumValue() != ((GateCondition) condition).getGateType();
+			GateType gateType = ((GateCondition) condition).getGateType();
+			changed = gateType == null || ((EnumBox<GateType>) panelControl).getEnumValue() != gateType;
 			break;
 		case UNIT_PLAYER:
 			PlayerEnum player;

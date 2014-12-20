@@ -63,7 +63,7 @@ public class ColumnCondition extends Condition implements NumberCondition
 	}
 
 	public void setRow(Integer row) {
-		this.conditionFields.put(ConditionFieldName.COLUMN, row);
+		this.conditionFields.put(ConditionFieldName.ROW, row);
 	}
 
 	public ColumnCondition(HashMap<ConditionFieldName, Integer> fieldMap, boolean isPlayer1)
