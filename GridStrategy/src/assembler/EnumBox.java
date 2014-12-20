@@ -47,7 +47,7 @@ public class EnumBox<T> extends JComboBox implements PanelControl
 		this.dirty = value;		
 	}
 	
-	public boolean getDirty()
+	public boolean isDirty()
 	{
 		return this.dirty;
 	}

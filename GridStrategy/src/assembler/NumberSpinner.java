@@ -41,7 +41,7 @@ public class NumberSpinner extends ConditionSpinner implements PanelControl
 		this.dirty = dirty;
 	}
 	
-	public boolean getDirty()
+	public boolean isDirty()
 	{
 		return this.dirty;
 	}

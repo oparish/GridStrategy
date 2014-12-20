@@ -32,9 +32,11 @@ import ai.ColumnCondition;
 import ai.ColumnSearchCondition;
 import ai.Condition;
 import ai.ConditionType;
+import ai.CreditCondition;
 import ai.DeployAction;
 import ai.GateCondition;
 import ai.GateType;
+import ai.NoCondition;
 import ai.NumberCondition;
 import ai.Rule;
 import main.FileOperations;
@@ -197,6 +199,36 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 	}
 	
+	private void completeConditionChange(PanelControl panelControl, ControlType controlType, Condition condition)
+	{
+		switch(controlType)
+		{
+		case COLUMN:
+			((ColumnCondition)condition).setColumn(((NumberSpinner) panelControl).getNumber());
+			break;
+		case UNIT_TYPE:
+			((ColumnCondition)condition).setUnitType(((EnumBox<UnitType>) panelControl).getEnumValue());
+			break;
+		case NUMBER:
+			((ColumnCondition)condition).setNumber(((NumberSpinner) panelControl).getNumber());
+			break;
+		case ROW:
+			((ColumnCondition)condition).setRow(((NumberSpinner) panelControl).getNumber());
+			break;
+		case GATE_TYPE:
+			((GateCondition)condition).setGateType(((EnumBox<GateType>) panelControl).getEnumValue());
+			break;
+		case CONDITION_TYPE:
+			((ColumnCondition)condition).setConditionType(((EnumBox<ConditionType>) panelControl).getEnumValue());
+			break;
+		case UNIT_PLAYER:
+			PlayerEnum playerEnum = ((EnumBox<PlayerEnum>) panelControl).getEnumValue();
+			boolean value = playerEnum == PlayerEnum.ONE ? true : false;		
+			((ColumnCondition) condition).setUnitPlayer(value);
+			break;
+		}
+	}
+	
 	public void processPanelControlEvent(Object source)
 	{
 		if (source instanceof PanelControl && !this.changingControls)
@@ -263,6 +295,10 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			if (this.selectedRule != null)
 				this.saveAction();
 			break;
+		case SAVE_CONDITION:
+			if (this.selectedCondition != null)
+				this.saveCondition();
+			break;
 		case MOVE_UP:
 			this.moveRule(true);
 			break;
@@ -287,6 +323,32 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			break;
 		}
 	}
+	
+	private void saveCondition()
+	{
+		Condition newCondition;
+		
+		HashMap<ControlType, PanelControl> controlMap = this.conditionFieldPanel.getControls();
+		
+		if (this.selectedCondition instanceof GateCondition)
+			newCondition = Condition.getConditionExample(GateCondition.class);
+		else if (this.selectedCondition instanceof CreditCondition)
+			newCondition = Condition.getConditionExample(CreditCondition.class);
+		else if (this.selectedCondition instanceof NoCondition)
+			newCondition = Condition.getConditionExample(NoCondition.class);
+		else
+			newCondition = Condition.getConditionExample(ColumnCondition.class);
+		
+		for (Entry<ControlType, PanelControl> entry : controlMap.entrySet())
+		{
+			PanelControl control = entry.getValue();
+			if (control.isEnabled())
+				this.completeConditionChange(control, entry.getKey(), newCondition);
+		}
+		this.selectedRule.setCondition(newCondition);
+		this.conditionFieldPanel.setNotDirty();
+	}
+	
 	
 	public void changeCondition(Condition newCondition)
 	{
@@ -364,9 +426,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	
 	private void changeSelectedRule(Rule rule, int index)
 	{
-		if (this.actionPanel.isDirty())
+		if (this.actionPanel.isDirty() || this.conditionFieldPanel.isDirty())
 		{
-			boolean result = this.showOptionPane("Action Changed", "Really cancel action changes?");
+			boolean result = this.showOptionPane("Unsaved Changes", "Really cancel changes?");
 			if (!result)
 			{
 				this.ruleList.setSelectedIndex(this.selectedListIndex);

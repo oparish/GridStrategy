@@ -43,8 +43,18 @@ public class ColumnCondition extends Condition implements NumberCondition
 			return ConditionType.values()[value];
 	}
 	
+	public void setConditionType(ConditionType type)
+	{
+		this.conditionFields.put(ConditionFieldName.CONDITION_TYPE, type.ordinal());
+	}
+	
 	public void setColumn(Integer column) {
 		this.conditionFields.put(ConditionFieldName.COLUMN, column);
+	}
+	
+	public void setNumber(int number)
+	{
+		this.conditionFields.put(ConditionFieldName.NUMBER, number);
 	}
 	
 	public void setUnitType(UnitType unitType)

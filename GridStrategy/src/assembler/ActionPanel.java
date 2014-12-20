@@ -48,7 +48,7 @@ public class ActionPanel extends JPanel
 	
 	public boolean isDirty()
 	{
-		if (unitTypeBox.getDirty() || conditionBox.getDirty() || positionSpinner.getDirty() || this.actionTypeBox.getDirty())
+		if (unitTypeBox.isDirty() || conditionBox.isDirty() || positionSpinner.isDirty() || this.actionTypeBox.isDirty())
 			return true;
 		else
 			return false;

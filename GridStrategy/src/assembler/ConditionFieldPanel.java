@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -33,6 +34,7 @@ public class ConditionFieldPanel extends JPanel
 	private EnumBox<ConditionType> conditionBox;
 	private EnumBox<PlayerEnum> playerBox;
 	private EnumBox<GateType> gateBox;
+	private HashMap<ControlType, PanelControl> controlMap;
 	
 	public ConditionFieldPanel(Assembler assembler)
 	{
@@ -56,6 +58,47 @@ public class ConditionFieldPanel extends JPanel
 		this.addControl(assembler, ControlType.CONDITION_TYPE.getText(), this.conditionBox, true);
 		this.addControl(assembler, ControlType.GATE_TYPE.getText(), this.gateBox, false);
 		this.addControl(assembler, "Player", this.playerBox, true);
+		
+		this.setupControlMap();
+	}
+	
+	private void setupControlMap()
+	{
+		this.controlMap = new HashMap<ControlType, PanelControl>();
+		controlMap.put(ControlType.COLUMN, this.columnSpinner);
+		controlMap.put(ControlType.UNIT_TYPE, this.unitBox);
+		controlMap.put(ControlType.NUMBER, this.numberSpinner);
+		controlMap.put(ControlType.ROW, this.rowSpinner);
+		controlMap.put(ControlType.CONDITION_TYPE, this.conditionBox);
+		controlMap.put(ControlType.GATE_TYPE, this.gateBox);
+		controlMap.put(ControlType.UNIT_PLAYER, this.playerBox);
+	}
+	
+	public HashMap<ControlType, PanelControl> getControls()
+	{
+		return this.controlMap;
+	}
+	
+	public boolean isDirty()
+	{
+		for (Entry<ControlType, PanelControl> entry : this.controlMap.entrySet())
+		{
+			PanelControl control = entry.getValue();
+			if (control.isEnabled() && control.isDirty())
+				return true;
+		}
+		return false;
+	}
+	
+	public void setNotDirty()
+	{
+		this.columnSpinner.setDirty(false);
+		this.unitBox.setDirty(false);
+		this.numberSpinner.setDirty(false);
+		this.rowSpinner.setDirty(false);
+		this.conditionBox.setDirty(false);
+		this.playerBox.setDirty(false);
+		this.gateBox.setDirty(false);
 	}
 	
 	public void changeCondition(Condition condition)
