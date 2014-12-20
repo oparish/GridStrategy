@@ -305,10 +305,24 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 	}
 	
+	private void resetCPlayer()
+	{
+		try {
+			FileOperations.resetCPlayer(this, true);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.resetFields();
+	}
+	
 	private void processButtonPress(AssemblerButton assemblerButton)
 	{
 		switch(assemblerButton.getButtonType())
 		{
+		case RESET:
+			this.resetCPlayer();
+			break;
 		case LOAD:
 			this.loadCPlayer();
 			break;
@@ -553,7 +567,12 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			this.cPlayer = FileOperations.loadCPlayer(this, true);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}	
+		this.resetFields();
+	}
+	
+	private void resetFields()
+	{
 		this.ruleListContents = this.cPlayer.getRules();
 		this.ruleList.setListData(this.ruleListContents.toArray(new Rule[this.ruleListContents.size()]));
 		this.selectedRule = null;

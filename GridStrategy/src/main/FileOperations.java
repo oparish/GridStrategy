@@ -34,14 +34,7 @@ public class FileOperations {
 	public static void saveCPlayer(ArrayList<Byte> bytes, Component component) 
 			throws IOException
 	{
-		if (FileOperations.lastCPlayer != null)
-		{
 			FileOperations.saveFile(FileOperations.lastCPlayer, bytes);
-		}
-		else
-		{
-			FileOperations.saveCPlayerAs(bytes, component); 
-		}
 	}
 	
 	public static void saveCPlayerAs(ArrayList<Byte> bytes, Component component) 
@@ -67,6 +60,12 @@ public class FileOperations {
 		}
 		fileInputStream.close();
 		return integers;
+	}
+	
+	public static CPlayer resetCPlayer(Component component, boolean isPlayer1) throws IOException
+	{
+		ArrayList<Integer> integers = FileOperations.loadFile(FileOperations.lastCPlayer);
+		return new CPlayer(isPlayer1, integers);
 	}
 	
 	public static CPlayer loadCPlayer(Component component, boolean isPlayer1) throws IOException
