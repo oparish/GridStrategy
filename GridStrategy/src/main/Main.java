@@ -128,7 +128,7 @@ public class Main
 	{
 		//Main.testPlayer = Spawner.createCPlayer(false);
 		//CPlayer.showCPlayer(Main.testPlayer);
-		CPlayer readPlayer = new CPlayer(false, FileOperations.loadFile("Test.ai"));
+		CPlayer readPlayer = FileOperations.loadCPlayer(null, false);
 		Main.debugOut(readPlayer.toString());
 		Main main = Main.getMain();
 //		while (Main.currentOpponent == null)
