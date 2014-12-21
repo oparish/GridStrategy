@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +64,11 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	public Assembler() throws IOException
 	{
 		super();
+		this.addWindowListener(new WindowAdapter() {  
+            public void windowClosing(WindowEvent e) {  
+                System.exit(0);  
+            }  
+        });  
 		this.cPlayer = FileOperations.loadCPlayer(this, true);
 		this.setLayout(new GridBagLayout());
 		this.ruleListContents = this.cPlayer.getRules();

@@ -13,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -68,6 +70,11 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	public GameScreen(GameGrid gameGrid)
 	{
 		super();
+		this.addWindowListener(new WindowAdapter() {  
+            public void windowClosing(WindowEvent e) {  
+                System.exit(0);  
+            }  
+        }); 
 		this.gameGrid = gameGrid;
 		this.setLayout(new GridLayout(2,2));
 		this.gridPane = new GridPane(this);
