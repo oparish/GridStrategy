@@ -44,7 +44,7 @@ public class ConditionFieldPanel extends JPanel
 		this.conditionTypeLabel = new JLabel("                   ");
 		this.columnSpinner = new NumberSpinner(0, Main.GRIDWIDTH - 1, ControlType.COLUMN, PanelType.CONDITION, assembler);
 		this.unitBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.CONDITION, assembler);
-		this.numberSpinner = new NumberSpinner(0, 9999, ControlType.NUMBER, PanelType.CONDITION, assembler);
+		this.numberSpinner = new NumberSpinner(0, 99, ControlType.NUMBER, PanelType.CONDITION, assembler);
 		this.rowSpinner = new NumberSpinner(0, Main.GRIDHEIGHT - 1, ControlType.ROW, PanelType.CONDITION, assembler);
 		this.conditionBox = new EnumBox<ConditionType>(ConditionType.values(), ControlType.CONDITION_TYPE, PanelType.CONDITION, assembler);
 		this.playerBox = new EnumBox<PlayerEnum>(PlayerEnum.values(), ControlType.UNIT_PLAYER, PanelType.CONDITION, assembler);
