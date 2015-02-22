@@ -380,7 +380,8 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 				}
 				else
 				{
-					
+					JOptionPane.showMessageDialog(new JFrame(), "You must select an appropriate condition first.", "No appropriate condition.",
+					        JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
