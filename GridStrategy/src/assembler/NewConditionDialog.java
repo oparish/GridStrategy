@@ -72,6 +72,7 @@ public class NewConditionDialog extends JDialog implements ActionListener
 		gridBagConstraints.gridwidth = width;
 		this.conditionOptions = new AssemblerList<Class<? extends Condition>>(new Class[]{ColumnCondition.class, GateCondition.class, CreditCondition.class, NoCondition.class}, AssemblerListType.CONDITIONCLASSES);
 		this.conditionOptions.setCellRenderer(new ConditionOptionsCellRenderer());
+		this.conditionOptions.setSelectedIndex(0);
 		this.add(new JScrollPane(this.conditionOptions), gridBagConstraints);
 	}
 	
