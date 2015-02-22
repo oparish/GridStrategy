@@ -1,6 +1,7 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ai.Action.ActionFieldName;
@@ -13,6 +14,11 @@ public class ActivateAction extends DeployAction
 	public ActivateAction(List<Integer> integers)
 	{
 		super(integers);
+	}
+	
+	public ActivateAction(HashMap<ActionFieldName, Integer> fields)
+	{
+		super(fields);
 	}
 	
 	public ColumnSearchCondition getColumnSearchCondition() {

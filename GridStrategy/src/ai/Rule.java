@@ -36,6 +36,11 @@ public class Rule
 				player1, ruleHeader.getActionHeader());
 	}
 	
+	public Rule clone()
+	{
+		return new Rule (this.condition.clone(), this.action.clone());
+	}
+	
 	public Condition getCondition() {
 		return condition;
 	}

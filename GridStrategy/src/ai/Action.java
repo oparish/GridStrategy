@@ -46,6 +46,11 @@ public abstract class Action
 		}
 	}
 	
+	public Action(HashMap<ActionFieldName, Integer> fields)
+	{
+		this.actionFields = fields;
+	}
+	
 	public static Action getActionExample(Class<? extends Action> actionClass)
 	{
 		if (actionClass == DeployAction.class)
@@ -147,6 +152,20 @@ public abstract class Action
 	public byte getHeaderByte()
 	{
 		return FileOperations.intToByte(CPlayer.getActionClassOrdinal(this.getClass()));
+	}
+	
+	public Action clone()
+	{
+		HashMap<ActionFieldName, Integer> newMap = new HashMap<ActionFieldName, Integer>();
+		for (Entry<ActionFieldName, Integer> entry : this.actionFields.entrySet())
+		{
+			newMap.put(entry.getKey(), entry.getValue());
+		}
+		
+		if (this instanceof DeployAction)
+			return new DeployAction(newMap);
+		else
+			return new ActivateAction(newMap);
 	}
 	
 	protected enum ActionFieldName

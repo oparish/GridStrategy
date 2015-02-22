@@ -1,6 +1,7 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ai.Action.ActionFieldName;
@@ -20,6 +21,11 @@ public class DeployAction extends Action
 	public DeployAction(List<Integer> integers)
 	{
 		super(integers);
+	}
+	
+	public DeployAction(HashMap<ActionFieldName, Integer> fields)
+	{
+		super(fields);
 	}
 	
 	public String toString()

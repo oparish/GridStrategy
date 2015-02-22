@@ -1,7 +1,9 @@
 package ai;
 
+import java.util.HashMap;
 import java.util.List;
 
+import ai.Condition.ConditionFieldName;
 import ai.headers.CreditConditionHeader;
 
 public class CreditCondition extends Condition implements NumberCondition
@@ -16,6 +18,11 @@ public class CreditCondition extends Condition implements NumberCondition
 	public CreditCondition(List<Integer> integers, boolean isPlayer1, CreditConditionHeader conditionHeader)
 	{
 		super(integers, isPlayer1, conditionHeader);
+	}
+	
+	public CreditCondition(HashMap<ConditionFieldName, Integer> fieldMap, boolean isPlayer1)
+	{
+		super(fieldMap, isPlayer1);
 	}
 
 	@Override

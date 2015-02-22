@@ -42,6 +42,7 @@ import ai.NoCondition;
 import ai.NumberCondition;
 import ai.Rule;
 import main.FileOperations;
+import main.Main;
 
 public class Assembler extends JFrame implements ActionListener, ChangeListener, ListSelectionListener
 {
@@ -367,7 +368,40 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			AddRuleDialog addRuleDialog = new AddRuleDialog(this);
 			addRuleDialog.setVisible(true);
 			break;
+		case MAKE_BATCH:
+			if (this.selectedRule != null)
+			{
+				this.saveCondition();
+				if (this.selectedCondition != null && this.selectedCondition instanceof ColumnCondition && 
+						((ColumnCondition) this.selectedCondition).getColumn() != null)
+				{
+					ArrayList<Rule> rules = this.makeBatch((ColumnCondition) this.selectedCondition, this.selectedRule.getAction());
+					this.ruleList.insertBatch(rules, ((ColumnCondition) this.selectedCondition).getColumn(), this.ruleList.getSelectedIndex());
+				}
+				else
+				{
+					
+				}
+
+			}
+			break;
 		}
+	}
+	
+	private ArrayList<Rule> makeBatch(ColumnCondition columnCondition, Action action)
+	{
+		int column = columnCondition.getColumn();
+		ArrayList<Rule> rules = new ArrayList<Rule>();
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			if (i != column)
+			{
+				ColumnCondition newCondition = (ColumnCondition) columnCondition.clone();
+				newCondition.setColumn(i);
+				rules.add(new Rule(newCondition, action.clone()));
+			}
+		}
+		return rules;
 	}
 	
 	private void saveCondition()
@@ -395,6 +429,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 				this.completeConditionChange(control, entry.getKey(), newCondition);
 		}
 		this.selectedRule.setCondition(newCondition);
+		this.selectedCondition = newCondition;
 		this.conditionFieldPanel.setNotDirty();
 	}
 	

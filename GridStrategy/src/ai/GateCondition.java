@@ -1,6 +1,7 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ai.Condition.ConditionFieldName;
@@ -51,6 +52,11 @@ public class GateCondition extends Condition
 				condition1Header.getSize() + condition2Header.getSize()), isPlayer1, condition1Header);
 	}
 	
+	public GateCondition(HashMap<ConditionFieldName, Integer> fieldMap, boolean isPlayer1)
+	{
+		super(fieldMap, isPlayer1);
+	}
+	
 	public GateType getGateType()
 	{
 		int value = this.conditionFields.get(ConditionFieldName.GATETYPE);
@@ -67,6 +73,14 @@ public class GateCondition extends Condition
 		return "		" + depth + " - Gate Condition: " + this.getGateType() + "\n" + 
 				this.condition1.toString(depth + 1) + "\n" + 
 						this.condition2.toString(depth + 1);
+	}
+	
+	public GateCondition clone()
+	{
+		GateCondition gateCondition = (GateCondition) super.clone();
+		gateCondition.setCondition1(this.condition1.clone());
+		gateCondition.setCondition2(this.condition2.clone());
+		return gateCondition;
 	}
 	
 	protected boolean runCheck(ObservationBatch observationBatch)

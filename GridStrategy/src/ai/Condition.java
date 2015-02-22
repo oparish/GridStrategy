@@ -3,7 +3,9 @@ package ai;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
+import ai.Action.ActionFieldName;
 import ai.headers.ColumnConditionHeader;
 import ai.headers.ConditionHeader;
 import ai.headers.CreditConditionHeader;
@@ -53,6 +55,33 @@ public abstract class Condition
 				value = null;
 			this.conditionFields.put(fieldName, value);
 			i++;
+		}
+	}
+	
+	public Condition clone()
+	{
+		if (this instanceof NoCondition)
+			return new NoCondition(this.isPlayer1);
+		
+		
+		HashMap<ConditionFieldName, Integer> newMap = new HashMap<ConditionFieldName, Integer>();
+		
+		for (Entry<ConditionFieldName, Integer> entry : this.conditionFields.entrySet())
+		{
+			newMap.put(entry.getKey(), entry.getValue());
+		}
+		
+		if (this instanceof ColumnCondition)
+		{
+			return new ColumnCondition(newMap, this.isPlayer1);
+		}
+		else if (this instanceof CreditCondition)
+		{
+			return new CreditCondition(newMap, this.isPlayer1);
+		}
+		else
+		{
+			return new GateCondition(newMap, this.isPlayer1);
 		}
 	}
 	
