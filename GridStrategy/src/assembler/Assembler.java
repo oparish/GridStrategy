@@ -46,6 +46,9 @@ import main.Main;
 
 public class Assembler extends JFrame implements ActionListener, ChangeListener, ListSelectionListener
 {
+	private static final String INITDIALOG_TITLE = "Opening";
+	private static final String INITDIALOG_MESSAGE = "Load an existing file?";
+	
 	RulePanel rulePanel;
 	AssemblerList<Rule> ruleList;
 	private CPlayer cPlayer;
@@ -69,8 +72,11 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
             public void windowClosing(WindowEvent e) {  
                 System.exit(0);  
             }  
-        });  
-		this.cPlayer = FileOperations.loadCPlayer(this, true);
+        });
+		if (this.initialDialog())
+			this.cPlayer = FileOperations.loadCPlayer(this, true);
+		else
+			this.cPlayer = new CPlayer(new ArrayList<Rule>(), true);
 		this.setLayout(new GridBagLayout());
 		this.ruleListContents = this.cPlayer.getRules();
 		this.setupHierarchyList();
@@ -85,6 +91,12 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.rulePanel = new RulePanel(this, this.conditionPanel, this.actionPanel);
 		this.add(this.rulePanel, this.getGridBagConstraints(1, 0, 1));
 		this.setSize(2400, 500);
+	}
+	
+	private boolean initialDialog()
+	{
+		return JOptionPane.showOptionDialog(this, INITDIALOG_MESSAGE, INITDIALOG_TITLE, JOptionPane.YES_NO_OPTION, 
+				JOptionPane.QUESTION_MESSAGE, null, new String[]{"Yes", "No"}, null) == 0;
 	}
 	
 	public void addToHierarchyList(Condition condition)
