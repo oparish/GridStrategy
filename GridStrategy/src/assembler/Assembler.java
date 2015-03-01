@@ -314,7 +314,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.saveCondition();
 		try
 		{
-			if (as)
+			if (as || !FileOperations.hasLastCPlayer())
 				FileOperations.saveCPlayerAs(this.cPlayer.toBytes(), this);
 			else
 				FileOperations.saveCPlayer(this.cPlayer.toBytes(), this);
@@ -388,7 +388,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 						((ColumnCondition) this.selectedCondition).getColumn() != null)
 				{
 					ArrayList<Rule> rules = this.makeBatch((ColumnCondition) this.selectedCondition, this.selectedRule.getAction());
-					this.ruleList.insertBatch(rules, ((ColumnCondition) this.selectedCondition).getColumn(), this.ruleList.getSelectedIndex());
+					this.insertBatch(rules, ((ColumnCondition) this.selectedCondition).getColumn(), this.ruleList.getSelectedIndex());
 				}
 				else
 				{
@@ -475,6 +475,34 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	{
 		this.ruleListContents.add(rule);
 		this.ruleList.setListData(this.ruleListContents.toArray(new Rule[this.ruleListContents.size()]));
+	}
+	
+	public void insertBatch(ArrayList<Rule> batch, int batchCutoff, int listCutoff)
+	{
+		ArrayList<Rule> newItems = new ArrayList<Rule>();
+		Rule[] contents = this.ruleList.getContents();
+		for (int j = 0; j < contents.length; j++)
+		{
+			if (j != listCutoff)
+				newItems.add(contents[j]);
+		}
+		for (int i = 0; i < Main.GRIDWIDTH - 1; i++)
+		{
+			if (i == batchCutoff)
+			{
+				newItems.add(contents[listCutoff]);
+			}
+			Rule item = batch.get(i);
+			newItems.add(item);
+		}
+		if (Main.GRIDWIDTH - 1 == batchCutoff)
+		{
+			newItems.add(contents[listCutoff]);
+		}
+		Rule[] ruleArray = new Rule[newItems.size()];
+		this.ruleList.setListData(newItems.toArray(ruleArray));
+		this.ruleListContents.clear();
+		this.ruleListContents.addAll(newItems);
 	}
 	
 	private void changeCondition(PanelControl panelControl, ControlType controlType)

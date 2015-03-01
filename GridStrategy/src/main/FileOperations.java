@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Component;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -31,6 +32,11 @@ public class FileOperations {
 		fileOutputStream.close();
 	}
 	
+	public static boolean hasLastCPlayer()
+	{
+		return FileOperations.lastCPlayer != null;
+	}
+	
 	public static void saveCPlayer(ArrayList<Byte> bytes, Component component) 
 			throws IOException
 	{
@@ -42,7 +48,10 @@ public class FileOperations {
 	{
 		JFileChooser fc = new JFileChooser(".");
 		fc.showSaveDialog(component);
-		String filename = fc.getSelectedFile().getName();
+		File selectedFile = fc.getSelectedFile();
+		if (selectedFile == null)
+			return;
+		String filename = selectedFile.getName();
 		FileOperations.lastCPlayer = filename;
 		FileOperations.saveFile(filename, bytes);
 	}

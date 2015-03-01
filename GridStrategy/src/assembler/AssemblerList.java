@@ -54,28 +54,4 @@ public class AssemblerList<T> extends JList<T>
 		super.setListData(listData);
 		this.contents = listData;
 	}
-	
-	public void insertBatch(ArrayList<T> batch, int batchCutoff, int listCutoff)
-	{
-		ArrayList<T> newItems = new ArrayList<T>();
-		for (int j = 0; j < this.contents.length; j++)
-		{
-			if (j != listCutoff)
-				newItems.add(this.contents[j]);
-		}
-		for (int i = 0; i < Main.GRIDWIDTH - 1; i++)
-		{
-			if (i == batchCutoff)
-			{
-				newItems.add(this.contents[listCutoff]);
-			}
-			T item = batch.get(i);
-			newItems.add(item);
-		}
-		if (Main.GRIDWIDTH - 1 == batchCutoff)
-		{
-			newItems.add(this.contents[listCutoff]);
-		}
-		this.setListData((T[])newItems.toArray());
-	}
 }
