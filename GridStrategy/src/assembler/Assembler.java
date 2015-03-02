@@ -336,6 +336,28 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.resetFields();
 	}
 	
+	private void removeSelectedRule()
+	{
+		this.changingControls = true;
+		Rule[] rules = this.ruleList.getContents();
+		Rule[] newRules = new Rule[rules.length - 1];
+		int i = 0;
+		for (Rule rule : rules)
+		{
+			if (rule != this.selectedRule)
+			{
+				newRules[i] = rule;
+				i++;
+			}
+		}
+		this.ruleList.setListData(newRules);
+		this.ruleListContents.remove(this.selectedRule);
+		this.selectedRule = null;
+		this.conditionFieldPanel.disableControls();
+		this.actionPanel.disableControls();
+		this.changingControls = false;
+	}
+	
 	private void processButtonPress(AssemblerButton assemblerButton)
 	{
 		switch(assemblerButton.getButtonType())
@@ -379,6 +401,10 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		case ADD_RULE:
 			AddRuleDialog addRuleDialog = new AddRuleDialog(this);
 			addRuleDialog.setVisible(true);
+			break;
+		case REMOVE_RULE:
+			if (this.selectedRule != null)
+				this.removeSelectedRule();
 			break;
 		case MAKE_BATCH:
 			if (this.selectedRule != null)
