@@ -37,6 +37,11 @@ public class FileOperations {
 		return FileOperations.lastCPlayer != null;
 	}
 	
+	public static void clearLastCPlayer()
+	{
+		FileOperations.lastCPlayer = null;
+	}
+	
 	public static void saveCPlayer(ArrayList<Byte> bytes, Component component) 
 			throws IOException
 	{

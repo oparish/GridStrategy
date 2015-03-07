@@ -358,6 +358,21 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.changingControls = false;
 	}
 	
+	private void newFile()
+	{
+		this.selectedRule = null;
+		this.selectedCondition = null;
+		this.cPlayer = new CPlayer(new ArrayList<Rule>(), true);
+		this.conditionFieldPanel.disableControls();
+		this.actionPanel.disableControls();
+		this.ruleList.setListData(new Rule[0]);
+		this.hierarchyList.setListData(new Condition[0]);
+		this.gateList.setListData(new Condition[0]);
+		this.ruleListContents.clear();
+		this.hierarchyContents.clear();
+		FileOperations.clearLastCPlayer();
+	}
+	
 	private void processButtonPress(AssemblerButton assemblerButton)
 	{
 		switch(assemblerButton.getButtonType())
@@ -405,6 +420,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		case REMOVE_RULE:
 			if (this.selectedRule != null)
 				this.removeSelectedRule();
+			break;
+		case NEW_FILE:
+			this.newFile();
 			break;
 		case MAKE_BATCH:
 			if (this.selectedRule != null)
