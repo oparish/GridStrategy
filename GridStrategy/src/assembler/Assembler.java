@@ -429,7 +429,8 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			{
 				this.saveCondition();
 				if (this.selectedCondition != null && this.selectedCondition instanceof ColumnCondition && 
-						((ColumnCondition) this.selectedCondition).getColumn() != null)
+						((ColumnCondition) this.selectedCondition).getColumn() != null  && 
+						((ColumnCondition) this.selectedCondition).getColumn() == this.selectedRule.getAction().getColumnPos())
 				{
 					ArrayList<Rule> rules = this.makeBatch((ColumnCondition) this.selectedCondition, this.selectedRule.getAction());
 					this.insertBatch(rules, ((ColumnCondition) this.selectedCondition).getColumn(), this.ruleList.getSelectedIndex());
@@ -455,7 +456,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			{
 				ColumnCondition newCondition = (ColumnCondition) columnCondition.clone();
 				newCondition.setColumn(i);
-				rules.add(new Rule(newCondition, action.clone()));
+				Action newAction = action.clone();
+				newAction.setColumnPos(i);
+				rules.add(new Rule(newCondition, newAction));
 			}
 		}
 		return rules;
