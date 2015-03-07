@@ -9,13 +9,18 @@ import javax.swing.event.ChangeListener;
 
 public class NumberSpinner extends ConditionSpinner implements PanelControl
 {
-	public NumberSpinner(int min, int max, ControlType controlType, PanelType panelType, ChangeListener changeListener)
+	public NumberSpinner(int min, int max, ControlType controlType, PanelType panelType, ChangeListener changeListener, boolean checkbox)
 	{
 		super(controlType, new SpinnerNumberModel(min, min, max, 1));
 		this.addChangeListener(changeListener);
 		this.controlType = controlType;
 		this.panelType = panelType;
 		this.setEnabled(false);
+		if (checkbox)
+		{
+			this.checkbox = new AssemblerCheckBox(this);
+			this.checkbox.setEnabled(false);
+		}
 	}
 
 	public int getNumber()
@@ -83,5 +88,11 @@ public class NumberSpinner extends ConditionSpinner implements PanelControl
 	public void addCheckBox(JCheckBox checkbox)
 	{
 		this.checkbox = checkbox;
+	}
+	
+	@Override
+	public JCheckBox getCheckBox()
+	{
+		return this.checkbox;
 	}
 }

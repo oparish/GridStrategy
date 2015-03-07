@@ -9,6 +9,7 @@ public interface PanelControl {
 	public void setDirty(boolean value);
 	public boolean isDirty();
 	public void addCheckBox(JCheckBox checkbox);
+	public JCheckBox getCheckBox();
 	public void setEnabled(boolean value);
 	public boolean isEnabled();
 }

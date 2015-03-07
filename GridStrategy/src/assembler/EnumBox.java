@@ -20,13 +20,18 @@ public class EnumBox<T> extends JComboBox implements PanelControl
 		return panelType;
 	}
 
-	public EnumBox(T[] spinnerValues, ControlType controlType, PanelType panelType, ActionListener actionListener)
+	public EnumBox(T[] spinnerValues, ControlType controlType, PanelType panelType, ActionListener actionListener, boolean checkbox)
 	{
 		super(spinnerValues);
 		this.controlType = controlType;
 		this.panelType = panelType;
 		this.addActionListener(actionListener);
 		this.setEnabled(false);
+		if (checkbox)
+		{
+			this.checkbox = new AssemblerCheckBox(this);
+			this.checkbox.setEnabled(false);
+		}
 	}
 
 	public void setEnumValue(T value)
@@ -88,5 +93,11 @@ public class EnumBox<T> extends JComboBox implements PanelControl
 			this.setEnumValue(value);
 			this.setEnabled(true);
 		}
+	}
+
+	@Override
+	public JCheckBox getCheckBox()
+	{
+		return this.checkbox;
 	}
 }

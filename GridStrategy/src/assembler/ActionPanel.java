@@ -31,16 +31,16 @@ public class ActionPanel extends JPanel
 	{
 		super();
 		this.setLayout(new GridBagLayout());
-		this.actionTypeBox = new EnumBox<ActionType>(ActionType.values(), ControlType.ACTION_TYPE, PanelType.ACTION, assembler);
+		this.actionTypeBox = new EnumBox<ActionType>(ActionType.values(), ControlType.ACTION_TYPE, PanelType.ACTION, assembler, false);
 		this.setupRow(ControlType.ACTION_TYPE, this.actionTypeBox, 0);
 		
-		this.positionSpinner = new NumberSpinner(0, Main.GRIDWIDTH, ControlType.COLUMN, PanelType.ACTION, assembler);
+		this.positionSpinner = new NumberSpinner(0, Main.GRIDWIDTH, ControlType.COLUMN, PanelType.ACTION, assembler, false);
 		this.setupRow(ControlType.COLUMN, this.positionSpinner, 1);
 
-		this.unitTypeBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.ACTION, assembler);
+		this.unitTypeBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.ACTION, assembler, false);
 		this.setupRow(ControlType.UNIT_TYPE, this.unitTypeBox, 2);
 		
-		this.conditionBox = new EnumBox<ColumnSearchCondition>(ColumnSearchCondition.values(), ControlType.CONDITION_TYPE, PanelType.ACTION, assembler);
+		this.conditionBox = new EnumBox<ColumnSearchCondition>(ColumnSearchCondition.values(), ControlType.CONDITION_TYPE, PanelType.ACTION, assembler, false);
 		this.setupRow(ControlType.CONDITION_TYPE, this.conditionBox, 3);
 		
 		this.setupControlMap();

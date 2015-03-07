@@ -42,22 +42,22 @@ public class ConditionFieldPanel extends JPanel
 		this.setLayout(new GridLayout(8, 3));
 		
 		this.conditionTypeLabel = new JLabel("                   ");
-		this.columnSpinner = new NumberSpinner(0, Main.GRIDWIDTH - 1, ControlType.COLUMN, PanelType.CONDITION, assembler);
-		this.unitBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.CONDITION, assembler);
-		this.numberSpinner = new NumberSpinner(0, 99, ControlType.NUMBER, PanelType.CONDITION, assembler);
-		this.rowSpinner = new NumberSpinner(0, Main.GRIDHEIGHT - 1, ControlType.ROW, PanelType.CONDITION, assembler);
-		this.conditionBox = new EnumBox<ConditionType>(ConditionType.values(), ControlType.CONDITION_TYPE, PanelType.CONDITION, assembler);
-		this.playerBox = new EnumBox<PlayerEnum>(PlayerEnum.values(), ControlType.UNIT_PLAYER, PanelType.CONDITION, assembler);
-		this.gateBox = new EnumBox<GateType>(GateType.values(), ControlType.GATE_TYPE, PanelType.CONDITION, assembler);
+		this.columnSpinner = new NumberSpinner(0, Main.GRIDWIDTH - 1, ControlType.COLUMN, PanelType.CONDITION, assembler, true);
+		this.unitBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.CONDITION, assembler, true);
+		this.numberSpinner = new NumberSpinner(0, 99, ControlType.NUMBER, PanelType.CONDITION, assembler, true);
+		this.rowSpinner = new NumberSpinner(0, Main.GRIDHEIGHT - 1, ControlType.ROW, PanelType.CONDITION, assembler, true);
+		this.conditionBox = new EnumBox<ConditionType>(ConditionType.values(), ControlType.CONDITION_TYPE, PanelType.CONDITION, assembler, true);
+		this.playerBox = new EnumBox<PlayerEnum>(PlayerEnum.values(), ControlType.UNIT_PLAYER, PanelType.CONDITION, assembler, true);
+		this.gateBox = new EnumBox<GateType>(GateType.values(), ControlType.GATE_TYPE, PanelType.CONDITION, assembler, true);
 		
-		this.addControl(assembler, "Test", this.conditionTypeLabel, false);
-		this.addControl(assembler, ControlType.COLUMN.getText(), this.columnSpinner, true);
-		this.addControl(assembler, ControlType.UNIT_TYPE.getText(), this.unitBox, true);
-		this.addControl(assembler, ControlType.NUMBER.getText(), this.numberSpinner, false);
-		this.addControl(assembler, ControlType.ROW.getText(), this.rowSpinner, true);
-		this.addControl(assembler, ControlType.CONDITION_TYPE.getText(), this.conditionBox, true);
-		this.addControl(assembler, ControlType.GATE_TYPE.getText(), this.gateBox, false);
-		this.addControl(assembler, "Player", this.playerBox, true);
+		this.addControl(assembler, "Test", this.conditionTypeLabel);
+		this.addControl(assembler, ControlType.COLUMN.getText(), this.columnSpinner);
+		this.addControl(assembler, ControlType.UNIT_TYPE.getText(), this.unitBox);
+		this.addControl(assembler, ControlType.NUMBER.getText(), this.numberSpinner);
+		this.addControl(assembler, ControlType.ROW.getText(), this.rowSpinner);
+		this.addControl(assembler, ControlType.CONDITION_TYPE.getText(), this.conditionBox);
+		this.addControl(assembler, ControlType.GATE_TYPE.getText(), this.gateBox);
+		this.addControl(assembler, "Player", this.playerBox);
 		
 		this.setupControlMap();
 	}
@@ -103,13 +103,13 @@ public class ConditionFieldPanel extends JPanel
 	
 	public void disableControls()
 	{
-		this.columnSpinner.setEnabled(false);
-		this.unitBox.setEnabled(false);
-		this.numberSpinner.setEnabled(false);
-		this.rowSpinner.setEnabled(false);
-		this.conditionBox.setEnabled(false);
-		this.playerBox.setEnabled(false);
-		this.gateBox.setEnabled(false);
+		this.columnSpinner.switchEnabled(false);
+		this.unitBox.switchEnabled(false);
+		this.numberSpinner.switchEnabled(false);
+		this.rowSpinner.switchEnabled(false);
+		this.conditionBox.switchEnabled(false);
+		this.playerBox.switchEnabled(false);
+		this.gateBox.switchEnabled(false);
 	}
 	
 	public void changeCondition(Condition condition)
@@ -159,17 +159,18 @@ public class ConditionFieldPanel extends JPanel
 		this.gateBox.switchEnabled(value);
 	}
 		
-	private void addControl(Assembler assembler, String text, JComponent control, boolean checkBox)
+	private void addControl(Assembler assembler, String text, JComponent control)
 	{
 		this.add(new JLabel(text));
 		this.add(control);
-		if (checkBox)
+		if (control instanceof PanelControl)
 		{
-			PanelControl panelControl = (PanelControl) control;
-			AssemblerCheckBox checkbox = new AssemblerCheckBox(panelControl);
-			this.add(checkbox);
-			checkbox.addActionListener(assembler);
-			panelControl.addCheckBox(checkbox);
+			JCheckBox checkbox = ((PanelControl) control).getCheckBox();
+			if (checkbox != null)
+			{
+				this.add(checkbox);
+				checkbox.addActionListener(assembler);
+			}
 		}
 		else
 		{
