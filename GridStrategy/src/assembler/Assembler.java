@@ -428,6 +428,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			if (this.selectedRule != null)
 			{
 				this.saveCondition();
+				this.saveAction();
 				if (this.selectedCondition != null && this.selectedCondition instanceof ColumnCondition && 
 						((ColumnCondition) this.selectedCondition).getColumn() != null  && 
 						((ColumnCondition) this.selectedCondition).getColumn() == this.selectedRule.getAction().getColumnPos())
