@@ -60,7 +60,7 @@ public class CPlayer
 		return null;
 	}
 	
-	private final ArrayList<Rule> rules;
+	private ArrayList<Rule> rules;
 	public ArrayList<Rule> getRules() {
 		return rules;
 	}
@@ -158,6 +158,21 @@ public class CPlayer
 	public int getNumberOfRules()
 	{
 		return this.rules.size();
+	}
+	
+	public void setRules(ArrayList<Rule> rules)
+	{
+		this.rules = rules;
+	}
+	
+	public void setRules(Rule[] rules)
+	{
+		ArrayList<Rule> ruleList = new ArrayList<Rule>();
+		for (Rule rule : rules)
+		{
+			ruleList.add(rule);
+		}
+		this.rules = ruleList;
 	}
 	
 	public String toString()

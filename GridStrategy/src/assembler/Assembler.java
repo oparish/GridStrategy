@@ -305,6 +305,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			}
 			this.ruleList.setListData(newContents);
 			this.ruleList.setSelectedIndex(newIndex);
+			this.cPlayer.setRules(newContents);
 		}
 	}
 	
