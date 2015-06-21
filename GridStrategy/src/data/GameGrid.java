@@ -280,7 +280,7 @@ public class GameGrid
 	
 	private void declareStalemate()
 	{
-		Main.debugOut("Stalemate");
+		System.out.println("Stalemate");
 		this.result = TIMED_OUT;
 		this.endGame();
 	}
@@ -418,14 +418,14 @@ public class GameGrid
 		
 	private void player1Loss()
 	{
-		System.out.println("Player 1 loses");
+		System.out.println("Player 2 wins");
 		this.result = PLAYER2_WINS;
 		this.endGame();
 	}
 	
 	private void player2Loss()
 	{
-		System.out.println("Player 2 loses");
+		System.out.println("Player 1 wins");
 		this.result = PLAYER1_WINS;
 		this.endGame();
 	}

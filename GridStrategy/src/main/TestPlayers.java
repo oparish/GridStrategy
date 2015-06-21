@@ -3,6 +3,8 @@ package main;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import data.Unit;
 import data.UnitType;
 import ai.Action;
@@ -65,11 +67,8 @@ public class TestPlayers
 	
 	public static void main(String args[]) throws IOException
 	{
-//		CPlayer cPlayer = new CPlayer(false, FileOperations.loadFile("test.ai"));
-//		System.out.println(unitsOnBoardTestPlayer().toString());
-		//Main.getMain().startGameGridWithScreen(unitsOnBoardTestPlayer(), null);
-		CPlayer cPlayer = TestPlayers.unitsOnBoardTestPlayer();
-		System.out.println(cPlayer.toString());
-		FileOperations.saveFile("test.ai", cPlayer.toBytes());
+		CPlayer cPlayer1 = FileOperations.loadCPlayer(null, true);
+		CPlayer cPlayer2 = FileOperations.loadCPlayer(null, false);
+		Main.getMain().startGameGridWithScreen(cPlayer1, cPlayer2, true);
 	}
 }

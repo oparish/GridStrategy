@@ -5,19 +5,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import data.GameResult;
+import javax.swing.JOptionPane;
 
+import data.GameResult;
 import main.FileOperations;
 import main.Main;
 
 public class Manufacturer 
 {
+	private static final String INITDIALOG_MESSAGE = "Do you want to load another step player?";
+	private static final String INITDIALOG_TITLE = "Load Step Player?";
 	private static final int NUMBER_OF_CONTESTANTS = 8;
+	private static ArrayList<CPlayer> stepPlayers = new ArrayList<CPlayer>();
 	
 	public static void main(String args[]) throws IOException
 	{
+		int result = JOptionPane.showOptionDialog(null, INITDIALOG_MESSAGE, INITDIALOG_TITLE, JOptionPane.YES_NO_OPTION, 
+				JOptionPane.QUESTION_MESSAGE, null, new String[]{"Yes", "No"}, null);
+		while (result == 0)
+		{
+			CPlayer stepPlayer = FileOperations.loadCPlayer(null, false);
+			if (stepPlayer != null)
+				stepPlayers.add(stepPlayer);
+			result = JOptionPane.showOptionDialog(null, INITDIALOG_MESSAGE, INITDIALOG_TITLE, JOptionPane.YES_NO_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, null, new String[]{"Yes", "No"}, null);
+		}
+			
 		CPlayer[] initialCplayers = Manufacturer.getInitialCPlayers();
-		CPlayer winner = Manufacturer.pitPlayers(initialCplayers);
+//		CPlayer winner = Manufacturer.pitPlayers(initialCplayers);
+		CPlayer winner = initialCplayers[0];
 		
 		FileOperations.saveFile("Test.ai", winner.toBytes());
 		System.out.println(winner);
@@ -84,8 +100,18 @@ public class Manufacturer
 				System.out.println("Making player");
 				cPlayer = Spawner.createBatchedCPlayer(true);
 				System.out.println("Player Made");
+				
 				result = Main.getMain().startGameGridWithoutScreen(cPlayer, null);
 				
+				if (result == GameResult.PLAYER1_WINS)
+				{
+					for (CPlayer stepPlayer : stepPlayers)
+					{
+						result = Main.getMain().startGameGridWithoutScreen(cPlayer, stepPlayer);
+						if (result != GameResult.PLAYER1_WINS)
+							break;
+					}
+				}				
 			} while(result != GameResult.PLAYER1_WINS);
 			players[i] = cPlayer;
 			System.out.println("Player Found");
