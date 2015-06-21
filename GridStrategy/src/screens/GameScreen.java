@@ -1,11 +1,13 @@
 package screens;
 
+import static java.awt.GridBagConstraints.BOTH;
 import static screens.GameScreenState.ACTIVATING_ABILITY;
 import static screens.GameScreenState.COMPUTER_PLAYING;
 import static screens.GameScreenState.DEPLOYING_UNIT;
 import static screens.GameScreenState.MOVING_UNITS;
 import static screens.GameScreenState.STANDARD;
 
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
@@ -76,7 +78,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
             }  
         }); 
 		this.gameGrid = gameGrid;
-		this.setLayout(new GridLayout(2,2));
+		this.setLayout(new GridLayout(1,1));
 		this.gridPane = new GridPane(this);
 		this.cellPanel = this.gridPane.getCellPanel();
 		Animator.setGridPane(this.gridPane);
@@ -85,9 +87,12 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		this.infoPane = new InfoPane(this.gameGrid);
 		JScrollPane jScrollPane = new JScrollPane(this.messagePane);
 		this.add(this.gridPane);
-		this.add(this.controlPane);
-		this.add(jScrollPane);
-		this.add(this.infoPane);
+		JPanel containerPanel = new JPanel();
+		containerPanel.setLayout(new GridLayout(3,1));
+		containerPanel.add(this.controlPane);
+		containerPanel.add(this.infoPane);
+		containerPanel.add(jScrollPane);
+		this.add(containerPanel);
 		this.switchScreenState(STANDARD);
 		this.gameGrid.addEventListener(this);
 		this.gameGrid.addEventListener(this.messagePane);

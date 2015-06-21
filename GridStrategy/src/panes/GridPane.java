@@ -61,8 +61,8 @@ public class GridPane extends JPanel
 	
 	private void setupNumbers()
 	{
-		this.gridInfo.rowNumbers = new Integer[10];
-		this.gridInfo.columnNumbers = new Integer[10];
+		this.gridInfo.rowNumbers = new Integer[Main.GRIDHEIGHT];
+		this.gridInfo.columnNumbers = new Integer[Main.GRIDWIDTH];
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
 			this.gridInfo.columnNumbers[i] = i + (i * Main.CELLWIDTH) + 1;

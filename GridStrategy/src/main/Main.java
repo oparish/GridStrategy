@@ -33,7 +33,7 @@ public class Main
 	public final static int PLAYER2_MAXCREDITS = 10;
 	public final static int CREDITSPERTURN = 1;
 	public final static int GRIDWIDTH = 5;
-	public final static int GRIDHEIGHT = 10;
+	public final static int GRIDHEIGHT = 15;
 	public final static int MOVESPERTURN = 1;
 	public final static int FIRSTATTACKSTALEMATE = 60;
 	public final static int SUBATTACKSTALEMATE = 40;	
