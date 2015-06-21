@@ -5,6 +5,7 @@ import static data.GameResult.PLAYER2_WINS;
 import static data.GameResult.TIMED_OUT;
 import static data.UnitCategory.FRONTLINE;
 import static data.UnitCategory.LOW;
+import static data.UnitCategory.SHIELD;
 import static data.UnitType.BUNKER;
 import static events.CombatType.BASIC;
 import static events.EventType.COMBAT;
@@ -180,21 +181,33 @@ public class GameGrid
 			endPoint = Main.GRIDHEIGHT - 1;
 		}
 		
+		boolean shotStopped = false;
+		
 		for (int i = y + direction; (endPoint - i) * direction >= 0; i+=direction)
 		{
 			Unit unit2 = this.getUnitAt(x, i);
-			if (unit2 != null && !unit2.getUnitType().hasCategory(LOW))
+			if (unit2 != null && unit2.getUnitType().hasCategory(SHIELD))
+			{
+				this.considerEvent(new TwoUnitEvent(this, EventType.ARTILLERY_BLOCKED, x, y, unit, x, i, unit2));
+				shotStopped = true;
+				break;
+			}
+			else if (unit2 != null && !unit2.getUnitType().hasCategory(LOW))
 			{
 				this.artilleryHit(x, y, x, i, unit, unit2);
+				shotStopped = true;
 				break;
 			}
 		}
+		
+		if (!shotStopped)
+			this.considerEvent(new OneUnitEvent(this, EventType.ARTILLERY_WITHOUT_HIT, x, y, unit));
 	}
 	
 	private void artilleryHit(int sourceX, int sourceY, int targetX, int targetY, Unit unit1, Unit unit2)
 	{
 		this.destroyUnitAt(targetX, targetY);
-		this.considerEvent(new TwoUnitEvent(this, EventType.ARTILLERY_FIRING, sourceX, sourceY, unit1, targetX, targetY, unit2));
+		this.considerEvent(new TwoUnitEvent(this, EventType.ARTILLERY_HIT, sourceX, sourceY, unit1, targetX, targetY, unit2));
 	}
 	
 	private void newDeployPoint(int x, int y)

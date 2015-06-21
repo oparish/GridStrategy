@@ -4,6 +4,7 @@ import static data.AbilityType.DEPLOYPOINT;
 import static data.UnitCategory.FRONTLINE;
 import static data.UnitCategory.INTERCEPTOR;
 import static data.UnitCategory.LOW;
+import static data.UnitCategory.SHIELD;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,7 +23,8 @@ public enum UnitType
 	DEPLOYER("Player1Deployer", "Player2Deployer", 1, 0, 1,
 					new UnitCategory[]{}, DEPLOYPOINT),
 	BUNKER("Player1Bunker", "Player2Bunker", 0, 0, -1, new UnitCategory[]{FRONTLINE, LOW}, null),
-	SPEEDER("Player1Speeder", "Player2Speeder", 4, 1, 3, new UnitCategory[]{LOW}, null);
+	SPEEDER("Player1Speeder", "Player2Speeder", 4, 1, 3, new UnitCategory[]{LOW}, null),
+	BARRIER("Player1Barrier", "Player2Barrier", 1, 1, 3, new UnitCategory[]{SHIELD}, null);
 	
 	private static ArrayList<UnitType> deployableUnitTypes;
 	private static ArrayList<UnitType> activatableUnitTypes;

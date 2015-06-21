@@ -289,10 +289,23 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			case FINISH_ACTION:
 				this.finishAction();
 				break;
-			case ARTILLERY_FIRING:
-				this.paintFiringArtillery(eventLocation1, eventLocation2, unit1, unit2);
+			case ARTILLERY_HIT:
+				this.paintArtilleryHit(eventLocation1, eventLocation2, unit1, unit2);
+				break;
+			case ARTILLERY_BLOCKED:
+				this.paintArtilleryBlocked(eventLocation1, eventLocation2, unit1, unit2);
+				break;
+			case ARTILLERY_WITHOUT_HIT:
+				this.paintArtilleryWithoutHit(eventLocation1, unit1);
 				break;
 		}
+	}
+	
+	private void paintArtilleryWithoutHit(EventLocation eventLocation1, Unit unit1)
+	{
+		VerticalAnimationSeries fireAnimationSeries = Animator.getFiringAnimationSeries(unit1);
+		fireAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), eventLocation1, new EventBase(eventLocation1.getColumn(), 
+				!unit1.isOwnedByPlayer1()));
 	}
 	
 	private void paintDeployPoint(EventLocation eventLocation1, Unit unit1)
@@ -300,7 +313,14 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		
 	}
 	
-	private void paintFiringArtillery(EventLocation eventLocation1, EventLocation eventLocation2, Unit unit1, Unit unit2)
+	private void paintArtilleryBlocked(EventLocation eventLocation1, EventLocation eventLocation2, Unit unit1, Unit unit2)
+	{
+		int direction = unit1.isOwnedByPlayer1()?-1:1;
+		VerticalAnimationSeries fireAnimationSeries = Animator.getFiringAnimationSeries(unit1);
+		fireAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), eventLocation1, eventLocation2);
+	}
+	
+	private void paintArtilleryHit(EventLocation eventLocation1, EventLocation eventLocation2, Unit unit1, Unit unit2)
 	{
 		int direction = unit1.isOwnedByPlayer1()?-1:1;
 		VerticalAnimationSeries fireAnimationSeries = Animator.getFiringAnimationSeries(unit1);
