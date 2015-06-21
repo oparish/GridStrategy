@@ -729,8 +729,14 @@ public class GameGrid
 		if (unit == null)
 			System.out.println("Trying to destroy a null unit");
 		if (unit.getUnitType().hasCategory(FRONTLINE))
+		{
+			this.gridContents[x][y] = null;
 			this.updateDeployPoints(unit.isOwnedByPlayer1(), x);
-		this.gridContents[x][y] = null;
+		}
+		else
+		{
+			this.gridContents[x][y] = null;
+		}	
 	}
 	
 	private void noteMove()
