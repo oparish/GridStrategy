@@ -342,6 +342,12 @@ public class GameGrid
 	private void tryMovingPlayerUnit(MoveAttempt moveAttempt, 
 			int end, int start, int directionToWalk)
 	{
+		if (moveAttempt.unit.isJustDeployed())
+		{
+			moveAttempt.unit.setJustDeployed(false);
+			return;
+		}
+		
 		Unit[] column = this.gridContents[moveAttempt.column];
 		int speed = moveAttempt.unit.getUnitType().getSpeed();
 		if (speed == 0)

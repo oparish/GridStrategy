@@ -5,6 +5,15 @@ import java.awt.image.BufferedImage;
 public class Unit
 {
 	private final boolean ownedByPlayer1;
+	private boolean justDeployed = true;
+	public boolean isJustDeployed() {
+		return justDeployed;
+	}
+
+	public void setJustDeployed(boolean justDeployed) {
+		this.justDeployed = justDeployed;
+	}
+
 	private final UnitType unitType;
 
 	public Unit(boolean ownedByPlayer1, UnitType unitType)
