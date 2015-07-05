@@ -357,6 +357,8 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.selectedRule = null;
 		this.conditionFieldPanel.disableControls();
 		this.actionPanel.disableControls();
+		this.conditionFieldPanel.setNotDirty();
+		this.actionPanel.setNotDirty();
 		this.changingControls = false;
 	}
 	
@@ -524,7 +526,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	public void addRule(Rule rule)
 	{
 		this.ruleListContents.add(rule);
+		int selectedIndex = this.ruleList.getSelectedIndex();
 		this.ruleList.setListData(this.ruleListContents.toArray(new Rule[this.ruleListContents.size()]));
+		this.ruleList.setSelectedIndex(selectedIndex);
 	}
 	
 	public void insertBatch(ArrayList<Rule> batch, int batchCutoff, int listCutoff)
