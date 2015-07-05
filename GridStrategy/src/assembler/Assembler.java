@@ -244,7 +244,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			break;
 		case UNIT_PLAYER:
 			PlayerEnum playerEnum = ((EnumBox<PlayerEnum>) panelControl).getEnumValue();
-			boolean value = playerEnum == PlayerEnum.ONE ? true : false;		
+			boolean value = playerEnum == PlayerEnum.ONE ? true : false;	
 			((ColumnCondition) condition).setUnitPlayer(value);
 			break;
 		}
@@ -313,6 +313,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	{
 		this.saveAction();
 		this.saveCondition();
+		
 		try
 		{
 			if (as || !FileOperations.hasLastCPlayer())
@@ -483,7 +484,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			newCondition = Condition.getConditionExample(NoCondition.class);
 		else
 			newCondition = Condition.getConditionExample(ColumnCondition.class);
-		
+
 		for (Entry<ControlType, PanelControl> entry : controlMap.entrySet())
 		{
 			PanelControl control = entry.getValue();
@@ -587,7 +588,10 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			break;
 		case UNIT_PLAYER:
 			PlayerEnum player;
-			if (((ColumnCondition) condition).getUnitPlayer())
+			Boolean currentValue = ((ColumnCondition) condition).getUnitPlayer();
+			if (currentValue == null)
+				player = null;
+			else if (currentValue == true)
 				player = PlayerEnum.ONE;
 			else
 				player = PlayerEnum.TWO;
@@ -606,7 +610,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	}
 	
 	private void changeSelectedRule(Rule rule, int index)
-	{
+	{	
 		if (this.actionPanel.isDirty() || this.conditionFieldPanel.isDirty())
 		{
 			boolean result = this.showOptionPane("Unsaved Changes", "Really cancel changes?");

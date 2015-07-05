@@ -20,14 +20,14 @@ public abstract class Condition
 	private static HashMap<Class<? extends Condition>, ConditionFieldName[]> conditionFieldNames;
 	
 	protected HashMap<ConditionFieldName, Integer> conditionFields = new HashMap<ConditionFieldName, Integer>();
-	protected boolean isPlayer1;
+	protected boolean employerIsPlayer1;
 	
 	static
 	{
 		Condition.conditionFieldNames = new HashMap<Class<? extends Condition>, ConditionFieldName[]>();
 		Condition.conditionFieldNames.put(GateCondition.class, new ConditionFieldName[]{ConditionFieldName.GATETYPE});
 		Condition.conditionFieldNames.put(ColumnCondition.class, new ConditionFieldName[]{ConditionFieldName.ROW, ConditionFieldName.COLUMN, ConditionFieldName.UNIT_TYPE, 
-			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE});
+			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE, ConditionFieldName.UNIT_PLAYER});
 		Condition.conditionFieldNames.put(CreditCondition.class, new ConditionFieldName[]{ 
 			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE});
 		Condition.conditionFieldNames.put(NoCondition.class, new ConditionFieldName[]{});
@@ -35,7 +35,7 @@ public abstract class Condition
 	
 	Condition(boolean isPlayer1)
 	{
-		this.isPlayer1 = isPlayer1;
+		this.employerIsPlayer1 = isPlayer1;
 	}
 	
 	Condition(HashMap<ConditionFieldName, Integer> fieldMap, boolean isPlayer1)
@@ -61,7 +61,7 @@ public abstract class Condition
 	public Condition clone()
 	{
 		if (this instanceof NoCondition)
-			return new NoCondition(this.isPlayer1);
+			return new NoCondition(this.employerIsPlayer1);
 		
 		
 		HashMap<ConditionFieldName, Integer> newMap = new HashMap<ConditionFieldName, Integer>();
@@ -73,15 +73,15 @@ public abstract class Condition
 		
 		if (this instanceof ColumnCondition)
 		{
-			return new ColumnCondition(newMap, this.isPlayer1);
+			return new ColumnCondition(newMap, this.employerIsPlayer1);
 		}
 		else if (this instanceof CreditCondition)
 		{
-			return new CreditCondition(newMap, this.isPlayer1);
+			return new CreditCondition(newMap, this.employerIsPlayer1);
 		}
 		else
 		{
-			return new GateCondition(newMap, this.isPlayer1);
+			return new GateCondition(newMap, this.employerIsPlayer1);
 		}
 	}
 	
@@ -116,16 +116,6 @@ public abstract class Condition
 	{
 		boolean check = runCheck(observationBatch);
 		return check;
-	}
-	
-	public boolean getUnitPlayer()
-	{
-		return this.isPlayer1;
-	}
-	
-	public void setUnitPlayer(boolean isPlayer1)
-	{
-		this.isPlayer1 = isPlayer1;
 	}
 	
 	protected abstract boolean runCheck(ObservationBatch observationBatch);

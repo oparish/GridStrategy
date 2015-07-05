@@ -57,7 +57,7 @@ public class ConditionFieldPanel extends JPanel
 		this.addControl(assembler, ControlType.ROW.getText(), this.rowSpinner);
 		this.addControl(assembler, ControlType.CONDITION_TYPE.getText(), this.conditionBox);
 		this.addControl(assembler, ControlType.GATE_TYPE.getText(), this.gateBox);
-		this.addControl(assembler, "Player", this.playerBox);
+		this.addControl(assembler, ControlType.UNIT_PLAYER.getText(), this.playerBox);
 		
 		this.setupControlMap();
 	}
@@ -126,7 +126,10 @@ public class ConditionFieldPanel extends JPanel
 			this.rowSpinner.setValue(columnCondition.getRow());
 			this.conditionBox.setValue(columnCondition.getConditionType());
 			this.gateBox.switchEnabled(false);
-			if (columnCondition.getUnitPlayer())
+			Boolean player = columnCondition.getUnitPlayer();
+			if (player == null)
+				this.playerBox.setValue(null);
+			else if (player == true)
 				this.playerBox.setValue(PlayerEnum.ONE);
 			else
 				this.playerBox.setValue(PlayerEnum.TWO);

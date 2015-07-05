@@ -65,6 +65,23 @@ public class ColumnCondition extends Condition implements NumberCondition
 	public void setRow(Integer row) {
 		this.conditionFields.put(ConditionFieldName.ROW, row);
 	}
+	
+	public Boolean getUnitPlayer()
+	{
+		Integer player = this.conditionFields.get(ConditionFieldName.UNIT_PLAYER);
+		if (player == null)
+			return null;
+		else
+			return player == 1;
+	}
+	
+	public void setUnitPlayer(boolean isPlayer1)
+	{
+		if (isPlayer1)
+			this.conditionFields.put(ConditionFieldName.UNIT_PLAYER, 1);
+		else
+			this.conditionFields.put(ConditionFieldName.UNIT_PLAYER, 0);
+	}
 
 	public ColumnCondition(HashMap<ConditionFieldName, Integer> fieldMap, boolean isPlayer1)
 	{
@@ -85,30 +102,23 @@ public class ColumnCondition extends Condition implements NumberCondition
 	
 	public ColumnCondition copyConditionWithNewColumn(int index)
 	{
-		ColumnCondition newCondition = new ColumnCondition((HashMap<Condition.ConditionFieldName, Integer>) this.conditionFields.clone(), this.isPlayer1);
+		ColumnCondition newCondition = new ColumnCondition((HashMap<Condition.ConditionFieldName, Integer>) this.conditionFields.clone(), this.employerIsPlayer1);
 		newCondition.setColumn(index);
 		return newCondition;
 	}
 	
 	public String toString(int depth)
-	{
-		UnitType unitType = this.getUnitType();
-		String unitString;
-		if (unitType != null)
-			unitString = (new Unit(this.isPlayer1, unitType).toString());
-		else
-			unitString = "Null";	
-			
+	{		
 		return "		" + depth + " - Column Condition: " + this.getConditionType() + 
-				", Number: " + this.getNumber() + ", Column: " + this.getColumn() + ", Unit: " + 
-				unitString + ", Row: " + this.getRow();
+				", Number: " + this.getNumber() + ", Column: " + this.getColumn() + ", Unit Type: " + 
+				this.getUnitType() + ", Unit Player: " + this.getUnitPlayer() + ", Row: " + this.getRow();
 	}
 
 	@Override
 	protected boolean runCheck(ObservationBatch observationBatch)
 	{
 		ArrayList<Unit> conditionUnits = this.findUnits(observationBatch);
-		this.filterTypes(this.getUnitType(), this.isPlayer1, conditionUnits);
+		this.filterTypes(this.getUnitType(), this.getUnitPlayer(), conditionUnits);
 		return this.checkNumber(observationBatch, conditionUnits);	
 	}
 	
@@ -142,7 +152,7 @@ public class ColumnCondition extends Condition implements NumberCondition
 			ArrayList<Unit> removeList = new ArrayList<Unit>();
 			for (Unit unit : conditionUnits)
 			{
-				if (!Unit.match(unit, filterType, unitIsPlayer1))
+				if (!Unit.match(unit, filterType, unitIsPlayer1 == this.employerIsPlayer1))
 					removeList.add(unit);
 			}
 			for (Unit unit : removeList)
