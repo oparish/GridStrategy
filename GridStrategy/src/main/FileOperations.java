@@ -17,6 +17,7 @@ import ai.CPlayer;
 public class FileOperations {
 
 	private static String lastCPlayer;
+	private static final String AI_FILE_EXTENSION = "ai"; 
 	
 	public static void saveFile(String fileName, ArrayList<Byte> bytes) 
 			throws IOException
@@ -58,6 +59,8 @@ public class FileOperations {
 		if (selectedFile == null)
 			return;
 		String filename = selectedFile.getName();
+		if (!filename.endsWith("." + AI_FILE_EXTENSION))
+				filename = filename + "." + AI_FILE_EXTENSION;
 		FileOperations.lastCPlayer = filename;
 		FileOperations.saveFile(filename, bytes);
 	}
@@ -96,7 +99,7 @@ public class FileOperations {
 	private static JFileChooser setupJFileChooser()
 	{
 		JFileChooser fc = new JFileChooser(".");
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("AI only", "ai");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("AI only", AI_FILE_EXTENSION);
 		fc.setFileFilter(filter);
 		return fc;
 	}
