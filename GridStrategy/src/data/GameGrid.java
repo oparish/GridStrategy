@@ -589,10 +589,10 @@ public class GameGrid
 			direction = 1;
 		}
 		
-		for (int i = start ; (end - i) * direction <= 0 ; i += direction)
+		for (int i = start ; (end - i) * direction >= 0 ; i += direction)
 		{
 			Unit unit = this.gridContents[x][i];
-			if (unit.isOwnedByPlayer1() == isPlayer1 && unit.getUnitType() == unitType)
+			if (unit != null && unit.isOwnedByPlayer1() == isPlayer1 && unit.getUnitType() == unitType)
 			{
 				this.activateAbility(x, i, unitType.getAbilityType(), unit);
 				return true;
