@@ -141,24 +141,17 @@ public class ColumnCondition extends Condition implements NumberCondition
 		}
 	}
 	
-	private void filterTypes(UnitType filterType, boolean unitIsPlayer1, ArrayList<Unit> conditionUnits)
+	private void filterTypes(UnitType filterType, Boolean unitIsPlayer1, ArrayList<Unit> conditionUnits)
 	{
-		if (filterType == null)
+		ArrayList<Unit> removeList = new ArrayList<Unit>();
+		for (Unit unit : conditionUnits)
 		{
-			return;
+			if (!Unit.match(unit, filterType, unitIsPlayer1 == this.employerIsPlayer1))
+				removeList.add(unit);
 		}
-		else
+		for (Unit unit : removeList)
 		{
-			ArrayList<Unit> removeList = new ArrayList<Unit>();
-			for (Unit unit : conditionUnits)
-			{
-				if (!Unit.match(unit, filterType, unitIsPlayer1 == this.employerIsPlayer1))
-					removeList.add(unit);
-			}
-			for (Unit unit : removeList)
-			{
-				conditionUnits.remove(unit);
-			}
+			conditionUnits.remove(unit);
 		}
 	}
 	
