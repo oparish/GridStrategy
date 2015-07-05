@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import ai.CPlayer;
 
@@ -51,7 +52,7 @@ public class FileOperations {
 	public static void saveCPlayerAs(ArrayList<Byte> bytes, Component component) 
 			throws IOException
 	{
-		JFileChooser fc = new JFileChooser(".");
+		JFileChooser fc = FileOperations.setupJFileChooser();
 		fc.showSaveDialog(component);
 		File selectedFile = fc.getSelectedFile();
 		if (selectedFile == null)
@@ -84,12 +85,20 @@ public class FileOperations {
 	
 	public static CPlayer loadCPlayer(Component component, boolean isPlayer1) throws IOException
 	{
-		JFileChooser fc = new JFileChooser(".");
+		JFileChooser fc = FileOperations.setupJFileChooser();
 		fc.showOpenDialog(component);
 		String filename = fc.getSelectedFile().getName();
 		FileOperations.lastCPlayer = filename;
 		ArrayList<Integer> integers = FileOperations.loadFile(filename);
 		return new CPlayer(isPlayer1, integers);
+	}
+	
+	private static JFileChooser setupJFileChooser()
+	{
+		JFileChooser fc = new JFileChooser(".");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("AI only", "ai");
+		fc.setFileFilter(filter);
+		return fc;
 	}
 	
 	public static Byte intToByte(int number)
