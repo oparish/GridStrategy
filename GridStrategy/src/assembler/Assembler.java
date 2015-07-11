@@ -377,6 +377,16 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		FileOperations.clearLastCPlayer();
 	}
 	
+	private void resetAction()
+	{
+		this.loadAction(this.selectedRule.getAction());
+	}
+	
+	private void resetCondition()
+	{
+		this.loadCondition(this.selectedCondition);
+	}
+	
 	private void processButtonPress(AssemblerButton assemblerButton)
 	{
 		switch(assemblerButton.getButtonType())
@@ -387,11 +397,11 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		case LOAD:
 			this.loadCPlayer();
 			break;
-		case SAVE_ACTION:
-			this.saveAction();
+		case RESET_ACTION:
+			this.resetAction();
 			break;
-		case SAVE_CONDITION:
-			this.saveCondition();
+		case RESET_CONDITION:
+			this.resetCondition();
 			break;
 		case SAVE_FILE:
 			this.saveCPlayer(false);
@@ -615,21 +625,29 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	
 	private void changeSelectedRule(Rule rule, int index)
 	{	
-		if (this.actionPanel.isDirty() || this.conditionFieldPanel.isDirty())
+		if (this.actionPanel.isDirty())
 		{
-			boolean result = this.showOptionPane("Unsaved Changes", "Really cancel changes?");
-			if (!result)
-			{
-				this.ruleList.setSelectedIndex(this.selectedListIndex);
-				return;
-			}
+			this.saveAction();
+		}
+		
+		if (this.conditionFieldPanel.isDirty())
+		{
+			this.saveCondition();
 		}
 
 		this.selectedRule = rule;
 		Condition condition = rule.getCondition();
 		this.changeSelectedCondition(condition);
+		this.loadAction(rule.getAction());
+		this.actionPanel.enableBoxes();
 		
-		DeployAction action = (DeployAction) rule.getAction();
+		this.clearHierarchyList();
+		
+		this.selectedListIndex = index;
+	}
+	
+	private void loadAction(Action action)
+	{
 		this.actionPanel.changeAction(action);
 		this.actionPanel.changePosition(action.getColumnPos());
 		this.actionPanel.changeUnitTypeBox(action.getUnitType());
@@ -642,14 +660,16 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		{
 			this.actionPanel.disablePositionBox();
 		}
-		this.clearHierarchyList();
-		this.actionPanel.enableBoxes();
-		this.selectedListIndex = index;
 	}
 	
 	private void changeSelectedCondition(Condition condition)
 	{
 		this.selectedCondition = condition;
+		this.loadCondition(condition);
+	}
+	
+	private void loadCondition(Condition condition)
+	{
 		this.conditionFieldPanel.changeCondition(condition);
 		if (condition instanceof GateCondition)
 			this.updateGateList((GateCondition) condition);
