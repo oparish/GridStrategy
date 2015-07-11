@@ -223,17 +223,20 @@ public class GameGrid
 	{
 		int searchStart;
 		int searchEnd;
+		int direction;
 		if (ownedByPlayer1)
 		{
 			searchStart = 0;
 			searchEnd = Main.GRIDHEIGHT - 1;
+			direction = 1;
 		}
 		else
 		{
 			searchStart = Main.GRIDHEIGHT - 1;
 			searchEnd = 0;
+			direction = -1;
 		}
-		for (int i = searchStart; i <= searchEnd; i++)
+		for (int i = searchStart; ((searchEnd - i) * direction) >= 0; i += direction)
 		{
 			Unit unit = this.gridContents[x][i];
 			if (unit != null && unit.getUnitType().hasCategory(FRONTLINE))
