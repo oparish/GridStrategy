@@ -270,7 +270,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		else if (source instanceof AssemblerCheckBox && !this.changingControls)
 		{
 			AssemblerCheckBox fieldCheckBox = (AssemblerCheckBox) source;
-			fieldCheckBox.getPanelControl().setEnabled(fieldCheckBox.isSelected());
+			PanelControl panelControl = fieldCheckBox.getPanelControl();
+			panelControl.setEnabled(fieldCheckBox.isSelected());
+			panelControl.setDirty(true);
 		}
 		else if (source instanceof AssemblerButton)
 		{
@@ -536,9 +538,10 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	public void addRule(Rule rule)
 	{
 		this.ruleListContents.add(rule);
-		int selectedIndex = this.ruleList.getSelectedIndex();
 		this.ruleList.setListData(this.ruleListContents.toArray(new Rule[this.ruleListContents.size()]));
+		int selectedIndex = this.ruleList.getLastVisibleIndex();
 		this.ruleList.setSelectedIndex(selectedIndex);
+		this.changeSelectedRule(rule, selectedIndex);
 	}
 	
 	public void insertBatch(ArrayList<Rule> batch, int batchCutoff, int listCutoff)
