@@ -110,6 +110,14 @@ public class GameGrid
 		return player2DeploymentPoints;
 	}
 	
+	public Integer[] getPlayerDeploymentPoints(boolean isPlayer1)
+	{
+		if (isPlayer1)
+			return this.getPlayer1DeploymentPoints();
+		else
+			return this.getPlayer2DeploymentPoints();
+	}
+	
 	public GameGrid(CPlayer cPlayer1, CPlayer cPlayer2)
 	{
 		this.cplayer1 = cPlayer1;
@@ -528,7 +536,7 @@ public class GameGrid
 			credits = this.player2Credits;
 		}
 		ObservationBatch observationBatch = new ObservationBatch(isPlayer1, 
-				this.gridContents, credits);
+				this.gridContents, credits, this.getPlayer1DeploymentPoints(), this.getPlayer2DeploymentPoints());
 		
 		boolean result = currentCPlayer.makeMove(observationBatch, this);
 		if (!result)
@@ -566,7 +574,7 @@ public class GameGrid
 		else
 		{
 			DeployAction action = new DeployAction(actionNumber, unitTypes.get(unitNumber));
-			boolean result = action.attemptAction(this, this.isPlayer1Turn);
+			boolean result = action.attemptAction(this, this.isPlayer1Turn, Main.GENERIC_CHECK_SUCCESS);
 			if (!result)
 				this.noteMove();
 		}

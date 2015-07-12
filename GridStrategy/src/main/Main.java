@@ -38,6 +38,10 @@ public class Main
 	public final static int FIRSTATTACKSTALEMATE = 60;
 	public final static int SUBATTACKSTALEMATE = 40;	
 	public final static boolean PLAYER1STARTS = true;
+	
+	public final static int GENERIC_CHECK_SUCCESS = 0;
+	public final static int GENERIC_CHECK_FAILURE = -1;
+	public final static int NO_SPECIFIC_COLUMN = 255;
 
 	public static final String IMAGES = "Images\\";
 	public static final String FILEEXTENSION = ".png";

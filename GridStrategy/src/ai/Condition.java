@@ -11,6 +11,7 @@ import ai.headers.ConditionHeader;
 import ai.headers.CreditConditionHeader;
 import ai.headers.GateConditionHeader;
 import ai.headers.NoConditionHeader;
+import ai.headers.SpecificColumnConditionHeader;
 import main.FileOperations;
 import main.Main;
 import data.UnitType;
@@ -26,7 +27,9 @@ public abstract class Condition
 	{
 		Condition.conditionFieldNames = new HashMap<Class<? extends Condition>, ConditionFieldName[]>();
 		Condition.conditionFieldNames.put(GateCondition.class, new ConditionFieldName[]{ConditionFieldName.GATETYPE});
-		Condition.conditionFieldNames.put(ColumnCondition.class, new ConditionFieldName[]{ConditionFieldName.ROW, ConditionFieldName.COLUMN, ConditionFieldName.UNIT_TYPE, 
+		Condition.conditionFieldNames.put(ColumnCondition.class, new ConditionFieldName[]{ConditionFieldName.ROW, ConditionFieldName.UNIT_TYPE, 
+			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE, ConditionFieldName.UNIT_PLAYER});
+		Condition.conditionFieldNames.put(SpecificColumnCondition.class, new ConditionFieldName[]{ConditionFieldName.ROW, ConditionFieldName.COLUMN, ConditionFieldName.UNIT_TYPE, 
 			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE, ConditionFieldName.UNIT_PLAYER});
 		Condition.conditionFieldNames.put(CreditCondition.class, new ConditionFieldName[]{ 
 			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE});
@@ -71,7 +74,11 @@ public abstract class Condition
 			newMap.put(entry.getKey(), entry.getValue());
 		}
 		
-		if (this instanceof ColumnCondition)
+		if (this instanceof SpecificColumnCondition)
+		{
+			return new SpecificColumnCondition(newMap, this.employerIsPlayer1);
+		}
+		else if (this instanceof ColumnCondition)
 		{
 			return new ColumnCondition(newMap, this.employerIsPlayer1);
 		}
@@ -87,7 +94,9 @@ public abstract class Condition
 	
 	public static Condition makeCondition(List<Integer> integers, boolean isPlayer1, ConditionHeader conditionHeader)
 	{
-		if (conditionHeader.getClass() == ColumnConditionHeader.class)
+		if (conditionHeader instanceof SpecificColumnConditionHeader)
+			return new SpecificColumnCondition(integers, isPlayer1, (SpecificColumnConditionHeader) conditionHeader);
+		else if (conditionHeader.getClass() == ColumnConditionHeader.class)
 			return new ColumnCondition(integers, isPlayer1, (ColumnConditionHeader) conditionHeader);
 		else if (conditionHeader.getClass() == GateConditionHeader.class)
 			return new GateCondition(integers, isPlayer1, (GateConditionHeader) conditionHeader);
@@ -112,13 +121,13 @@ public abstract class Condition
 		return Condition.getConditionFieldNames(this.getClass());
 	}
 	
-	public boolean checkCondition(ObservationBatch observationBatch)
+	public int checkCondition(ObservationBatch observationBatch, Action action)
 	{
-		boolean check = runCheck(observationBatch);
+		int check = runCheck(observationBatch, action);
 		return check;
 	}
 	
-	protected abstract boolean runCheck(ObservationBatch observationBatch);
+	protected abstract int runCheck(ObservationBatch observationBatch, Action action);
 	
 	public abstract String toString(int depth);
 	
@@ -154,7 +163,11 @@ public abstract class Condition
 
 	public static String getConditionClassName(Class conditionClass)
 	{
-		if (conditionClass == ColumnCondition.class)
+		if (conditionClass == SpecificColumnCondition.class)
+		{
+			return "Specific Column Condition";
+		}
+		else if (conditionClass == ColumnCondition.class)
 		{
 			return "Column Condition";
 		}
@@ -178,7 +191,11 @@ public abstract class Condition
 	
 	public static Condition getConditionExample(Class conditionClass)
 	{
-		if (conditionClass == ColumnCondition.class)
+		if (conditionClass == SpecificColumnCondition.class)
+		{
+			return new SpecificColumnCondition(ConditionType.EQUAL_TO, 0, true);
+		}
+		else if (conditionClass == ColumnCondition.class)
 		{
 			return new ColumnCondition(ConditionType.EQUAL_TO, 0, true);
 		}

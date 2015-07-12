@@ -17,10 +17,6 @@ public class ColumnCondition extends Condition implements NumberCondition
 	public Integer getRow() {
 		return this.conditionFields.get(ConditionFieldName.ROW);
 	}
-
-	public Integer getColumn() {
-		return this.conditionFields.get(ConditionFieldName.COLUMN);
-	}
 	
 	public UnitType getUnitType()
 	{
@@ -46,10 +42,6 @@ public class ColumnCondition extends Condition implements NumberCondition
 	public void setConditionType(ConditionType type)
 	{
 		this.conditionFields.put(ConditionFieldName.CONDITION_TYPE, type.ordinal());
-	}
-	
-	public void setColumn(Integer column) {
-		this.conditionFields.put(ConditionFieldName.COLUMN, column);
 	}
 	
 	public void setNumber(Integer number)
@@ -100,29 +92,29 @@ public class ColumnCondition extends Condition implements NumberCondition
 		super(integers, isPlayer1, conditionHeader);
 	}
 	
-	public ColumnCondition copyConditionWithNewColumn(int index)
-	{
-		ColumnCondition newCondition = new ColumnCondition((HashMap<Condition.ConditionFieldName, Integer>) this.conditionFields.clone(), this.employerIsPlayer1);
-		newCondition.setColumn(index);
-		return newCondition;
-	}
-	
 	public String toString(int depth)
 	{		
 		return "		" + depth + " - Column Condition: " + this.getConditionType() + 
-				", Number: " + this.getNumber() + ", Column: " + this.getColumn() + ", Unit Type: " + 
+				", Number: " + this.getNumber() + ", Unit Type: " + 
 				this.getUnitType() + ", Unit Player: " + this.getUnitPlayer() + ", Row: " + this.getRow();
 	}
 
 	@Override
-	protected boolean runCheck(ObservationBatch observationBatch)
+	protected int runCheck(ObservationBatch observationBatch, Action action)
 	{
-		ArrayList<Unit> conditionUnits = this.findUnits(observationBatch);
-		this.filterTypes(this.getUnitType(), this.getUnitPlayer(), conditionUnits);
-		return this.checkNumber(observationBatch, conditionUnits);	
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			ArrayList<Unit> conditionUnits = this.findUnits(observationBatch, i);
+			this.filterTypes(this.getUnitType(), this.getUnitPlayer(), conditionUnits);
+			if (this.checkNumber(observationBatch, conditionUnits) && action.checkViability(observationBatch, i, 
+					this.employerIsPlayer1))
+				return i;
+		}
+	
+		return Main.GENERIC_CHECK_FAILURE;
 	}
 	
-	private boolean checkNumber(ObservationBatch observationBatch, 
+	protected boolean checkNumber(ObservationBatch observationBatch, 
 			ArrayList<Unit> conditionUnits)
 	{
 		int unitNumber = conditionUnits.size();
@@ -141,12 +133,12 @@ public class ColumnCondition extends Condition implements NumberCondition
 		}
 	}
 	
-	private void filterTypes(UnitType filterType, Boolean unitIsPlayer1, ArrayList<Unit> conditionUnits)
+	protected void filterTypes(UnitType filterType, Boolean unitIsPlayer1, ArrayList<Unit> conditionUnits)
 	{
 		ArrayList<Unit> removeList = new ArrayList<Unit>();
 		for (Unit unit : conditionUnits)
 		{
-			if (!Unit.match(unit, filterType, unitIsPlayer1 == this.employerIsPlayer1))
+			if (!Unit.match(unit, filterType, unitIsPlayer1 == null ? null : unitIsPlayer1 == this.employerIsPlayer1))
 				removeList.add(unit);
 		}
 		for (Unit unit : removeList)
@@ -161,10 +153,9 @@ public class ColumnCondition extends Condition implements NumberCondition
 			units.add(unit);
 	}
 	
-	private ArrayList<Unit> findUnits(ObservationBatch observationBatch)
+	protected ArrayList<Unit> findUnits(ObservationBatch observationBatch, Integer column)
 	{
 		ArrayList<Unit> conditionUnits;
-		Integer column = this.getColumn();
 		Integer row = this.getRow();
 		if (column == null && row == null)
 		{

@@ -3,6 +3,7 @@ package ai;
 import java.util.HashMap;
 import java.util.List;
 
+import main.Main;
 import ai.Condition.ConditionFieldName;
 import ai.headers.CreditConditionHeader;
 
@@ -26,19 +27,19 @@ public class CreditCondition extends Condition implements NumberCondition
 	}
 
 	@Override
-	protected boolean runCheck(ObservationBatch observationBatch)
+	protected int runCheck(ObservationBatch observationBatch, Action action)
 	{
 		int credits = observationBatch.getCredits();
 		switch(this.getConditionType())
 		{
 		case GREATER_THAN:
-			return (credits > this.getNumber());
+			return credits > this.getNumber() ? Main.GENERIC_CHECK_SUCCESS : Main.GENERIC_CHECK_FAILURE;
 		case EQUAL_TO:
-			return (credits == this.getNumber());
+			return credits == this.getNumber() ? Main.GENERIC_CHECK_SUCCESS : Main.GENERIC_CHECK_FAILURE;
 		case SMALLER_THAN:
-			return (credits < this.getNumber());
+			return credits < this.getNumber() ? Main.GENERIC_CHECK_SUCCESS : Main.GENERIC_CHECK_FAILURE;
 		default:
-			return false;
+			return Main.GENERIC_CHECK_FAILURE;
 		}
 	}
 

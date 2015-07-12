@@ -21,6 +21,7 @@ import ai.CreditCondition;
 import ai.GateCondition;
 import ai.GateType;
 import ai.NoCondition;
+import ai.SpecificColumnCondition;
 import data.UnitType;
 import main.Main;
 
@@ -121,7 +122,6 @@ public class ConditionFieldPanel extends JPanel
 			this.switchAllControls(true);
 			ColumnCondition columnCondition = (ColumnCondition) condition;
 			this.numberSpinner.setValue(columnCondition.getNumber());
-			this.columnSpinner.setValue(columnCondition.getColumn());
 			this.unitBox.setValue(columnCondition.getUnitType());
 			this.rowSpinner.setValue(columnCondition.getRow());
 			this.conditionBox.setValue(columnCondition.getConditionType());
@@ -133,6 +133,13 @@ public class ConditionFieldPanel extends JPanel
 				this.playerBox.setValue(PlayerEnum.ONE);
 			else
 				this.playerBox.setValue(PlayerEnum.TWO);
+			if (condition instanceof SpecificColumnCondition)
+				this.columnSpinner.setValue(((SpecificColumnCondition)columnCondition).getColumn());
+			else
+			{
+				this.columnSpinner.setEnabled(false);
+				this.columnSpinner.getCheckBox().setEnabled(false);
+			}
 		}
 		else if (condition instanceof GateCondition)
 		{

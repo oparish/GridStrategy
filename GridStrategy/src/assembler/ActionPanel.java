@@ -34,7 +34,7 @@ public class ActionPanel extends JPanel
 		this.actionTypeBox = new EnumBox<ActionType>(ActionType.values(), ControlType.ACTION_TYPE, PanelType.ACTION, assembler, false);
 		this.setupRow(ControlType.ACTION_TYPE, this.actionTypeBox, 0);
 		
-		this.positionSpinner = new NumberSpinner(0, Main.GRIDWIDTH, ControlType.COLUMN, PanelType.ACTION, assembler, false);
+		this.positionSpinner = new NumberSpinner(-1, Main.GRIDWIDTH, ControlType.COLUMN, PanelType.ACTION, assembler, false);
 		this.setupRow(ControlType.COLUMN, this.positionSpinner, 1);
 
 		this.unitTypeBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.ACTION, assembler, false);

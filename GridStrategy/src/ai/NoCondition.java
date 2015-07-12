@@ -3,6 +3,7 @@ package ai;
 import java.util.ArrayList;
 
 import main.FileOperations;
+import main.Main;
 
 public class NoCondition extends Condition
 {
@@ -13,9 +14,9 @@ public class NoCondition extends Condition
 	}
 
 	@Override
-	protected boolean runCheck(ObservationBatch observationBatch)
+	protected int runCheck(ObservationBatch observationBatch, Action action)
 	{
-		return true;
+		return Main.GENERIC_CHECK_SUCCESS;
 	}
 
 	@Override

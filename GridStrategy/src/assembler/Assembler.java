@@ -41,6 +41,7 @@ import ai.GateType;
 import ai.NoCondition;
 import ai.NumberCondition;
 import ai.Rule;
+import ai.SpecificColumnCondition;
 import main.FileOperations;
 import main.Main;
 
@@ -225,7 +226,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		switch(controlType)
 		{
 		case COLUMN:
-			((ColumnCondition)condition).setColumn(((NumberSpinner) panelControl).getNumber());
+			((SpecificColumnCondition)condition).setColumn(((NumberSpinner) panelControl).getNumber());
 			break;
 		case UNIT_TYPE:
 			((ColumnCondition)condition).setUnitType(((EnumBox<UnitType>) panelControl).getEnumValue());
@@ -440,45 +441,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		case NEW_FILE:
 			this.newFile();
 			break;
-		case MAKE_BATCH:
-			if (this.selectedRule != null)
-			{
-				this.saveCondition();
-				this.saveAction();
-				if (this.selectedCondition != null && this.selectedCondition instanceof ColumnCondition && 
-						((ColumnCondition) this.selectedCondition).getColumn() != null  && 
-						((ColumnCondition) this.selectedCondition).getColumn() == this.selectedRule.getAction().getColumnPos())
-				{
-					ArrayList<Rule> rules = this.makeBatch((ColumnCondition) this.selectedCondition, this.selectedRule.getAction());
-					this.insertBatch(rules, ((ColumnCondition) this.selectedCondition).getColumn(), this.ruleList.getSelectedIndex());
-				}
-				else
-				{
-					JOptionPane.showMessageDialog(new JFrame(), "You must select an appropriate condition first.", "No appropriate condition.",
-					        JOptionPane.ERROR_MESSAGE);
-				}
-
-			}
-			break;
 		}
-	}
-	
-	private ArrayList<Rule> makeBatch(ColumnCondition columnCondition, Action action)
-	{
-		int column = columnCondition.getColumn();
-		ArrayList<Rule> rules = new ArrayList<Rule>();
-		for (int i = 0; i < Main.GRIDWIDTH; i++)
-		{
-			if (i != column)
-			{
-				ColumnCondition newCondition = (ColumnCondition) columnCondition.clone();
-				newCondition.setColumn(i);
-				Action newAction = action.clone();
-				newAction.setColumnPos(i);
-				rules.add(new Rule(newCondition, newAction));
-			}
-		}
-		return rules;
 	}
 	
 	private void saveCondition()
@@ -496,6 +459,8 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			newCondition = Condition.getConditionExample(CreditCondition.class);
 		else if (this.selectedCondition instanceof NoCondition)
 			newCondition = Condition.getConditionExample(NoCondition.class);
+		else if (this.selectedCondition instanceof SpecificColumnCondition)
+			newCondition = Condition.getConditionExample(SpecificColumnCondition.class);
 		else
 			newCondition = Condition.getConditionExample(ColumnCondition.class);
 
@@ -580,7 +545,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		switch(controlType)
 		{
 		case COLUMN:
-			number = ((ColumnCondition) condition).getColumn();
+			number = ((SpecificColumnCondition) condition).getColumn();
 			changed =  number == null || number != ((NumberSpinner) panelControl).getNumber();
 			break;
 		case UNIT_TYPE:

@@ -50,12 +50,12 @@ public class Unit
 				(unit1.unitType == unit2.unitType);
 	}
 	
-	public static boolean match(Unit unit1, UnitType unit2Type, boolean unit2IsPlayer1)
+	public static boolean match(Unit unit1, UnitType unit2Type, Boolean unit2IsPlayer1)
 	{
-		if (unit1 == null)
-			return unit2Type == null;
+		if (unit2IsPlayer1 == null)
+			return unit2Type == null || unit1.unitType == unit2Type;
 		else
-			return (unit1.ownedByPlayer1 == unit2IsPlayer1) &&
-				(unit1.unitType == unit2Type);
+			return (unit1.ownedByPlayer1 == unit2IsPlayer1) && ((unit2Type == null) ||
+				(unit1.unitType == unit2Type));
 	}
 }

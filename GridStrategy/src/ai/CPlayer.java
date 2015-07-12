@@ -12,6 +12,7 @@ import ai.headers.CreditConditionHeader;
 import ai.headers.GateConditionHeader;
 import ai.headers.NoConditionHeader;
 import ai.headers.RuleHeader;
+import ai.headers.SpecificColumnConditionHeader;
 
 public class CPlayer
 {	
@@ -21,6 +22,7 @@ public class CPlayer
 	static
 	{
 		conditionClasses = new ArrayList<Class<? extends Condition>>();
+		conditionClasses.add(SpecificColumnCondition.class);
 		conditionClasses.add(ColumnCondition.class);
 		conditionClasses.add(GateCondition.class);
 		conditionClasses.add(CreditCondition.class);
@@ -115,6 +117,10 @@ public class CPlayer
 			ConditionHeader condition2 = this.makeConditionHeader(integers, counter);
 			conditionHeader = new GateConditionHeader(conditionClass, condition1, condition2);
 		}
+		else if (conditionClass == SpecificColumnCondition.class)
+		{
+			conditionHeader = new SpecificColumnConditionHeader(conditionClass);
+		}
 		else if (conditionClass == ColumnCondition.class)
 		{
 			conditionHeader = new ColumnConditionHeader(conditionClass);
@@ -143,9 +149,10 @@ public class CPlayer
 		Main.debugOut("Making move: " + this.isPlayer1 );
 		for(Rule rule : this.rules)
 		{
-			if (rule.getCondition().checkCondition(observationBatch))
+			int checkResult = rule.getCondition().checkCondition(observationBatch, rule.getAction());
+			if (checkResult != Main.GENERIC_CHECK_FAILURE)
 			{
-				boolean result = rule.getAction().attemptAction(gameGrid, this.isPlayer1);
+				boolean result = rule.getAction().attemptAction(gameGrid, this.isPlayer1, checkResult);
 				Main.debugOut(this.isPlayer1);
 				Main.debugOut("Result: " + result);
 				if (result)

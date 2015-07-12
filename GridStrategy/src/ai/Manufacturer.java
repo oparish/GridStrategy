@@ -98,7 +98,7 @@ public class Manufacturer
 			do
 			{
 				System.out.println("Making player");
-				cPlayer = Spawner.createBatchedCPlayer(true);
+				cPlayer = Spawner.createCPlayer(true);
 				System.out.println("Player Made");
 				
 				result = Main.getMain().startGameGridWithoutScreen(cPlayer, null);

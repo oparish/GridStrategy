@@ -34,19 +34,6 @@ public class Spawner
 		return new CPlayer(rules, isPlayer1);
 	}
 	
-	public static CPlayer createBatchedCPlayer(boolean isPlayer1)
-	{
-		ArrayList<Rule> rules = new ArrayList<Rule>();
-		int range = MAX_RULES - MIN_RULES + 1;
-		int ruleNum = random.nextInt(range) + MIN_RULES;
-		for (int i = 0; i < ruleNum; i++)
-		{
-			rules.addAll(createRuleBatch(isPlayer1));
-		}
-		rules.addAll(Spawner.createDefaultRuleBatch(isPlayer1));
-		return new CPlayer(rules, isPlayer1);
-	}
-	
 	private static Rule createCompletelyRandomRule(boolean isPlayer1)
 	{
 		return new Rule(createCondition(isPlayer1), createAction());
@@ -60,7 +47,7 @@ public class Spawner
 			return createGateCondition(isPlayer1);	
 	}
 	
-	private static ColumnCondition createColumnCondition(HashMap<ColumnConditionParameter, Boolean> parameters, boolean isPlayer1)
+	private static SpecificColumnCondition createColumnCondition(HashMap<ColumnConditionParameter, Boolean> parameters, boolean isPlayer1)
 	{		
 		boolean useColumnCount = fillParameter(parameters, ColumnConditionParameter.USECOLUMNCOUNT);
 		boolean useRowCount = fillParameter(parameters, ColumnConditionParameter.USEROWCOUNT);
@@ -68,7 +55,7 @@ public class Spawner
 		return Spawner.createColumnCondition(useColumnCount, useRowCount, useUnitType, isPlayer1);
 	}
 	
-	private static ColumnCondition createColumnCondition(boolean isPlayer1)
+	private static SpecificColumnCondition createColumnCondition(boolean isPlayer1)
 	{		
 		boolean useColumnCount = randomBoolean();
 		boolean useRowCount = randomBoolean();
@@ -76,7 +63,7 @@ public class Spawner
 		return Spawner.createColumnCondition(useColumnCount, useRowCount, useUnitType, isPlayer1);
 	}
 	
-	private static ColumnCondition createColumnCondition(boolean useColumnCount, boolean useRowCount, boolean useUnitType, 
+	private static SpecificColumnCondition createColumnCondition(boolean useColumnCount, boolean useRowCount, boolean useUnitType, 
 			boolean isPlayer1)
 	{
 		int unitCount;
@@ -90,7 +77,7 @@ public class Spawner
 		else
 			unitCount = random.nextInt(Main.GRIDWIDTH * Main.GRIDHEIGHT + 1);		
 		
-		ColumnCondition columnCondition = new ColumnCondition(
+		SpecificColumnCondition columnCondition = new SpecificColumnCondition(
 				randomConditionType(), unitCount, isPlayer1);
 		if (useUnitType)
 		{
@@ -111,31 +98,6 @@ public class Spawner
 			return parameters.get(parameter);
 		else
 			return randomBoolean();
-	}
-	
-	private static ArrayList<Rule> createRuleBatch(boolean isPlayer1)
-	{
-		ArrayList<Rule> rules = new ArrayList<Rule>();
-		HashMap<ColumnConditionParameter, Boolean> parameters = new HashMap<ColumnConditionParameter, Boolean>();
-		parameters.put(ColumnConditionParameter.USECOLUMNCOUNT, true);
-		ColumnCondition[] conditions = Spawner.makeColumnConditionBatch(parameters, isPlayer1);
-		Action[] actions = createActionBatch();
-		for (int i = 0; i < Main.GRIDWIDTH; i++)
-		{
-			rules.add(new Rule(conditions[i], actions[i]));
-		}
-		
-		if (actions[0] instanceof DeployAction && ((DeployAction) actions[0]).getUnitType().getAbilityType() != null)
-		{
-			ColumnCondition[] activateConditions = 
-					Spawner.makeColumnConditionBatch(parameters, isPlayer1);
-			ActivateAction[] activateActions = Spawner.createActivateActionBatch(((DeployAction) actions[0]).getUnitType());
-			for (int i = 0; i < Main.GRIDWIDTH; i++)
-			{
-				rules.add(new Rule(activateConditions[i], activateActions[i]));
-			}
-		}
-		return rules;
 	}
 	
 	private static ActivateAction[] createActivateActionBatch(UnitType unitType)
@@ -189,18 +151,6 @@ public class Spawner
 		}
 		
 		return rules;
-	}
-	
-	private static ColumnCondition[] makeColumnConditionBatch(HashMap<ColumnConditionParameter, Boolean> parameters, boolean isPlayer1)
-	{
-		ColumnCondition[] conditionBatch = new ColumnCondition[Main.GRIDWIDTH];
-		conditionBatch[0] = Spawner.createColumnCondition(parameters, isPlayer1);
-		conditionBatch[0].setColumn(0);
-		for (int i = 1; i < Main.GRIDWIDTH; i++)
-		{
-			conditionBatch[i] = conditionBatch[0].copyConditionWithNewColumn(i);
-		}
-		return conditionBatch;
 	}
 	
 	private static GateCondition createGateCondition(boolean isPlayer1)

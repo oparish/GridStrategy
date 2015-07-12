@@ -8,6 +8,7 @@ import ai.Condition.ConditionFieldName;
 import ai.headers.ConditionHeader;
 import ai.headers.GateConditionHeader;
 import main.FileOperations;
+import main.Main;
 
 public class GateCondition extends Condition
 {	
@@ -83,23 +84,23 @@ public class GateCondition extends Condition
 		return gateCondition;
 	}
 	
-	protected boolean runCheck(ObservationBatch observationBatch)
+	protected int runCheck(ObservationBatch observationBatch, Action action)
 	{
-		boolean result1 = this.condition1.checkCondition(observationBatch);
-		boolean result2 = this.condition2.checkCondition(observationBatch);
+		int result1 = this.condition1.checkCondition(observationBatch, action);
+		int result2 = this.condition2.checkCondition(observationBatch, action);
 		
 		switch(this.getGateType())
 		{
 		case AND:
-			return (result1 && result2);
+			return (result1 != Main.GENERIC_CHECK_FAILURE && result2 != Main.GENERIC_CHECK_FAILURE ) ? Main.GENERIC_CHECK_SUCCESS : Main.GENERIC_CHECK_FAILURE;
 		case OR:
-			return (result1 || result2);
+			return (result1 != Main.GENERIC_CHECK_FAILURE || result2 != Main.GENERIC_CHECK_FAILURE ) ? Main.GENERIC_CHECK_SUCCESS : Main.GENERIC_CHECK_FAILURE;
 		case NAND:
-			return !(result1 && result2);
+			return !(result1 != Main.GENERIC_CHECK_FAILURE  && result2 != Main.GENERIC_CHECK_FAILURE ) ? Main.GENERIC_CHECK_SUCCESS : Main.GENERIC_CHECK_FAILURE;
 		case NOR:
-			return !(result1 || result2);
+			return !(result1 != Main.GENERIC_CHECK_FAILURE  || result2 != Main.GENERIC_CHECK_FAILURE ) ? Main.GENERIC_CHECK_SUCCESS : Main.GENERIC_CHECK_FAILURE;
 		default:
-			return false;
+			return Main.GENERIC_CHECK_FAILURE;
 		}
 	}
 	

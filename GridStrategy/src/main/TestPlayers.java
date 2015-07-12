@@ -17,6 +17,7 @@ import ai.DeployAction;
 import ai.GateCondition;
 import ai.GateType;
 import ai.Rule;
+import ai.SpecificColumnCondition;
 
 public class TestPlayers
 {
@@ -56,8 +57,8 @@ public class TestPlayers
 	private static ColumnCondition numberOfUnitsInColumnTestCondition
 		(int columnPos, int rowPos, Unit unit, ConditionType conditionType, int number)
 	{
-		ColumnCondition testCondition = 
-				new ColumnCondition(conditionType, number, false);
+		SpecificColumnCondition testCondition = 
+				new SpecificColumnCondition(conditionType, number, false);
 		testCondition.setColumn(columnPos);
 		testCondition.setRow(rowPos);
 		testCondition.setUnitType(unit.getUnitType());
