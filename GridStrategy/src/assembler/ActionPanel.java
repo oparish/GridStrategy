@@ -26,15 +26,17 @@ public class ActionPanel extends JPanel
 	private final EnumBox<ColumnSearchCondition> conditionBox;
 	private final NumberSpinner positionSpinner;
 	private HashMap<ControlType, PanelControl> controlMap;
+	private Assembler assembler;
 	
 	public ActionPanel(Assembler assembler)
 	{
 		super();
+		this.assembler = assembler;
 		this.setLayout(new GridBagLayout());
 		this.actionTypeBox = new EnumBox<ActionType>(ActionType.values(), ControlType.ACTION_TYPE, PanelType.ACTION, assembler, false);
 		this.setupRow(ControlType.ACTION_TYPE, this.actionTypeBox, 0);
 		
-		this.positionSpinner = new NumberSpinner(-1, Main.GRIDWIDTH, ControlType.COLUMN, PanelType.ACTION, assembler, false);
+		this.positionSpinner = new NumberSpinner(0, Main.GRIDWIDTH, ControlType.COLUMN, PanelType.ACTION, assembler, true);
 		this.setupRow(ControlType.COLUMN, this.positionSpinner, 1);
 
 		this.unitTypeBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.ACTION, assembler, false);
@@ -77,7 +79,7 @@ public class ActionPanel extends JPanel
 	public void enableBoxes()
 	{
 		this.actionTypeBox.setEnabled(true);
-		this.positionSpinner.setEnabled(true);
+		this.positionSpinner.getCheckBox().setEnabled(true);
 		this.unitTypeBox.setEnabled(true);
 	}
 	
@@ -106,7 +108,17 @@ public class ActionPanel extends JPanel
 	
 	public void changePosition(int position)
 	{
-		this.positionSpinner.setValue(position);
+		if (position == Main.NO_SPECIFIC_COLUMN)
+		{
+			this.positionSpinner.getCheckBox().setSelected(false);
+			this.positionSpinner.setEnabled(false);
+		}
+		else
+		{
+			this.positionSpinner.getCheckBox().setSelected(true);
+			this.positionSpinner.setEnabled(true);
+			this.positionSpinner.setValue(position);
+		}
 	}
 	
 	public void changeUnitTypeBox(UnitType unitType)
@@ -139,6 +151,12 @@ public class ActionPanel extends JPanel
 	{
 		this.add(new JLabel(conditionSpinnerType.getText()), this.getGridBagConstraints(0, y, 1));
 		this.add(component, this.getGridBagConstraints(1, y, 2));
+		JCheckBox checkbox = ((PanelControl) component).getCheckBox();
+		if (checkbox != null)
+		{
+			this.add(checkbox, this.getGridBagConstraints(3, y, 1));
+			checkbox.addActionListener(this.assembler);
+		}
 	}
 	
 	private void setupControlMap()
