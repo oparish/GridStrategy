@@ -102,13 +102,15 @@ public class ColumnCondition extends Condition implements NumberCondition
 	@Override
 	protected int runCheck(ObservationBatch observationBatch, Action action)
 	{
+		int [] colList = Main.getRandomColumnList();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			ArrayList<Unit> conditionUnits = this.findUnits(observationBatch, i);
+			int pos = colList[i];
+			ArrayList<Unit> conditionUnits = this.findUnits(observationBatch, pos);
 			this.filterTypes(this.getUnitType(), this.getUnitPlayer(), conditionUnits);
-			if (this.checkNumber(observationBatch, conditionUnits) && action.checkViability(observationBatch, i, 
+			if (this.checkNumber(observationBatch, conditionUnits) && action.checkViability(observationBatch, pos, 
 					this.employerIsPlayer1))
-				return i;
+				return pos;
 		}
 	
 		return Main.GENERIC_CHECK_FAILURE;

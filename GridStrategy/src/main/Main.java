@@ -6,7 +6,9 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -56,8 +58,11 @@ public class Main
 	private static GameScreen gameScreen;
 
 	private static Main main;
+	private static Random random;
 
-	public static Main getMain() {
+	public static Main getMain()
+	{
+		Main.random = new Random();
 		if (Main.main != null)
 			return main;
 		else
@@ -183,6 +188,23 @@ public class Main
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public static int[] getRandomColumnList()
+	{
+		ArrayList<Integer> oldList = new ArrayList<Integer>();
+		int[] newList = new int[GRIDWIDTH];
+		for (int i = 0; i < GRIDWIDTH; i++)
+		{
+			oldList.add(i);
+		}
+		for (int j = 0; j < GRIDWIDTH; j++)
+		{
+			int pos = random.nextInt(GRIDWIDTH - j);
+			newList[j] = oldList.get(pos);
+			oldList.remove(pos);
+		}
+		return newList;
 	}
 	
 	private static void test1(Main main)
