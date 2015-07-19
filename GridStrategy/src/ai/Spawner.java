@@ -47,23 +47,51 @@ public class Spawner
 			return createGateCondition(isPlayer1);	
 	}
 	
-	private static SpecificColumnCondition createColumnCondition(HashMap<ColumnConditionParameter, Boolean> parameters, boolean isPlayer1)
+	private static SpecificColumnCondition createSpecificColumnCondition(HashMap<ColumnConditionParameter, Boolean> parameters, boolean isPlayer1)
 	{		
 		boolean useColumnCount = fillParameter(parameters, ColumnConditionParameter.USECOLUMNCOUNT);
 		boolean useRowCount = fillParameter(parameters, ColumnConditionParameter.USEROWCOUNT);
 		boolean useUnitType = fillParameter(parameters, ColumnConditionParameter.USEUNITTYPE);
-		return Spawner.createColumnCondition(useColumnCount, useRowCount, useUnitType, isPlayer1);
+		return Spawner.createSpecificColumnCondition(useColumnCount, useRowCount, useUnitType, isPlayer1);
 	}
 	
-	private static SpecificColumnCondition createColumnCondition(boolean isPlayer1)
+	private static SpecificColumnCondition createSpecificColumnCondition(boolean isPlayer1)
 	{		
 		boolean useColumnCount = randomBoolean();
 		boolean useRowCount = randomBoolean();
 		boolean useUnitType = randomBoolean();
-		return Spawner.createColumnCondition(useColumnCount, useRowCount, useUnitType, isPlayer1);
+		return Spawner.createSpecificColumnCondition(useColumnCount, useRowCount, useUnitType, isPlayer1);
 	}
 	
-	private static SpecificColumnCondition createColumnCondition(boolean useColumnCount, boolean useRowCount, boolean useUnitType, 
+	private static ColumnCondition createColumnCondition(boolean isPlayer1)
+	{
+		boolean useRowCount = randomBoolean();
+		boolean useUnitType = randomBoolean();
+		return Spawner.createColumnCondition(useRowCount, useUnitType, isPlayer1);
+	}
+	
+	private static ColumnCondition createColumnCondition(boolean useRowCount, boolean useUnitType, boolean isPlayer1)
+	{
+		int unitCount;
+		
+		if (useRowCount)
+			unitCount = random.nextInt(2);
+		else
+			unitCount = random.nextInt(Main.GRIDWIDTH + 1);		
+		
+		ColumnCondition columnCondition = new ColumnCondition(randomConditionType(), unitCount, isPlayer1);
+		if (useUnitType)
+		{
+			columnCondition.setUnitType(randomUnitType());
+			columnCondition.setUnitPlayer(randomBoolean());
+		}
+
+		if (useRowCount)
+			columnCondition.setRow(randomRow());
+		return columnCondition;
+	}
+	
+	private static SpecificColumnCondition createSpecificColumnCondition(boolean useColumnCount, boolean useRowCount, boolean useUnitType, 
 			boolean isPlayer1)
 	{
 		int unitCount;
@@ -178,9 +206,9 @@ public class Spawner
 		switch (randomActionType())
 		{
 		case DEPLOY_ACTION:
-			return new DeployAction(randomColumn(), randomUnitType());
+			return new DeployAction(Main.NO_SPECIFIC_COLUMN, randomUnitType());
 		case ACTIVATE_ACTION:
-			return new ActivateAction(randomColumn(), randomActivatableUnitType(), randomColumnSearchCondition());
+			return new ActivateAction(Main.NO_SPECIFIC_COLUMN, randomActivatableUnitType(), randomColumnSearchCondition());
 		default:
 			return null;
 		}

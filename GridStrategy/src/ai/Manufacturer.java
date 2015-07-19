@@ -32,8 +32,8 @@ public class Manufacturer
 		}
 			
 		CPlayer[] initialCplayers = Manufacturer.getInitialCPlayers();
-//		CPlayer winner = Manufacturer.pitPlayers(initialCplayers);
-		CPlayer winner = initialCplayers[0];
+		CPlayer winner = Manufacturer.pitPlayers(initialCplayers);
+//		CPlayer winner = initialCplayers[0];
 		
 		FileOperations.saveFile("Test.ai", winner.toBytes());
 		System.out.println(winner);

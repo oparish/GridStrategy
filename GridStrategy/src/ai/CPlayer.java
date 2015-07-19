@@ -89,8 +89,10 @@ public class CPlayer
 			ConditionHeader conditionHeader = this.makeConditionHeader(integers, counter);
 			counter += conditionHeader.getHeaderSize();
 			ActionHeader actionHeader = this.makeActionHeader(integers, counter);
+			System.out.println(actionHeader.getActionClass());
 			counter++;
 			ruleHeaders.add(new RuleHeader(conditionHeader, actionHeader));
+			System.out.println("Rule Header Made");
 		}	
 		
 		
