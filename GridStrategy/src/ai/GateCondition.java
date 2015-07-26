@@ -48,9 +48,9 @@ public class GateCondition extends Condition
 		
 		ConditionHeader condition1Header = conditionHeader.condition1;
 		ConditionHeader condition2Header = conditionHeader.condition2;
-		this.condition1 = Condition.makeCondition(conditionIntegers.subList(0, condition1Header.getSize()), isPlayer1, condition1Header);
-		this.condition2 = Condition.makeCondition(conditionIntegers.subList(condition1Header.getSize(), 
-				condition1Header.getSize() + condition2Header.getSize()), isPlayer1, condition1Header);
+		this.condition1 = Condition.makeCondition(conditionIntegers.subList(1, condition1Header.getSize() + 1), isPlayer1, condition1Header);
+		this.condition2 = Condition.makeCondition(conditionIntegers.subList(condition1Header.getSize() + 1, 
+				condition1Header.getSize() + condition2Header.getSize() + 1), isPlayer1, condition2Header);
 	}
 	
 	public GateCondition(HashMap<ConditionFieldName, Integer> fieldMap, boolean isPlayer1)

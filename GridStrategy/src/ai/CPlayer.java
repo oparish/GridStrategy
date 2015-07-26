@@ -89,10 +89,9 @@ public class CPlayer
 			ConditionHeader conditionHeader = this.makeConditionHeader(integers, counter);
 			counter += conditionHeader.getHeaderSize();
 			ActionHeader actionHeader = this.makeActionHeader(integers, counter);
-			System.out.println(actionHeader.getActionClass());
 			counter++;
-			ruleHeaders.add(new RuleHeader(conditionHeader, actionHeader));
-			System.out.println("Rule Header Made");
+			RuleHeader ruleHeader = new RuleHeader(conditionHeader, actionHeader);
+			ruleHeaders.add(ruleHeader);
 		}	
 		
 		
@@ -115,7 +114,7 @@ public class CPlayer
 		{
 			counter++;
 			ConditionHeader condition1 = this.makeConditionHeader(integers, counter);
-			counter++;
+			counter+=condition1.getHeaderSize();
 			ConditionHeader condition2 = this.makeConditionHeader(integers, counter);
 			conditionHeader = new GateConditionHeader(conditionClass, condition1, condition2);
 		}
