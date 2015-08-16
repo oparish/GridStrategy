@@ -6,28 +6,16 @@ import panes.PaintArea;
 
 public abstract class Frame
 {	
-protected int milliseconds;
+protected int ticks;
 	
-	public int getMilliseconds() {
-		return milliseconds;
+	public int getTicks() {
+		return ticks;
 	}
 
-	public Frame(int milliseconds)
+	public Frame(int ticks)
 	{
 		super();
-		this.milliseconds = milliseconds;
-	}
-	
-	protected void pause()
-	{
-		try 
-		{
-			Thread.sleep(milliseconds);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
+		this.ticks = ticks;
 	}
 	
 	public abstract void playFrame(PaintArea cell);

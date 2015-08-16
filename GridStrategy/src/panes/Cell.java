@@ -22,4 +22,14 @@ public class Cell extends PaintArea
 		else
 			return null;
 	}
+	
+	public BufferedImage getImage2()
+	{
+		if (unit != null)
+			return this.unit.getImage2();
+		else if (this.cellImage != null)
+			return this.cellImage.getImage();
+		else
+			return null;
+	}
 }

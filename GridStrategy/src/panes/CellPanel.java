@@ -1,27 +1,42 @@
 package panes;
 
+import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Timer;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
+import data.Unit;
+import data.UnitType;
+import animation.Animator;
+import animation.AtomicAnimation;
 import animation.EffectPosition;
 import animation.EffectTask;
 import main.Main;
 
-public class CellPanel extends JPanel
+public class CellPanel extends JPanel implements ActionListener
 {
 	private ArrayList<MyLine> lines;
 	private ArrayList<MyLine> endZoneLines;
 	private GridInfo gridInfo;
+	private BufferedImage g2dImage;
+	private Graphics2D g2d;
 	
 	private final int fullHeight;
+	private int animationCounter = 0;
+
+	private Timer timer = null;
+	boolean animationTicker = false;
 	
 	public CellPanel(GridInfo gridInfo)
 	{
@@ -75,9 +90,14 @@ public class CellPanel extends JPanel
 		this.endZoneLines.add(firstVertLine);
 		this.endZoneLines.add(secondVertLine);
 		this.endZoneLines.add(firstHorzLine);
-		MyLine thirdVertLine = new MyLine(0, gridHeightPixels + Main.CELLHEIGHT + 1, 0, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 2);
-		MyLine fourthVertLine = new MyLine(gridWidthPixels, gridHeightPixels + Main.CELLHEIGHT + 1, gridWidthPixels, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 2);
-		MyLine secondHorzLine = new MyLine(0, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 2, gridWidthPixels, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 2);
+		MyLine thirdVertLine = 
+				new MyLine(0, gridHeightPixels + Main.CELLHEIGHT + 1, 0, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 2);
+		MyLine fourthVertLine = 
+				new MyLine(gridWidthPixels, gridHeightPixels + Main.CELLHEIGHT + 1, gridWidthPixels, 
+						gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 2);
+		MyLine secondHorzLine = 
+				new MyLine(0, gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 2, gridWidthPixels, 
+						gridHeightPixels + Main.CELLHEIGHT + Main.CELLHEIGHT + 2);
 		this.endZoneLines.add(thirdVertLine);
 		this.endZoneLines.add(fourthVertLine);
 		this.endZoneLines.add(secondHorzLine);
@@ -93,7 +113,7 @@ public class CellPanel extends JPanel
 		return linePositions;
 	}
 	
-	private void drawLines(ArrayList<MyLine> lines, Graphics2D g2d, Integer xpos, Integer ypos)
+	private void drawLines(ArrayList<MyLine> lines, Graphics g, Integer xpos, Integer ypos)
 	{	
 		for (MyLine line : lines)
 		{
@@ -101,7 +121,7 @@ public class CellPanel extends JPanel
 			Integer X2 = line.X2 + xpos;
 			Integer Y1 = line.Y1 + ypos;
 			Integer Y2 = line.Y2 + ypos;
-			g2d.drawLine(X1, Y1, X2, Y2);
+			g.drawLine(X1, Y1, X2, Y2);
 		}
 	}
 	
@@ -147,32 +167,56 @@ public class CellPanel extends JPanel
 	{
 		super.paint(g);
 		
-		Graphics2D g2d = (Graphics2D) g;
-		Rectangle bounds = g2d.getClipBounds();
+		Rectangle bounds = g.getClipBounds();
 		Double xDouble =(Double) (bounds.getWidth() - this.gridInfo.gridWidth)/2;
 		Double yDouble =(Double) (bounds.getHeight() - (this.fullHeight))/2;
 		Integer xpos = xDouble.intValue();
 		Integer ypos = yDouble.intValue();
 		
-		this.drawLines(this.lines, g2d, xpos, ypos + Main.CELLHEIGHT + 1);
-		this.drawLines(this.endZoneLines, g2d, xpos, ypos);
-		this.drawCells(g2d, xpos, ypos + Main.CELLHEIGHT + 1);
-		this.drawEndZoneCells(g2d, xpos, ypos);
+		if (this.g2dImage == null)
+		{
+			this.g2dImage = (BufferedImage) this.createImage(((Double)bounds.getWidth()).intValue(), ((Double)bounds.getHeight()).intValue());
+			this.g2d = this.g2dImage.createGraphics();
+			this.drawLines(this.lines, this.g2d, xpos, ypos + Main.CELLHEIGHT + 1);
+			this.drawLines(this.endZoneLines, this.g2d, xpos, ypos);
+			this.drawCells(this.g2d, xpos, ypos + Main.CELLHEIGHT + 1);
+			this.drawEndZoneCells(this.g2d, xpos, ypos);
+		}
+
+		g.drawImage(this.g2dImage, 0, 0, this);
+
+		if (this.timer == null)
+		{
+			this.timer = new Timer(Animator.UNIT_SECONDS, this);
+			this.timer.start();
+		}
+
 	}
 	
-	public void repaintCell(PaintArea cell)
+	public void repaintCell(PaintArea cell, boolean image2, boolean repaint)
 	{
 		if (cell.paintedX != null)
 		{
-			BufferedImage image = cell.getImage();
-			Graphics2D g2d = (Graphics2D) this.getGraphics();
-			if (image != null)
-				g2d.drawImage(image, cell.paintedX, cell.paintedY, 
-					this);
+			BufferedImage image;
+			
+			if (image2)
+				image = cell.getImage2();
 			else
-				g2d.clearRect(cell.paintedX, cell.paintedY, 
+				image = cell.getImage();
+			
+			if (image != null)
+			{
+				this.g2d.clearRect(cell.paintedX, cell.paintedY, 
+						Main.CELLWIDTH, Main.CELLHEIGHT);
+				this.g2d.drawImage(image, cell.paintedX, cell.paintedY, 
+						this);
+			}
+			else
+				this.g2d.clearRect(cell.paintedX, cell.paintedY, 
 						Main.CELLWIDTH, Main.CELLHEIGHT);
 		}
+		if (repaint)
+			this.repaint();
 	}
 	
 	public Cell getCell(int x, int y)
@@ -191,17 +235,15 @@ public class CellPanel extends JPanel
 	public void paintEffect(PaintArea paintArea, Effect effect)
 	{
 		BufferedImage image = effect.getImage();
-		Graphics2D g2d = (Graphics2D) this.getGraphics();
-		g2d.drawImage(image, paintArea.paintedX, paintArea.paintedY,
+		this.g2d.drawImage(image, paintArea.paintedX, paintArea.paintedY,
 					this);
 	}
 	
 	public void paintEffect(PaintArea cell, Effect effect, EffectPosition effectPosition)
 	{
 		BufferedImage image = effect.getImage();
-		Graphics2D g2d = (Graphics2D) this.getGraphics();
 		Double yValue = cell.paintedY + (effectPosition.getPositionNumber() * Main.CELLHEIGHT);
-		g2d.drawImage(image, cell.paintedX, yValue.intValue(), this);
+		this.g2d.drawImage(image, cell.paintedX, yValue.intValue(), this);
 	}
 	
 	public void showDeployPoints(Integer[] deployPositions)
@@ -220,14 +262,14 @@ public class CellPanel extends JPanel
 		{
 			PaintArea paintArea = this.gridInfo.getDeployPointPaintArea(i, deployPositions[i]);
 			paintArea.cellImage = null;
-			this.repaintCell(paintArea);
+			this.repaintCell(paintArea, false, true);
 		}
 	}
 	
 	private void paintImageIntoCell(PaintArea paintArea, CellImage image)
 	{
 		paintArea.cellImage = image;
-		this.repaintCell(paintArea);
+		this.repaintCell(paintArea, false, true);
 	}
 	
 	private class MyLine
@@ -244,5 +286,29 @@ public class CellPanel extends JPanel
 			this.X2 = X2;
 			this.Y2 = Y2;
 		}
+	}
+	
+	private void animationTick()
+	{
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			for (int j = 0; j < Main.GRIDHEIGHT; j++)
+			{
+				this.repaintCell(this.gridInfo.cells[i][j], this.animationTicker, false);
+			}
+		}	
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		if (this.animationCounter % Animator.TICKER_PAUSE == 0)
+			this.animationTicker = !this.animationTicker;
+		this.animationTick();
+		Animator.playAnimation(this.animationCounter);
+		this.repaint();
+		this.animationCounter++;
+		if (this.animationCounter == Animator.CYCLE_TIME)
+			this.animationCounter = 0;
 	}
 }

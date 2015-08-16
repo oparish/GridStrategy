@@ -48,7 +48,5 @@ public class OperationFrame extends Frame
 			removeOperation(cell);
 			break;
 		}
-		gridPane.getCellPanel().repaintCell(cell);
-		this.pause();
 	}
 }

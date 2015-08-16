@@ -23,4 +23,8 @@ public class PaintArea
 		else
 			return null;
 	}
+	public BufferedImage getImage2()
+	{
+		return this.getImage();
+	}
 }

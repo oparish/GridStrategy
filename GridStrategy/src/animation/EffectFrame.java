@@ -30,7 +30,5 @@ public class EffectFrame extends Frame
 		GridPane gridPane = Animator.getGridPane();
 		CellPanel cellPanel = gridPane.getCellPanel();
 		cellPanel.paintEffect(cell, effect, this.effectPosition);
-		this.pause();
-		cellPanel.repaintCell(cell);
 	}
 }

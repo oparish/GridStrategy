@@ -35,6 +35,11 @@ public class Unit
 		return this.unitType.getImage(ownedByPlayer1);
 	}
 	
+	public BufferedImage getImage2()
+	{
+		return this.unitType.getImage2(ownedByPlayer1);
+	}
+	
 	public String toString()
 	{
 		return "Unit Type: " + this.unitType.toString() + ", Player: " 

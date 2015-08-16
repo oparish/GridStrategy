@@ -322,7 +322,6 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void paintArtilleryHit(EventLocation eventLocation1, EventLocation eventLocation2, Unit unit1, Unit unit2)
 	{
-		int direction = unit1.isOwnedByPlayer1()?-1:1;
 		VerticalAnimationSeries fireAnimationSeries = Animator.getFiringAnimationSeries(unit1);
 		fireAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), eventLocation1, eventLocation2);
 		Animation removeAnimation = Animator.getSimpleCombatUnit1DestroyedAnimation(unit2);
