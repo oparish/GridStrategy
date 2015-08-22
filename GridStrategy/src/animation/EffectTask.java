@@ -20,6 +20,6 @@ public class EffectTask extends TimerTask
 	
 	public void run()
 	{
-		this.cellPanel.repaintCell(this.cellPanel.getCell(this.x, this.y), false, true);
+		this.cellPanel.paintCell(this.cellPanel.getCell(this.x, this.y), false, true);
 	}
 }

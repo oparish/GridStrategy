@@ -21,6 +21,7 @@ import main.Main;
 import screens.GameScreen;
 import animation.EffectPosition;
 import data.GameGrid;
+import data.Terrain;
 import data.Unit;
 import events.EventType;
 import events.MyEvent;
@@ -40,7 +41,7 @@ public class GridPane extends JPanel
 
 	private GameScreen gameScreen;
 	
-	public GridPane(GameScreen gameScreen)
+	public GridPane(GameScreen gameScreen, Terrain[][] terrainArray)
 	{
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -48,7 +49,7 @@ public class GridPane extends JPanel
 		this.gameScreen = gameScreen;
 		this.setupBoundaries();
 		this.setupNumbers();
-		this.setupCells();
+		this.setupCells(terrainArray);
 		this.setupCellPanel();
 	}
 	
@@ -78,7 +79,7 @@ public class GridPane extends JPanel
 		this.gridInfo.base2RowNumber = 1;
 	}
 	
-	private void setupCells()
+	private void setupCells(Terrain[][] terrainArray)
 	{
 		this.gridInfo.cells = new Cell[Main.GRIDWIDTH][Main.GRIDHEIGHT];
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
@@ -88,6 +89,7 @@ public class GridPane extends JPanel
 				this.gridInfo.cells[i][j] = 
 						new Cell(this.gridInfo.columnNumbers[i], 
 								this.gridInfo.rowNumbers[j]);
+				this.gridInfo.cells[i][j].setTerrain(terrainArray[i][j]);
 			}
 		}
 		
@@ -105,13 +107,13 @@ public class GridPane extends JPanel
 	
 	public void setCellContent(Cell cell, Unit unit)
 	{
-		cell.unit = unit;
+		cell.setUnit(unit);
 		new MyEvent(this, EventType.DEPLOYING_UNIT);
 	}
 	
 	public void deleteCellContent(Cell cell)
 	{
-		cell.unit = null;
+		cell.setUnit(null);
 	}
 	
 	private void setupBoundaries()

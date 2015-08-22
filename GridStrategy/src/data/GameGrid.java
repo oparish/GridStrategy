@@ -55,7 +55,12 @@ public class GameGrid
 	private int player2Credits;
 	private Integer[] player1DeploymentPoints;
 	private Integer[] player2DeploymentPoints;
-	private Unit[][] gridContents;
+	private Unit[][] gridUnits;
+	private Terrain[][] gridTerrain;
+	public Terrain[][] getGridTerrain() {
+		return gridTerrain;
+	}
+
 	private int turnMoves;
 	private boolean isPlayer1Turn;
 	private EventRunnable eventRunnable;
@@ -131,8 +136,28 @@ public class GameGrid
 		this.player1Credits = Main.PLAYER1_MAXCREDITS;
 		this.player2Credits = Main.PLAYER2_MAXCREDITS;
 		this.isPlayer1Turn = Main.PLAYER1STARTS;
-		this.gridContents = new Unit[Main.GRIDWIDTH][Main.GRIDHEIGHT];
+		this.gridUnits = new Unit[Main.GRIDWIDTH][Main.GRIDHEIGHT];
+		this.gridTerrain = new Terrain[Main.GRIDWIDTH][Main.GRIDHEIGHT];
+		this.loadTerrain();
 		this.setupDeploymentPoints();
+	}
+	
+	private void loadTerrain()
+	{
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			for (int j = 4; j < Main.GRIDHEIGHT; j++)
+			{
+				this.gridTerrain[i][j] = Terrain.GRASS;
+			}
+		}
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				this.gridTerrain[i][j] = Terrain.DESERT;
+			}
+		}
 	}
 	
 	public void addEventListener(MyEventListener listener)
@@ -155,7 +180,7 @@ public class GameGrid
 	
 	public Unit getUnitAt(int x, int y)
 	{
-		return this.gridContents[x][y];
+		return this.gridUnits[x][y];
 	}
 	
 	public void activateAbility(int x, int y, AbilityType abilityType, Unit unit)
@@ -220,9 +245,9 @@ public class GameGrid
 	
 	private void newDeployPoint(int x, int y)
 	{
-		boolean ownedByPlayer1 = this.gridContents[x][y].isOwnedByPlayer1();
+		boolean ownedByPlayer1 = this.gridUnits[x][y].isOwnedByPlayer1();
 		Unit unit = new Unit(ownedByPlayer1, BUNKER);
-		this.gridContents[x][y] = unit;
+		this.gridUnits[x][y] = unit;
 		this.updateDeployPoints(ownedByPlayer1, x);
 		considerEvent(new OneUnitEvent(this, EventType.DEPLOYING_UNIT, x, y, unit));
 	}
@@ -246,7 +271,7 @@ public class GameGrid
 		}
 		for (int i = searchStart; ((searchEnd - i) * direction) >= 0; i += direction)
 		{
-			Unit unit = this.gridContents[x][i];
+			Unit unit = this.gridUnits[x][i];
 			if (unit != null && unit.getUnitType().hasCategory(FRONTLINE))
 			{
 				if (ownedByPlayer1)
@@ -349,9 +374,9 @@ public class GameGrid
 	{
 		ArrayList<MoveAttempt> moveList = new ArrayList<MoveAttempt>();
 		
-		for (int i = 0 ; i < this.gridContents.length; i++)
+		for (int i = 0 ; i < this.gridUnits.length; i++)
 		{
-			Unit[] column = this.gridContents[i];
+			Unit[] column = this.gridUnits[i];
 			for(int j = end ; (start - j) * -directionToWalk >= 0; j -= directionToWalk)
 			{
 				Unit unit = column[j];
@@ -372,7 +397,7 @@ public class GameGrid
 			return;
 		}
 		
-		Unit[] column = this.gridContents[moveAttempt.column];
+		Unit[] column = this.gridUnits[moveAttempt.column];
 		int speed = moveAttempt.unit.getUnitType().getSpeed();
 		if (speed == 0)
 			return;
@@ -536,7 +561,7 @@ public class GameGrid
 			credits = this.player2Credits;
 		}
 		ObservationBatch observationBatch = new ObservationBatch(isPlayer1, 
-				this.gridContents, credits, this.getPlayer1DeploymentPoints(), this.getPlayer2DeploymentPoints());
+				this.gridUnits, credits, this.getPlayer1DeploymentPoints(), this.getPlayer2DeploymentPoints());
 		
 		boolean result = currentCPlayer.makeMove(observationBatch, this);
 		if (!result)
@@ -561,7 +586,7 @@ public class GameGrid
 		ArrayList<Integer> possiblePositions = new ArrayList<Integer>();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			if (this.gridContents[i][deploymentPoints[i]] == null)
+			if (this.gridUnits[i][deploymentPoints[i]] == null)
 				possiblePositions.add(i);
 		}
 		int actionNumber = GameGrid.random.nextInt(possiblePositions.size() + 1);
@@ -602,7 +627,7 @@ public class GameGrid
 		
 		for (int i = start ; (end - i) * direction >= 0 ; i += direction)
 		{
-			Unit unit = this.gridContents[x][i];
+			Unit unit = this.gridUnits[x][i];
 			if (unit != null && unit.isOwnedByPlayer1() == isPlayer1 && unit.getUnitType() == unitType)
 			{
 				this.activateAbility(x, i, unitType.getAbilityType(), unit);
@@ -665,14 +690,14 @@ public class GameGrid
 			this.noteMove();
 			return true;
 		}
-		else if (this.gridContents[columnPos][deployPoint] == null)
+		else if (this.gridUnits[columnPos][deployPoint] == null)
 		{
 			boolean purchaseResult = this.attemptUnitPurchase(isPlayer1, unit.getUnitType().getCost());	
 			if (!purchaseResult)
 				return false;
 			considerEvent(new OneUnitEvent(this, DEPLOYING_UNIT, columnPos, 
 					deployPoint, unit));
-			this.gridContents[columnPos][deployPoint] = unit;
+			this.gridUnits[columnPos][deployPoint] = unit;
 			this.noteMove();
 			return true;
 		}
@@ -684,13 +709,13 @@ public class GameGrid
 	
 	public void moveUnit(int xPos1, int yPos1, int xPos2, int yPos2)
 	{
-		Unit unit = this.gridContents[xPos1][yPos1];
+		Unit unit = this.gridUnits[xPos1][yPos1];
 		if (unit == null)
 			System.out.println("Trying to move a null unit");
 		this.considerEvent(new TwoPositionEvent(this, MOVING_UNIT, xPos1, 
 				yPos1, unit, xPos2, yPos2));
-		this.gridContents[xPos2][yPos2] = unit;
-		this.gridContents[xPos1][yPos1] = null;
+		this.gridUnits[xPos2][yPos2] = unit;
+		this.gridUnits[xPos1][yPos1] = null;
 	}
 	
 	private CombatResult checkCategoryCombat(UnitCategory unitCategory1, 
@@ -755,17 +780,17 @@ public class GameGrid
 	
 	private void destroyUnitAt(int x, int y)
 	{
-		Unit unit = this.gridContents[x][y];
+		Unit unit = this.gridUnits[x][y];
 		if (unit == null)
 			System.out.println("Trying to destroy a null unit");
 		if (unit.getUnitType().hasCategory(FRONTLINE))
 		{
-			this.gridContents[x][y] = null;
+			this.gridUnits[x][y] = null;
 			this.updateDeployPoints(unit.isOwnedByPlayer1(), x);
 		}
 		else
 		{
-			this.gridContents[x][y] = null;
+			this.gridUnits[x][y] = null;
 		}	
 	}
 	

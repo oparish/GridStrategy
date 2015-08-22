@@ -133,11 +133,8 @@ public class CellPanel extends JPanel implements ActionListener
 			{
 				cell.paintedX = cell.baseX + xpos;
 				cell.paintedY = cell.baseY + ypos;
-				if (cell.unit != null)
-				{
-					g2d.drawImage(cell.getImage(), cell.paintedX, cell.paintedY, 
-							this);
-				}
+				cell.setUnit(null);
+				this.paintCell(cell, false, false);
 			}
 		}
 	}
@@ -153,7 +150,7 @@ public class CellPanel extends JPanel implements ActionListener
 				if (paintArea instanceof Cell)
 				{
 					Cell cell2 = (Cell) paintArea;
-					if (cell2.unit != null)
+					if (cell2.getUnit() != null)
 					{
 						g2d.drawImage(paintArea.getImage(), paintArea.paintedX, paintArea.paintedY, 
 								this);
@@ -193,7 +190,7 @@ public class CellPanel extends JPanel implements ActionListener
 
 	}
 	
-	public void repaintCell(PaintArea cell, boolean image2, boolean repaint)
+	public void paintCell(PaintArea cell, boolean image2, boolean repaint)
 	{
 		if (cell.paintedX != null)
 		{
@@ -251,7 +248,7 @@ public class CellPanel extends JPanel implements ActionListener
 		for (int i = 0; i < deployPositions.length; i++)
 		{
 			PaintArea paintArea = this.gridInfo.getDeployPointPaintArea(i, deployPositions[i]);
-			if (!(paintArea instanceof Cell) || ((Cell) paintArea).unit == null)
+			if (!(paintArea instanceof Cell) || ((Cell) paintArea).getUnit() == null)
 				this.paintImageIntoCell(paintArea, CellImage.ARROW);
 		}
 	}
@@ -261,15 +258,15 @@ public class CellPanel extends JPanel implements ActionListener
 		for (int i = 0; i < deployPositions.length; i++)
 		{
 			PaintArea paintArea = this.gridInfo.getDeployPointPaintArea(i, deployPositions[i]);
-			paintArea.cellImage = null;
-			this.repaintCell(paintArea, false, true);
+			paintArea.overlayImage = null;
+			this.paintCell(paintArea, false, true);
 		}
 	}
 	
 	private void paintImageIntoCell(PaintArea paintArea, CellImage image)
 	{
-		paintArea.cellImage = image;
-		this.repaintCell(paintArea, false, true);
+		paintArea.overlayImage = image;
+		this.paintCell(paintArea, false, true);
 	}
 	
 	private class MyLine
@@ -294,7 +291,7 @@ public class CellPanel extends JPanel implements ActionListener
 		{
 			for (int j = 0; j < Main.GRIDHEIGHT; j++)
 			{
-				this.repaintCell(this.gridInfo.cells[i][j], this.animationTicker, false);
+				this.paintCell(this.gridInfo.cells[i][j], this.animationTicker, false);
 			}
 		}	
 	}

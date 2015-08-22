@@ -79,7 +79,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
         }); 
 		this.gameGrid = gameGrid;
 		this.setLayout(new GridLayout(1,1));
-		this.gridPane = new GridPane(this);
+		this.gridPane = new GridPane(this, this.gameGrid.getGridTerrain());
 		this.cellPanel = this.gridPane.getCellPanel();
 		Animator.setGridPane(this.gridPane);
 		this.controlPane = new ControlPane(this);
@@ -412,7 +412,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void checkForDeployPoint(int x, int y)
 	{
-		if (this.gameGrid.getPlayer1DeploymentPoints()[x] == y && (y == -1 || this.cellPanel.getCell(x, y).unit == null))
+		if (this.gameGrid.getPlayer1DeploymentPoints()[x] == y && (y == -1 || this.cellPanel.getCell(x, y).getUnit() == null))
 		{			
 			this.cellPanel.clearDeployPoints(this.getPlayer1DeploymentPoints());
 			this.gameGrid.deployUnit(this.unitToDeploy, x);
@@ -443,13 +443,13 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	public void checkForAbility(Cell cell, int x, int y)
 	{
-		if (cell.unit == null)
+		if (cell.getUnit()== null)
 			return;
-		AbilityType abilityType = cell.unit.getUnitType().getAbilityType();
+		AbilityType abilityType = cell.getUnit().getUnitType().getAbilityType();
 		if (abilityType != null)
 		{
 			this.switchScreenState(GameScreenState.STANDARD);
-			this.gameGrid.activateAbility(x, y, abilityType, cell.unit);
+			this.gameGrid.activateAbility(x, y, abilityType, cell.getUnit());
 		}
 	}
 

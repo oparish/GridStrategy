@@ -14,17 +14,17 @@ import main.Main;
 
 public enum UnitType
 {
-	ARTILLERY("Player1Artillery", "Player1Artillery", "Player2Artillery", "Player2Artillery", 0, 0, 1,
+	ARTILLERY("FriendlyArtillery1", "FriendlyArtillery2", "EnemyArtillery1", "EnemyArtillery2", 0, 0, 1,
 			new UnitCategory[]{}, AbilityType.ARTILLERY),
-	DEMOLISHER("UnitAnimation1", "UnitAnimation2", "UnitAnimation1", "UnitAnimation2", 3, 2, 5,
+	DEMOLISHER("FriendlyEngineers1", "FriendlyEngineers2", "EnemyEngineers1", "EnemyEngineers2", 3, 2, 5,
 			new UnitCategory[]{}, null),
-	INTERCEPTOR("Player1Interceptor", "Player1Interceptor", "Player2Interceptor", "Player2Interceptor",2, 1, 5,
+	INTERCEPTOR("FriendlySoldiers1", "FriendlySoldiers2", "EnemySoldiers1", "EnemySoldiers2",2, 1, 5,
 			new UnitCategory[]{UnitCategory.INTERCEPTOR}, null),
-	DEPLOYER("Player1Deployer", "Player1Deployer", "Player2Deployer", "Player2Deployer",1, 0, 1,
+	DEPLOYER("FriendlyVehicle1", "FriendlyVehicle2", "EnemyVehicle1", "EnemyVehicle2",1, 0, 1,
 					new UnitCategory[]{}, DEPLOYPOINT),
-	BUNKER("Player1Bunker", "Player1Bunker", "Player2Bunker", "Player2Bunker",0, 0, -1, new UnitCategory[]{FRONTLINE, LOW}, null),
-	SPEEDER("Player1Speeder", "Player1Speeder", "Player2Speeder", "Player2Speeder",4, 1, 3, new UnitCategory[]{LOW}, null),
-	BARRIER("Player1Barrier", "Player1Barrier", "Player2Barrier", "Player2Barrier",1, 1, 3, new UnitCategory[]{SHIELD}, null);
+	BUNKER("FriendlyBunker1", "FriendlyBunker2", "EnemyBunker1", "EnemyBunker2",0, 0, -1, new UnitCategory[]{FRONTLINE, LOW}, null),
+	SPEEDER("FriendlyNinjas1", "FriendlyNinjas2", "EnemyNinjas1", "EnemyNinjas2",4, 1, 3, new UnitCategory[]{LOW}, null),
+	BARRIER("FriendlyPriest1", "FriendlyPriest2", "EnemyPriest1", "EnemyPriest2",1, 1, 3, new UnitCategory[]{SHIELD}, null);
 	
 	private static ArrayList<UnitType> deployableUnitTypes;
 	private static ArrayList<UnitType> activatableUnitTypes;
