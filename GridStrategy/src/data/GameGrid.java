@@ -378,6 +378,18 @@ public class GameGrid
 		return moveList;
 	}
 	
+	private int deduceEndPos(int startPos, int column, int directionToWalk, UnitType unitType)
+	{
+		int distance = unitType.getSpeed();
+		int endPos = startPos;
+		while (distance > 0)
+		{
+			endPos += directionToWalk;
+			distance -= this.map.getGridTerrain()[column][startPos].hasCategory(TerrainCategory.ROUGH) ? 2 : 1;
+		}
+		return endPos;
+	}
+	
 	private void tryMovingPlayerUnit(MoveAttempt moveAttempt, 
 			int end, int start, int directionToWalk)
 	{
@@ -391,7 +403,8 @@ public class GameGrid
 		int speed = moveAttempt.unit.getUnitType().getSpeed();
 		if (speed == 0)
 			return;
-		moveAttempt.potentialEndPos = (moveAttempt.startPos + (speed * directionToWalk));
+		moveAttempt.potentialEndPos = this.deduceEndPos(moveAttempt.startPos, moveAttempt.column, directionToWalk, 
+				moveAttempt.unit.getUnitType());
 		
 		int currentScreenPos = moveAttempt.startPos;
 		
