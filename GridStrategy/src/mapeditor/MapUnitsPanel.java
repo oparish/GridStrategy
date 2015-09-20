@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -33,21 +34,29 @@ public class MapUnitsPanel extends JPanel implements ActionListener
 		this.addButton.addActionListener(this);
 		this.removeButton.addActionListener(this);
 		this.unitList.setBorder(BorderFactory.createLineBorder(Color.black));
-		this.unitList.setListData(UnitType.values());
+		this.unitList.setListData(this.setupUnitTypeArray());
 	}
 	
 	public void clearList()
 	{
 		this.unitBox.removeAllItems();
 		this.unitBox.setSelectedItem(null);
-		this.unitList.setListData(UnitType.values());
+		this.unitList.setListData(this.setupUnitTypeArray());
+	}
+	
+	private UnitType[] setupUnitTypeArray()
+	{
+		ArrayList<UnitType> unitTypeList = UnitType.getDeployableUnitTypes();
+		UnitType[] typeArray = new UnitType[unitTypeList.size()];
+		unitTypeList.toArray(typeArray);
+		return typeArray;
 	}
 	
 	public void setListData(UnitType[] data)
 	{
 		this.unitList.setListData(data);
 		this.unitBox.removeAllItems();
-		for (UnitType type : UnitType.values())
+		for (UnitType type : UnitType.getDeployableUnitTypes())
 		{
 			boolean check = true;
 			for (int i = 0; i < data.length; i++)

@@ -171,10 +171,10 @@ public class MapEditor extends JFrame implements MouseListener, ActionListener, 
 	
 	private void newMap()
 	{
-		this.player1CreditSpinner.setValue(0);
-		this.player2CreditSpinner.setValue(0);
-		this.player1LifeSpinner.setValue(0);
-		this.player2LifeSpinner.setValue(0);
+		this.player1CreditSpinner.setValue(Main.PLAYER1_DEFAULTCREDITS);
+		this.player2CreditSpinner.setValue(Main.PLAYER2_DEFAULTCREDITS);
+		this.player1LifeSpinner.setValue(Main.PLAYER1_DEFAULTHP);
+		this.player2LifeSpinner.setValue(Main.PLAYER2_DEFAULTHP);
 		this.player1MapUnitsList.clearList();
 		this.player2MapUnitsList.clearList();
 		this.mapPanel.clearMap();
