@@ -58,7 +58,7 @@ public class Manufacturer
 				System.out.println("j = " + j);
 				CPlayer player1 = initialCplayers[i];
 				CPlayer player2 = initialCplayers[j];
-				result = Main.getMain().startGameGridWithoutScreen(player1, player2);
+				result = Main.getMain().startGameGridWithoutScreen(player1, player2, null);
 				if (result == GameResult.PLAYER1_WINS)
 					cPlayerMap.put(player1, (cPlayerMap.get(player1) + 1));
 				else if (result == GameResult.PLAYER2_WINS)
@@ -101,13 +101,13 @@ public class Manufacturer
 				cPlayer = Spawner.createCPlayer(true);
 				System.out.println("Player Made");
 				
-				result = Main.getMain().startGameGridWithoutScreen(cPlayer, null);
+				result = Main.getMain().startGameGridWithoutScreen(cPlayer, null, null);
 				
 				if (result == GameResult.PLAYER1_WINS)
 				{
 					for (CPlayer stepPlayer : stepPlayers)
 					{
-						result = Main.getMain().startGameGridWithoutScreen(cPlayer, stepPlayer);
+						result = Main.getMain().startGameGridWithoutScreen(cPlayer, stepPlayer, null);
 						if (result != GameResult.PLAYER1_WINS)
 							break;
 					}

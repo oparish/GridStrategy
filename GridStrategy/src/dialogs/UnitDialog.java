@@ -32,7 +32,7 @@ public class UnitDialog extends MyDialog implements ActionListener
 	{
 		int i = 0;
 		int j = 0;
-		for (UnitType unitType : UnitType.getDeployableUnitTypes())
+		for (UnitType unitType : this.gameScreen.getGameGrid().getAvailableUnitTypes(true))
 		{
 			UnitButton unitButton = new UnitButton(unitType);
 			LabelledButtonPanel unitPanel = new LabelledButtonPanel(unitButton, this.getCostLabelText(unitType.getCost()));

@@ -37,6 +37,9 @@ public class DeployAction extends Action
 	public boolean attemptAction(GameGrid gameGrid, boolean isPlayer1, int checkResult)
 	{
 		Unit unit = new Unit(isPlayer1, this.getUnitType());
+		if (!gameGrid.getAvailableUnitTypes(isPlayer1).contains(this.getUnitType()))
+			return false;
+		
 		int columnPos = this.getColumnPos();
 		if (columnPos == Main.NO_SPECIFIC_COLUMN)
 			columnPos = checkResult;

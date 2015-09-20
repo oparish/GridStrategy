@@ -24,9 +24,8 @@ import animation.EffectPosition;
 import animation.EffectTask;
 import main.Main;
 
-public class CellPanel extends JPanel implements ActionListener
+public class CellPanel extends LinesPanel implements ActionListener
 {
-	private ArrayList<MyLine> lines;
 	private ArrayList<MyLine> endZoneLines;
 	private GridInfo gridInfo;
 	private BufferedImage g2dImage;
@@ -43,40 +42,9 @@ public class CellPanel extends JPanel implements ActionListener
 		super();
 		this.gridInfo = gridInfo;
 		this.fullHeight = gridInfo.gridHeight + Main.CELLHEIGHT + Main.CELLHEIGHT + 2;
-		this.setLayout(null);
 		this.setupEndZoneLines();
-		this.setupLines();
-		this.setPanelBounds();
-	}
-	
-	private void setPanelBounds()
-	{
-		Dimension size = new Dimension(gridInfo.gridWidth, this.fullHeight);
-		this.setMinimumSize(size);
-		this.setPreferredSize(size);
-		this.setMaximumSize(size);
-	}
-	
-	private void setupLines()
-	{
-		this.lines = new ArrayList<MyLine>();
-			
-		ArrayList<Integer> lineXPositions = 
-				setupLinePositions(this.gridInfo.gridWidth, Main.CELLWIDTH);
-		ArrayList<Integer> lineYPositions = 
-				setupLinePositions(this.gridInfo.gridHeight, Main.CELLHEIGHT);		
-		
-		for (Integer xPos : lineXPositions)
-		{
-			MyLine columnLine = new MyLine(xPos, 0, xPos, this.gridInfo.gridHeight - 1);
-			this.lines.add(columnLine);
-		}
-		
-		for (Integer yPos : lineYPositions)
-		{
-			MyLine rowLine = new MyLine(0, yPos, this.gridInfo.gridWidth - 1, yPos);
-			this.lines.add(rowLine);
-		}
+		this.setupLines(gridInfo.gridWidth, this.fullHeight);
+		this.setPanelBounds(gridInfo.gridWidth, this.fullHeight);
 	}
 	
 	private void setupEndZoneLines()
@@ -101,28 +69,6 @@ public class CellPanel extends JPanel implements ActionListener
 		this.endZoneLines.add(thirdVertLine);
 		this.endZoneLines.add(fourthVertLine);
 		this.endZoneLines.add(secondHorzLine);
-	}
-	
-	private ArrayList<Integer> setupLinePositions(int gridLength, int cellLength)
-	{
-		ArrayList<Integer> linePositions = new ArrayList<Integer>();
-		for (int i = 0; i < gridLength; i += (cellLength + 1))
-		{
-			linePositions.add(i);
-		}
-		return linePositions;
-	}
-	
-	private void drawLines(ArrayList<MyLine> lines, Graphics g, Integer xpos, Integer ypos)
-	{	
-		for (MyLine line : lines)
-		{
-			Integer X1 = line.X1 + xpos;
-			Integer X2 = line.X2 + xpos;
-			Integer Y1 = line.Y1 + ypos;
-			Integer Y2 = line.Y2 + ypos;
-			g.drawLine(X1, Y1, X2, Y2);
-		}
 	}
 	
 	private void drawCells(Graphics2D g2d, Integer xpos, Integer ypos)
@@ -268,23 +214,7 @@ public class CellPanel extends JPanel implements ActionListener
 		paintArea.overlayImage = image;
 		this.paintCell(paintArea, false, true);
 	}
-	
-	private class MyLine
-	{
-		public Integer X1;
-		public Integer X2;
-		public Integer Y1;
-		public Integer Y2;
-		
-		public MyLine(Integer X1, Integer Y1, Integer X2, Integer Y2)
-		{
-			this.X1 = X1;
-			this.Y1 = Y1;
-			this.X2 = X2;
-			this.Y2 = Y2;
-		}
-	}
-	
+
 	private void animationTick()
 	{
 		for (int i = 0; i < Main.GRIDWIDTH; i++)

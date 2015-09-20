@@ -30,10 +30,10 @@ public class InfoPane extends JPanel implements MyEventListener
 		super();
 		this.gameGrid = gameGrid;
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		this.player1HP = new HPLabel(true, Main.PLAYER1_MAXHP);
-		this.player2HP = new HPLabel(false, Main.PLAYER2_MAXHP);
-		this.player1Credit = new CreditLabel(true, Main.PLAYER1_MAXCREDITS);
-		this.player2Credit = new CreditLabel(false, Main.PLAYER2_MAXCREDITS);
+		this.player1HP = new HPLabel(true, this.gameGrid.getPlayer1HP());
+		this.player2HP = new HPLabel(false, this.gameGrid.getPlayer2HP());
+		this.player1Credit = new CreditLabel(true, this.gameGrid.getPlayer1Credits());
+		this.player2Credit = new CreditLabel(false, this.gameGrid.getPlayer2Credits());
 		this.player1HP.setAlignmentX(CENTER_ALIGNMENT);
 		this.player2HP.setAlignmentX(CENTER_ALIGNMENT);
 		this.add(this.player1HP);

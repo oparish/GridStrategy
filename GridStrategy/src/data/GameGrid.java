@@ -49,6 +49,11 @@ public class GameGrid
 	private static Random random;
 	
 	private final MyEventSpeaker speaker;
+	private Map map;
+	public Map getMap() {
+		return map;
+	}
+
 	private int player1HP;
 	private int player2HP;
 	private int player1Credits;
@@ -56,10 +61,6 @@ public class GameGrid
 	private Integer[] player1DeploymentPoints;
 	private Integer[] player2DeploymentPoints;
 	private Unit[][] gridUnits;
-	private Terrain[][] gridTerrain;
-	public Terrain[][] getGridTerrain() {
-		return gridTerrain;
-	}
 
 	private int turnMoves;
 	private boolean isPlayer1Turn;
@@ -123,7 +124,7 @@ public class GameGrid
 			return this.getPlayer2DeploymentPoints();
 	}
 	
-	public GameGrid(CPlayer cPlayer1, CPlayer cPlayer2)
+	public GameGrid(CPlayer cPlayer1, CPlayer cPlayer2, ArrayList<Integer> mapData)
 	{
 		this.cplayer1 = cPlayer1;
 		this.cplayer2 = cPlayer2;
@@ -131,33 +132,22 @@ public class GameGrid
 		this.eventRunnable = new EventRunnable();
 		this.thread = new Thread(eventRunnable);
 		this.thread.start();
-		this.player1HP = Main.PLAYER1_MAXHP;
-		this.player2HP = Main.PLAYER2_MAXHP;
-		this.player1Credits = Main.PLAYER1_MAXCREDITS;
-		this.player2Credits = Main.PLAYER2_MAXCREDITS;
 		this.isPlayer1Turn = Main.PLAYER1STARTS;
 		this.gridUnits = new Unit[Main.GRIDWIDTH][Main.GRIDHEIGHT];
-		this.gridTerrain = new Terrain[Main.GRIDWIDTH][Main.GRIDHEIGHT];
-		this.loadTerrain();
+		if (mapData != null)
+			this.map = new DataMap(mapData);
+		else
+			this.map = new DefaultMap();
+		this.loadMap();
 		this.setupDeploymentPoints();
 	}
 	
-	private void loadTerrain()
+	private void loadMap()
 	{
-		for (int i = 0; i < Main.GRIDWIDTH; i++)
-		{
-			for (int j = 4; j < Main.GRIDHEIGHT; j++)
-			{
-				this.gridTerrain[i][j] = Terrain.GRASS;
-			}
-		}
-		for (int i = 0; i < Main.GRIDWIDTH; i++)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				this.gridTerrain[i][j] = Terrain.DESERT;
-			}
-		}
+		this.player1HP = this.map.getPlayer1InitialLife();
+		this.player2HP = this.map.getPlayer2InitialLife();
+		this.player1Credits = this.map.getPlayer1Credits();
+		this.player2Credits = this.map.getPlayer2Credits();
 	}
 	
 	public void addEventListener(MyEventListener listener)
@@ -603,6 +593,14 @@ public class GameGrid
 			if (!result)
 				this.noteMove();
 		}
+	}
+	
+	public ArrayList<UnitType> getAvailableUnitTypes(boolean isPlayer1)
+	{
+		if (isPlayer1)
+			return this.map.getPlayer1Types();
+		else
+			return this.map.getPlayer2Types();
 	}
 	
 	public boolean activateCplayerUnit(boolean isPlayer1, UnitType unitType, int x, ColumnSearchCondition searchCondition)

@@ -29,10 +29,10 @@ public class Main
 	private final static int[] DEBUG_COLUMNS = {0};
 	private final static EventType[] DEBUG_EVENTTYPES = {EventType.COMBAT};
 	
-	public final static int PLAYER1_MAXHP = 10;
-	public final static int PLAYER2_MAXHP = 10;
-	public final static int PLAYER1_MAXCREDITS = 10;
-	public final static int PLAYER2_MAXCREDITS = 10;
+	public final static int PLAYER1_DEFAULTHP = 10;
+	public final static int PLAYER2_DEFAULTHP = 10;
+	public final static int PLAYER1_DEFAULTCREDITS = 10;
+	public final static int PLAYER2_DEFAULTCREDITS = 10;
 	public final static int CREDITSPERTURN = 1;
 	public final static int GRIDWIDTH = 5;
 	public final static int GRIDHEIGHT = 15;
@@ -97,16 +97,16 @@ public class Main
 		return false;
 	}
 	
-	public GameResult startGameGridWithScreen(CPlayer cPlayer1, CPlayer cPlayer2, boolean automated)
+	public GameResult startGameGridWithScreen(CPlayer cPlayer1, CPlayer cPlayer2, ArrayList<Integer> mapData, boolean automated)
 	{
-		this.gameGrid = new GameGrid(cPlayer1, cPlayer2);			
+		this.gameGrid = new GameGrid(cPlayer1, cPlayer2, mapData);			
 		this.setupGameScreen();
 		return this.gameGrid.startGame(Main.gameScreen, automated);
 	}
 	
-	public GameResult startGameGridWithoutScreen(CPlayer cPlayer1, CPlayer cPlayer2)
+	public GameResult startGameGridWithoutScreen(CPlayer cPlayer1, CPlayer cPlayer2, ArrayList<Integer> mapData)
 	{
-		this.gameGrid = new GameGrid(cPlayer1, cPlayer2);
+		this.gameGrid = new GameGrid(cPlayer1, cPlayer2, mapData);
 		return this.gameGrid.startGameWithoutScreen();
 	}
 	
@@ -138,12 +138,13 @@ public class Main
 		//Main.testPlayer = Spawner.createCPlayer(false);
 		//CPlayer.showCPlayer(Main.testPlayer);
 		CPlayer readPlayer = FileOperations.loadCPlayer(null, false);
+		ArrayList<Integer> mapData = FileOperations.loadMap(null);
 		Main.debugOut(readPlayer.toString());
 		Main main = Main.getMain();
 //		while (Main.currentOpponent == null)
 //		{
 			//CPlayer testPlayer = TestPlayers.unitsOnBoardTestPlayer();
-			main.startGameGridWithScreen(null, readPlayer, false);
+			main.startGameGridWithScreen(null, readPlayer, mapData, false);
 
 //		}
 //		Main.main.startGameGrid(null, Main.getCurrentOpponent());

@@ -70,6 +70,6 @@ public class TestPlayers
 	{
 		CPlayer cPlayer1 = FileOperations.loadCPlayer(null, true);
 		CPlayer cPlayer2 = FileOperations.loadCPlayer(null, false);
-		Main.getMain().startGameGridWithScreen(cPlayer1, cPlayer2, true);
+		Main.getMain().startGameGridWithScreen(cPlayer1, cPlayer2, null, true);
 	}
 }

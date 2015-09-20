@@ -79,7 +79,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
         }); 
 		this.gameGrid = gameGrid;
 		this.setLayout(new GridLayout(1,1));
-		this.gridPane = new GridPane(this, this.gameGrid.getGridTerrain());
+		this.gridPane = new GridPane(this, this.gameGrid.getMap().getGridTerrain());
 		this.cellPanel = this.gridPane.getCellPanel();
 		Animator.setGridPane(this.gridPane);
 		this.controlPane = new ControlPane(this);

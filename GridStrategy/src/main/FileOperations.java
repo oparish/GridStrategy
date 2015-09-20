@@ -17,7 +17,9 @@ import ai.CPlayer;
 public class FileOperations {
 
 	private static String lastCPlayer;
-	private static final String AI_FILE_EXTENSION = "ai"; 
+	private static String lastMap;
+	private static final String AI_FILE_EXTENSION = "ai";
+	private static final String MAP_FILE_EXTENSION = "map"; 
 	
 	public static void saveFile(String fileName, ArrayList<Byte> bytes) 
 			throws IOException
@@ -39,6 +41,11 @@ public class FileOperations {
 		return FileOperations.lastCPlayer != null;
 	}
 	
+	public static boolean hasLastMap()
+	{
+		return FileOperations.lastMap != null;
+	}
+	
 	public static void clearLastCPlayer()
 	{
 		FileOperations.lastCPlayer = null;
@@ -50,10 +57,31 @@ public class FileOperations {
 			FileOperations.saveFile(FileOperations.lastCPlayer, bytes);
 	}
 	
+	public static void saveMap(ArrayList<Byte> bytes, Component component) 
+			throws IOException
+	{
+			FileOperations.saveFile(FileOperations.lastMap, bytes);
+	}
+	
+	public static void saveMapAs(ArrayList<Byte> bytes, Component component) 
+			throws IOException
+	{
+		JFileChooser fc = FileOperations.setupMapJFileChooser();
+		fc.showSaveDialog(component);
+		File selectedFile = fc.getSelectedFile();
+		if (selectedFile == null)
+			return;
+		String filename = selectedFile.getName();
+		if (!filename.endsWith("." + MAP_FILE_EXTENSION))
+				filename = filename + "." + MAP_FILE_EXTENSION;
+		FileOperations.lastMap = filename;
+		FileOperations.saveFile(filename, bytes);
+	}
+	
 	public static void saveCPlayerAs(ArrayList<Byte> bytes, Component component) 
 			throws IOException
 	{
-		JFileChooser fc = FileOperations.setupJFileChooser();
+		JFileChooser fc = FileOperations.setupAIJFileChooser();
 		fc.showSaveDialog(component);
 		File selectedFile = fc.getSelectedFile();
 		if (selectedFile == null)
@@ -88,7 +116,7 @@ public class FileOperations {
 	
 	public static CPlayer loadCPlayer(Component component, boolean isPlayer1) throws IOException
 	{
-		JFileChooser fc = FileOperations.setupJFileChooser();
+		JFileChooser fc = FileOperations.setupAIJFileChooser();
 		fc.showOpenDialog(component);
 		String filename = fc.getSelectedFile().getName();
 		FileOperations.lastCPlayer = filename;
@@ -96,10 +124,27 @@ public class FileOperations {
 		return new CPlayer(isPlayer1, integers);
 	}
 	
-	private static JFileChooser setupJFileChooser()
+	public static ArrayList<Integer> loadMap(Component component) throws IOException
+	{
+		JFileChooser fc = FileOperations.setupMapJFileChooser();
+		fc.showOpenDialog(component);
+		String filename = fc.getSelectedFile().getName();
+		FileOperations.lastMap = filename;
+		return FileOperations.loadFile(filename);
+	}
+	
+	private static JFileChooser setupAIJFileChooser()
 	{
 		JFileChooser fc = new JFileChooser(".");
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("AI only", AI_FILE_EXTENSION);
+		fc.setFileFilter(filter);
+		return fc;
+	}
+	
+	private static JFileChooser setupMapJFileChooser()
+	{
+		JFileChooser fc = new JFileChooser(".");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Map only", MAP_FILE_EXTENSION);
 		fc.setFileFilter(filter);
 		return fc;
 	}
