@@ -43,7 +43,7 @@ public class CellPanel extends LinesPanel implements ActionListener
 		this.gridInfo = gridInfo;
 		this.fullHeight = gridInfo.gridHeight + Main.CELLHEIGHT + Main.CELLHEIGHT + 2;
 		this.setupEndZoneLines();
-		this.setupLines(gridInfo.gridWidth, this.fullHeight);
+		this.setupLines(gridInfo.gridWidth, gridInfo.gridHeight);
 		this.setPanelBounds(gridInfo.gridWidth, this.fullHeight);
 	}
 	
