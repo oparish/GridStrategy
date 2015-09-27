@@ -93,15 +93,15 @@ public class GridPane extends JPanel
 			}
 		}
 		
-		this.gridInfo.player1BaseCells = new Cell[Main.GRIDWIDTH];
+		this.gridInfo.player1BaseCells = new PaintArea[Main.GRIDWIDTH];
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			this.gridInfo.player1BaseCells[i] = new Cell(this.gridInfo.columnNumbers[i], this.gridInfo.base1RowNumber);
+			this.gridInfo.player1BaseCells[i] = new PaintArea(this.gridInfo.columnNumbers[i], this.gridInfo.base1RowNumber);
 		}
-		this.gridInfo.player2BaseCells = new Cell[Main.GRIDWIDTH];	
+		this.gridInfo.player2BaseCells = new PaintArea[Main.GRIDWIDTH];	
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
-			this.gridInfo.player2BaseCells[i] = new Cell(this.gridInfo.columnNumbers[i], this.gridInfo.base2RowNumber);
+			this.gridInfo.player2BaseCells[i] = new PaintArea(this.gridInfo.columnNumbers[i], this.gridInfo.base2RowNumber);
 		}
 	}
 	

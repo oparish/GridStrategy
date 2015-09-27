@@ -17,35 +17,34 @@ public class OperationFrame extends Frame
 		this.operationType = operationType;
 	}
 	
-	private void addOperation(Cell cell)
+	private void addOperation(PaintArea paintArea)
 	{
-		Animator.getGridPane().setCellContent(cell, this.unit);
+		if (paintArea instanceof Cell)
+			Animator.getGridPane().setCellContent((Cell) paintArea, this.unit);
+		else
+			Animator.getGridPane().getCellPanel().paintUnitImage(paintArea, this.unit);
 	}
 	
-	private void removeOperation(Cell cell)
+	private void removeOperation(PaintArea paintArea)
 	{
-		Animator.getGridPane().deleteCellContent(cell);
+		if (paintArea instanceof Cell)
+			Animator.getGridPane().deleteCellContent((Cell) paintArea);
+		else
+			Animator.getGridPane().getCellPanel().clearArea(paintArea);
 	}
 	
 	public void playFrame(PaintArea paintArea)
 	{
-		if (!(paintArea instanceof Cell))
-		{
-			System.out.println("Trying to run an operation frame with a non-cell paint area.");
-			return;
-		}
-		
-		Cell cell = (Cell) paintArea;
 		GridPane gridPane = Animator.getGridPane();
 		
 		switch(this.operationType)
 		{
 		default:
 		case ADD:
-			addOperation(cell);
+			addOperation(paintArea);
 			break;
 		case REMOVE:
-			removeOperation(cell);
+			removeOperation(paintArea);
 			break;
 		}
 	}

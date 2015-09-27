@@ -20,11 +20,13 @@ public class Cell extends PaintArea
 		BufferedImage terrainImage = this.terrain.getImage();
 		if (unit == null)
 		{
+			terrainImage = this.terrain.getImage();
 			this.image1 = terrainImage;
 			this.image2 = terrainImage;
 		}
 		else
 		{
+			terrainImage = this.terrain.getImage();
 			this.image1 = this.createCellImage(terrainImage, unit.getImage());
 			this.image2 = this.createCellImage(terrainImage, unit.getImage2());
 		}

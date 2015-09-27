@@ -182,11 +182,24 @@ public class CellPanel extends LinesPanel implements ActionListener
 					this);
 	}
 	
-	public void paintEffect(PaintArea cell, Effect effect, EffectPosition effectPosition)
+	public void paintUnitImage(PaintArea paintArea, Unit unit)
+	{
+		BufferedImage image = unit.getImage();
+		this.g2d.drawImage(image, paintArea.paintedX, paintArea.paintedY,
+					this);
+	}
+	
+	public void clearArea(PaintArea paintArea)
+	{
+		this.g2d.clearRect(paintArea.paintedX, paintArea.paintedY, 
+				Main.CELLWIDTH, Main.CELLHEIGHT);
+	}
+	
+	public void paintEffect(PaintArea paintArea, Effect effect, EffectPosition effectPosition)
 	{
 		BufferedImage image = effect.getImage();
-		Double yValue = cell.paintedY + (effectPosition.getPositionNumber() * Main.CELLHEIGHT);
-		this.g2d.drawImage(image, cell.paintedX, yValue.intValue(), this);
+		Double yValue = paintArea.paintedY + (effectPosition.getPositionNumber() * Main.CELLHEIGHT);
+		this.g2d.drawImage(image, paintArea.paintedX, yValue.intValue(), this);
 	}
 	
 	public void showDeployPoints(Integer[] deployPositions)

@@ -25,10 +25,10 @@ public class EffectFrame extends Frame
 		this.effectPosition = effectPosition;
 	}
 	
-	public void playFrame(PaintArea cell)
+	public void playFrame(PaintArea paintArea)
 	{
 		GridPane gridPane = Animator.getGridPane();
 		CellPanel cellPanel = gridPane.getCellPanel();
-		cellPanel.paintEffect(cell, effect, this.effectPosition);
+		cellPanel.paintEffect(paintArea, effect, this.effectPosition);
 	}
 }
