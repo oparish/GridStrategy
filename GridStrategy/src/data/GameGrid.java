@@ -190,6 +190,7 @@ public class GameGrid
 	
 	private void fireArtillery(int x, int y, Unit unit)
 	{
+		Sound.ARTILLERY_FIRE.play();
 		int direction;
 		int endPoint;
 		

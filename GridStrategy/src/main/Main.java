@@ -45,8 +45,10 @@ public class Main
 	public final static int GENERIC_CHECK_FAILURE = -1;
 	public final static int NO_SPECIFIC_COLUMN = 255;
 
-	public static final String IMAGES = "Images\\";
-	public static final String FILEEXTENSION = ".png";
+	public static final String SOUNDS_PATH = "Sounds\\";
+	public static final String SOUND_FILEEXTENSION = ".wav";
+	public static final String IMAGES_PATH = "Images\\";
+	public static final String IMAGE_FILEEXTENSION = ".png";
 	
 	public final static int CELLWIDTH = 40;
 	public final static int CELLHEIGHT = 40;
@@ -180,7 +182,7 @@ public class Main
 	
 	public static BufferedImage loadImage(String filename)
 	{
-		File testG = new File(IMAGES + filename + FILEEXTENSION);
+		File testG = new File(IMAGES_PATH + filename + IMAGE_FILEEXTENSION);
 		try
 		{
 			return ImageIO.read(testG);

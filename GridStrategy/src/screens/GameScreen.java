@@ -25,6 +25,7 @@ import javax.swing.JScrollPane;
 
 import data.AbilityType;
 import data.GameGrid;
+import data.Sound;
 import data.Unit;
 import data.UnitType;
 import dialogs.UnitDialog;
