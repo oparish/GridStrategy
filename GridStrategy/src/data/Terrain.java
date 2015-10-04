@@ -1,5 +1,6 @@
 package data;
 
+import static data.TerrainCategory.OBSTACLE;
 import static data.TerrainCategory.ROUGH;
 
 import java.awt.image.BufferedImage;
@@ -8,7 +9,8 @@ import java.util.ArrayList;
 import main.Main;
 
 public enum Terrain {
-	GRASS("Grass", new TerrainCategory[]{}), DESERT("Desert", new TerrainCategory[]{ROUGH});
+	GRASS("Grass", new TerrainCategory[]{}), DESERT("Desert", new TerrainCategory[]{ROUGH}), 
+	MOUNTAINS("Mountains", new TerrainCategory[]{OBSTACLE});
 	
 	BufferedImage image;
 	TerrainCategory[] terrainCategories; 
