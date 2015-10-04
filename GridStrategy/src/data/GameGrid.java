@@ -3,6 +3,7 @@ package data;
 import static data.GameResult.PLAYER1_WINS;
 import static data.GameResult.PLAYER2_WINS;
 import static data.GameResult.TIMED_OUT;
+import static data.TerrainCategory.BARRIER;
 import static data.UnitCategory.FLYING;
 import static data.UnitCategory.FRONTLINE;
 import static data.UnitCategory.LOW;
@@ -223,6 +224,12 @@ public class GameGrid
 				shotStopped = true;
 				break;
 			}
+			else if (this.map.getGridTerrain()[x][i].hasCategory(BARRIER))
+			{
+				this.considerEvent(new TwoPositionEvent(this, EventType.ARTILLERY_BLOCKED, x, y, unit, x, i));
+				shotStopped = true;
+				break;
+			}
 		}
 		
 		if (!shotStopped)
@@ -387,7 +394,8 @@ public class GameGrid
 		while (distance > 0)
 		{
 			endPos += directionToWalk;
-			distance -= this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.ROUGH) && !unitType.hasCategory(FLYING) ? 2 : 1;
+			distance -= this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.ROUGH) && 
+					!unitType.hasCategory(FLYING) ? 2 : 1;
 			if (this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.OBSTACLE) 
 					&& !unitType.hasCategory(UnitCategory.FLYING))
 			{

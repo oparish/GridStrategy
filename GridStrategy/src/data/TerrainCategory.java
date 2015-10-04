@@ -1,5 +1,5 @@
 package data;
 
 public enum TerrainCategory {
-	ROUGH, OBSTACLE;
+	ROUGH, OBSTACLE, BARRIER;
 }

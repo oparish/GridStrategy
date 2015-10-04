@@ -1,5 +1,6 @@
 package data;
 
+import static data.TerrainCategory.BARRIER;
 import static data.TerrainCategory.OBSTACLE;
 import static data.TerrainCategory.ROUGH;
 
@@ -10,7 +11,7 @@ import main.Main;
 
 public enum Terrain {
 	GRASS("Grass", new TerrainCategory[]{}), DESERT("Desert", new TerrainCategory[]{ROUGH}), 
-	MOUNTAINS("Mountains", new TerrainCategory[]{OBSTACLE});
+	MOUNTAINS("Mountains", new TerrainCategory[]{BARRIER, OBSTACLE}), FOREST("Forest", new TerrainCategory[]{BARRIER});
 	
 	BufferedImage image;
 	TerrainCategory[] terrainCategories; 
