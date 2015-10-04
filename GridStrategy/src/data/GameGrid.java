@@ -6,6 +6,7 @@ import static data.GameResult.TIMED_OUT;
 import static data.TerrainCategory.BARRIER;
 import static data.UnitCategory.FLYING;
 import static data.UnitCategory.FRONTLINE;
+import static data.UnitCategory.GENERATING;
 import static data.UnitCategory.LOW;
 import static data.UnitCategory.SHIELD;
 import static data.UnitType.BUNKER;
@@ -16,6 +17,7 @@ import static events.EventType.MOVING_UNIT;
 import static events.EventType.NEW_TURN;
 import static events.EventType.NEXT_TURN;
 import static events.EventType.UNITBASEATTACK;
+import static main.Main.GENERATIONRATE;
 import static screens.GameScreenState.STANDARD;
 
 import java.awt.Event;
@@ -175,6 +177,21 @@ public class GameGrid
 		return this.gridUnits[x][y];
 	}
 	
+	private int countGenerators(boolean isPlayer1)
+	{
+		int count = 0;
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			for (int j = 0; j < Main.GRIDHEIGHT; j++)
+			{
+				if (this.gridUnits[i][j]!= null && this.gridUnits[i][j].isOwnedByPlayer1() == isPlayer1
+						&& this.gridUnits[i][j].getUnitType().hasCategory(GENERATING))
+					count++;
+			}
+		}
+		return count;
+	}
+	
 	public void activateAbility(int x, int y, AbilityType abilityType, Unit unit)
 	{
 		switch(abilityType)
@@ -301,7 +318,8 @@ public class GameGrid
 		this.considerEvent(new TurnEvent(this, NEXT_TURN, this.isPlayer1Turn));
 		this.movePlayerUnits();
 		this.checkForStalemate();
-		this.increaseCredits(this.isPlayer1Turn, Main.CREDITSPERTURN);
+		int generators = this.countGenerators(this.isPlayer1Turn);
+		this.increaseCredits(this.isPlayer1Turn, Main.CREDITSPERTURN + (generators * GENERATIONRATE));
 		this.isPlayer1Turn = !this.isPlayer1Turn;
 		Main.debugOut("End of End of Turn");
 	}
