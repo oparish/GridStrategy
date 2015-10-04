@@ -3,6 +3,7 @@ package data;
 import static data.GameResult.PLAYER1_WINS;
 import static data.GameResult.PLAYER2_WINS;
 import static data.GameResult.TIMED_OUT;
+import static data.UnitCategory.FLYING;
 import static data.UnitCategory.FRONTLINE;
 import static data.UnitCategory.LOW;
 import static data.UnitCategory.SHIELD;
@@ -386,7 +387,7 @@ public class GameGrid
 		while (distance > 0)
 		{
 			endPos += directionToWalk;
-			distance -= this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.ROUGH) ? 2 : 1;
+			distance -= this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.ROUGH) && !unitType.hasCategory(FLYING) ? 2 : 1;
 			if (this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.OBSTACLE) 
 					&& !unitType.hasCategory(UnitCategory.FLYING))
 			{
