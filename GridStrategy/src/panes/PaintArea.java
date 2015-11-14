@@ -9,6 +9,7 @@ public class PaintArea
 	public Integer paintedX;
 	public Integer paintedY;
 	public CellImage overlayImage;
+	public CellImage overlayImage2;
 	
 	public PaintArea(Integer X, Integer Y)
 	{
@@ -18,10 +19,7 @@ public class PaintArea
 	
 	public BufferedImage getImage()
 	{
-		if (this.overlayImage != null)
-			return this.overlayImage.getImage();
-		else
-			return null;
+		return null;
 	}
 	public BufferedImage getImage2()
 	{

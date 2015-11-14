@@ -141,11 +141,20 @@ public class CellPanel extends LinesPanel implements ActionListener
 		if (cell.paintedX != null)
 		{
 			BufferedImage image;
+			BufferedImage overlayImage = null;
 			
 			if (image2)
+			{
 				image = cell.getImage2();
+				if (cell.overlayImage != null)
+					overlayImage = cell.overlayImage.getImage();
+			}
 			else
+			{
 				image = cell.getImage();
+				if (cell.overlayImage2 != null)
+					overlayImage = cell.overlayImage2.getImage();
+			}
 			
 			if (image != null)
 			{
@@ -157,6 +166,10 @@ public class CellPanel extends LinesPanel implements ActionListener
 			else
 				this.g2d.clearRect(cell.paintedX, cell.paintedY, 
 						Main.CELLWIDTH, Main.CELLHEIGHT);
+			
+			if (overlayImage != null)
+				this.g2d.drawImage(overlayImage, cell.paintedX, cell.paintedY, 
+					this);
 		}
 		if (repaint)
 			this.repaint();
@@ -208,7 +221,7 @@ public class CellPanel extends LinesPanel implements ActionListener
 		{
 			PaintArea paintArea = this.gridInfo.getDeployPointPaintArea(i, deployPositions[i]);
 			if (!(paintArea instanceof Cell) || ((Cell) paintArea).getUnit() == null)
-				this.paintImageIntoCell(paintArea, CellImage.ARROW);
+				this.addOverlayImages(paintArea, CellImage.ARROW, CellImage.ARROW2);
 		}
 	}
 	
@@ -217,15 +230,21 @@ public class CellPanel extends LinesPanel implements ActionListener
 		for (int i = 0; i < deployPositions.length; i++)
 		{
 			PaintArea paintArea = this.gridInfo.getDeployPointPaintArea(i, deployPositions[i]);
-			paintArea.overlayImage = null;
+			this.clearOverlayImages(paintArea);
 			this.paintCell(paintArea, false, true);
 		}
 	}
 	
-	private void paintImageIntoCell(PaintArea paintArea, CellImage image)
+	private void clearOverlayImages(PaintArea paintArea)
 	{
-		paintArea.overlayImage = image;
-		this.paintCell(paintArea, false, true);
+		paintArea.overlayImage = null;
+		paintArea.overlayImage2 = null;
+	}
+	
+	private void addOverlayImages(PaintArea paintArea, CellImage cellImage, CellImage cellImage2)
+	{
+		paintArea.overlayImage = cellImage;
+		paintArea.overlayImage2 = cellImage2;
 	}
 
 	private void animationTick()

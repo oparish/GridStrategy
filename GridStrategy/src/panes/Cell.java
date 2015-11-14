@@ -60,15 +60,11 @@ public class Cell extends PaintArea
 	
 	public BufferedImage getImage()
 	{
-		if (this.overlayImage != null)
-			return this.overlayImage.getImage();
 		return this.image1;
 	}
 	
 	public BufferedImage getImage2()
 	{
-		if (this.overlayImage != null)
-			return this.overlayImage.getImage();
 		return this.image2;
 	}
 }

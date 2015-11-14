@@ -6,7 +6,7 @@ import main.Main;
 
 public enum CellImage
 {
-	ARROW("Arrow");
+	ARROW("Arrow"), ARROW2("Arrow2");
 	
 	private BufferedImage image;
 	
