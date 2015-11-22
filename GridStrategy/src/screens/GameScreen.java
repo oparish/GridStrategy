@@ -5,6 +5,7 @@ import static screens.GameScreenState.ACTIVATING_ABILITY;
 import static screens.GameScreenState.COMPUTER_PLAYING;
 import static screens.GameScreenState.DEPLOYING_UNIT;
 import static screens.GameScreenState.MOVING_UNITS;
+import static screens.GameScreenState.FURTHER_INPUT;
 import static screens.GameScreenState.STANDARD;
 
 import java.awt.GridBagConstraints;
@@ -17,6 +18,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -67,6 +69,10 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	private InfoPane infoPane;
 	private GameScreenState screenState;
 	private GameGrid gameGrid;
+	private ArrayList<Integer[]> furtherInputPoints;
+	private AbilityType furtherInputType;
+	private Unit furtherInputUnit;
+	private Integer[] furtherInputPos;
 
 	private Unit unitToDeploy;
 
@@ -130,7 +136,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	public void switchScreenState(GameScreenState screenState)
 	{
-		this.screenState = screenState;
+		if (this.screenState != null)
+			this.clearOldScreenState();
+		this.screenState = screenState;	
 		switch(screenState)
 		{
 		case STANDARD:
@@ -142,6 +150,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		case ACTIVATING_ABILITY:
 			this.switchToActivatingAbilityScreen();
 			break;
+		case FURTHER_INPUT:
+			this.switchToFurtherInputScreen();
+			break;
 		case MOVING_UNITS:
 			this.switchToComputerPlayingScreen();
 			break;
@@ -152,6 +163,25 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		}
 	}
 	
+	private void clearOldScreenState()
+	{
+		switch(this.screenState)
+		{
+		case FURTHER_INPUT:
+			this.cellPanel.clearShiftPoints(this.furtherInputPoints);
+			break;
+		case DEPLOYING_UNIT:
+			this.cellPanel.clearDeployPoints(this.getPlayer1DeploymentPoints());
+			break;
+		default:
+		}
+	}
+	
+	private void switchToFurtherInputScreen()
+	{
+		this.controlPane.runningPlayerOperation(true);
+	}
+	
 	private void switchToActivatingAbilityScreen()
 	{
 		this.controlPane.runningPlayerOperation(true);
@@ -160,13 +190,11 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	private void switchToComputerPlayingScreen()
 	{
 		this.controlPane.disableControls();
-		this.cellPanel.clearDeployPoints(this.getPlayer1DeploymentPoints());
 	}
 	
 	private void switchToStandardScreen()
 	{
 		this.controlPane.runningPlayerOperation(false);
-		this.cellPanel.clearDeployPoints(this.getPlayer1DeploymentPoints());
 	}
 	
 	private void switchToDeployingScreen()
@@ -281,6 +309,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			case MOVING_UNIT:
 				paintUnitMove(eventLocation1, unit1, eventLocation2);
 				break;
+			case SHIFTING_UNIT:
+				paintUnitShift(eventLocation1, unit1, eventLocation2);
+				break;
 			case COMBAT:
 				CombatEvent combatEvent = (CombatEvent) event;
 				paintCombat(eventLocation1, unit1, eventLocation2, unit2, 
@@ -300,6 +331,12 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 				this.paintArtilleryWithoutHit(eventLocation1, unit1);
 				break;
 		}
+	}
+	
+	private void paintUnitShift(EventLocation eventLocation1, Unit unit1, EventLocation eventLocation2)
+	{
+		AnimationSeries moveAnimationSeries = Animator.getHorzMoveAnimationSeries(unit1);
+		moveAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), eventLocation1, eventLocation2);
 	}
 	
 	private void paintArtilleryWithoutHit(EventLocation eventLocation1, Unit unit1)
@@ -365,7 +402,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void paintUnitMove(EventLocation eventLocation1, Unit unit1, EventLocation eventLocation2)
 	{
-		AnimationSeries moveAnimationSeries = Animator.getMoveAnimationSeries(unit1);
+		AnimationSeries moveAnimationSeries = Animator.getVertMoveAnimationSeries(unit1);
 		moveAnimationSeries.playAnimations(unit1.isOwnedByPlayer1(), eventLocation1, eventLocation2);
 	}
 	
@@ -405,6 +442,10 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		{
 			this.checkForAbility((Cell) paintArea, column, row);
 		}
+		else if (this.screenState == GameScreenState.FURTHER_INPUT && paintArea instanceof Cell)
+		{
+			this.checkForFurtherInput((Cell) paintArea, column, row);
+		}
 		else if (this.screenState == GameScreenState.DEPLOYING_UNIT)
 		{
 			this.checkForDeployPoint(column, row);
@@ -415,7 +456,6 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	{
 		if (this.gameGrid.getPlayer1DeploymentPoints()[x] == y && (y == -1 || this.cellPanel.getCell(x, y).getUnit() == null))
 		{			
-			this.cellPanel.clearDeployPoints(this.getPlayer1DeploymentPoints());
 			this.gameGrid.deployUnit(this.unitToDeploy, x);
 		}
 	}
@@ -449,9 +489,49 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		AbilityType abilityType = cell.getUnit().getUnitType().getAbilityType();
 		if (abilityType != null)
 		{
-			this.switchScreenState(GameScreenState.STANDARD);
-			this.gameGrid.activateAbility(x, y, abilityType, cell.getUnit());
+			if (abilityType.getInput1Max() != null)
+			{
+				this.getFurtherAbilityInput(x, y, abilityType, cell.getUnit());
+			}
+			else
+			{
+				this.gameGrid.activateAbility(x, y, abilityType, cell.getUnit(), null, null);
+				this.switchScreenState(GameScreenState.STANDARD);
+			}		
 		}
+	}
+	
+	private void checkForFurtherInput(Cell cell, int x, int y)
+	{
+		for (Integer[] point : this.furtherInputPoints)
+		{
+			if (point[0] == x && point[1] == y)
+			{
+				this.setFurtherInput(x, y);
+				break;
+			}
+		}
+	}
+	
+	private void setFurtherInput(int x, int y)
+	{
+		this.gameGrid.activateAbility(this.furtherInputPos[0], this.furtherInputPos[1], this.furtherInputType, this.furtherInputUnit, x, y);
+		this.switchScreenState(STANDARD);
+	}
+	
+	private void getFurtherAbilityInput(int x, int y, AbilityType abilityType, Unit unit)
+	{
+		this.furtherInputType = abilityType;
+		this.furtherInputUnit = unit;
+		this.furtherInputPos = new Integer[]{x,y};
+		switch(abilityType)
+		{
+		case SHIFTER:
+			this.furtherInputPoints = this.cellPanel.showShiftPoints(x, y);
+			break;
+		default:
+		}
+		this.switchScreenState(FURTHER_INPUT);
 	}
 
 	@Override

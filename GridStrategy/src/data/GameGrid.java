@@ -16,6 +16,7 @@ import static events.EventType.DEPLOYING_UNIT;
 import static events.EventType.MOVING_UNIT;
 import static events.EventType.NEW_TURN;
 import static events.EventType.NEXT_TURN;
+import static events.EventType.SHIFTING_UNIT;
 import static events.EventType.UNITBASEATTACK;
 import static main.Main.GENERATIONRATE;
 import static screens.GameScreenState.STANDARD;
@@ -24,6 +25,7 @@ import java.awt.Event;
 import java.util.ArrayList;
 import java.util.Random;
 
+import panes.Cell;
 import screens.GameScreen;
 import events.CombatEvent;
 import events.CombatResult;
@@ -192,7 +194,7 @@ public class GameGrid
 		return count;
 	}
 	
-	public void activateAbility(int x, int y, AbilityType abilityType, Unit unit)
+	public void activateAbility(int x, int y, AbilityType abilityType, Unit unit, Integer secondValue, Integer thirdValue)
 	{
 		switch(abilityType)
 		{
@@ -201,6 +203,9 @@ public class GameGrid
 			break;
 		case ARTILLERY:
 			this.fireArtillery(x, y, unit);
+			break;
+		case SHIFTER:
+			this.shiftUnit(x, y, unit, secondValue, thirdValue);
 			break;
 		default:
 		}
@@ -678,12 +683,20 @@ public class GameGrid
 			Unit unit = this.gridUnits[x][i];
 			if (unit != null && unit.isOwnedByPlayer1() == isPlayer1 && unit.getUnitType() == unitType)
 			{
-				this.activateAbility(x, i, unitType.getAbilityType(), unit);
+				this.activateAbility(x, i, unitType.getAbilityType(), unit, null, null);
 				return true;
 			}
 		}
 		
 		return false;
+	}
+	
+	public void shiftUnit(int x, int y, Unit unit, int newX, int newY)
+	{
+		this.gridUnits[newX][newY] = unit;
+		this.gridUnits[x][y] = null;
+		this.considerEvent(new TwoPositionEvent(this, SHIFTING_UNIT, x, 
+				y, unit, newX, newY));
 	}
 	
 	private boolean attemptUnitPurchase(boolean isPlayer1, int cost)

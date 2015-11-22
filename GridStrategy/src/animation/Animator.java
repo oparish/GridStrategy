@@ -111,10 +111,16 @@ public class Animator
 		return new AtomicAnimation(frames);
 	}
 	
-	public static VerticalAnimationSeries getMoveAnimationSeries(Unit unit)
+	public static VerticalAnimationSeries getVertMoveAnimationSeries(Unit unit)
 	{
 		AtomicAnimation moveAnimation = Animator.getSimpleMoveAnimation(unit);
 		return new VerticalAnimationSeries(moveAnimation);
+	}
+	
+	public static HorizontalAnimationSeries getHorzMoveAnimationSeries(Unit unit)
+	{
+		AtomicAnimation moveAnimation = Animator.getSimpleMoveAnimation(unit);
+		return new HorizontalAnimationSeries(moveAnimation);
 	}
 	
 	public static AtomicAnimation getSimpleCombatDrawAnimation(Unit unit)

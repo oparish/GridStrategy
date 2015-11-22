@@ -1,6 +1,7 @@
 package data;
 
 import static data.AbilityType.DEPLOYPOINT;
+import static data.AbilityType.SHIFTER;
 import static data.UnitCategory.FLYING;
 import static data.UnitCategory.FRONTLINE;
 import static data.UnitCategory.GENERATING;
@@ -28,7 +29,10 @@ public enum UnitType
 	SPEEDER("FriendlyNinjas1", "FriendlyNinjas2", "EnemyNinjas1", "EnemyNinjas2",4, 1, 3, new UnitCategory[]{LOW}, null),
 	BARRIER("FriendlyPriest1", "FriendlyPriest2", "EnemyPriest1", "EnemyPriest2",1, 1, 3, new UnitCategory[]{SHIELD}, null),
 	PLANE("FriendlyPlane1", "FriendlyPlane2", "EnemyPlane1", "EnemyPlane2", 5, 1, 5, new UnitCategory[]{FLYING}, null),
-	GENERATOR("FriendlyGenerator1", "FriendlyGenerator2", "EnemyGenerator1", "EnemyGenerator2", 0, 0, 2, new UnitCategory[]{GENERATING}, null);
+	GENERATOR("FriendlyGenerator1", "FriendlyGenerator2", "EnemyGenerator1", "EnemyGenerator2", 0, 0, 2, new UnitCategory[]{GENERATING}, 
+			null),
+	COMMANDO("FriendlyCommando1", "FriendlyCommando2", "EnemyCommando1", "EnemyCommando2", 2, 2, 2, new UnitCategory[]{}, 
+			SHIFTER);
 	
 	private static ArrayList<UnitType> deployableUnitTypes;
 	private static ArrayList<UnitType> activatableUnitTypes;

@@ -225,11 +225,37 @@ public class CellPanel extends LinesPanel implements ActionListener
 		}
 	}
 	
+	public ArrayList<Integer[]> showShiftPoints(int x, int y)
+	{
+		ArrayList<Integer[]> shiftPointList = new ArrayList<Integer[]>();
+		if (x != 0 && this.gridInfo.cells[x - 1][y].getUnit() == null)
+		{
+			this.addOverlayImages(this.gridInfo.cells[x - 1][y], CellImage.ARROW, CellImage.ARROW2);
+			shiftPointList.add(new Integer[]{x - 1, y});
+		}
+		if (x != (Main.GRIDWIDTH - 1) && this.gridInfo.cells[x + 1][y].getUnit() == null)
+		{
+			this.addOverlayImages(this.gridInfo.cells[x + 1][y], CellImage.ARROW, CellImage.ARROW2);
+			shiftPointList.add(new Integer[]{x + 1, y});
+		}
+		return shiftPointList;
+	}
+	
 	public void clearDeployPoints(Integer[] deployPositions)
 	{
 		for (int i = 0; i < deployPositions.length; i++)
 		{
 			PaintArea paintArea = this.gridInfo.getDeployPointPaintArea(i, deployPositions[i]);
+			this.clearOverlayImages(paintArea);
+			this.paintCell(paintArea, false, true);
+		}
+	}
+	
+	public void clearShiftPoints(ArrayList<Integer[]> shiftPositions)
+	{
+		for (Integer[] point : shiftPositions)
+		{
+			PaintArea paintArea = this.gridInfo.cells[point[0]][point[1]];
 			this.clearOverlayImages(paintArea);
 			this.paintCell(paintArea, false, true);
 		}
