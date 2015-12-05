@@ -16,6 +16,7 @@ import ai.ColumnCondition;
 import ai.Condition;
 import ai.CreditCondition;
 import ai.DeployAction;
+import ai.FurtherInputActivateAction;
 import ai.GateCondition;
 import ai.NoCondition;
 import ai.Rule;
@@ -63,8 +64,8 @@ public class AddRuleDialog extends NewConditionDialog
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		gridBagConstraints.gridwidth = 1;
-		this.actionOptions = new AssemblerList<Class<? extends Action>>(new Class[]{DeployAction.class, ActivateAction.class}, 
-				AssemblerListType.ACTIONCLASSES);
+		this.actionOptions = new AssemblerList<Class<? extends Action>>(new Class[]{DeployAction.class, ActivateAction.class, 
+				FurtherInputActivateAction.class}, AssemblerListType.ACTIONCLASSES);
 		this.actionOptions.setCellRenderer(new ActionOptionsCellRenderer());
 		this.actionOptions.setSelectedIndex(0);
 		this.add(new JScrollPane(this.actionOptions), gridBagConstraints);

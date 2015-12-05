@@ -36,6 +36,7 @@ import ai.Condition;
 import ai.ConditionType;
 import ai.CreditCondition;
 import ai.DeployAction;
+import ai.FurtherInputActivateAction;
 import ai.GateCondition;
 import ai.GateType;
 import ai.NoCondition;
@@ -180,7 +181,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		case ACTION_TYPE:
 			ActionType oldType;
 			ActionType newType = ((EnumBox<ActionType>) panelControl).getEnumValue();
-			if (action instanceof ActivateAction)
+			if (action instanceof FurtherInputActivateAction)
+				oldType = ActionType.FURTHERINPUTACTIVATE_ACTION;
+			else if (action instanceof ActivateAction)
 				oldType = ActionType.ACTIVATE_ACTION;
 			else
 				oldType = ActionType.DEPLOY_ACTION;
@@ -217,6 +220,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			break;
 		case CONDITION_TYPE:
 			((ActivateAction) action).setColumnSearchCondition(((EnumBox<ColumnSearchCondition>) panelControl).getEnumValue());
+			break;
+		case FURTHER_INPUT:
+			((FurtherInputActivateAction) action).setFurtherInput(((NumberSpinner) panelControl).getNumber());
 			break;
 		}
 	}
@@ -722,7 +728,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		EnumBox<ActionType> actionBox = (EnumBox<ActionType>) controlMap.get(ControlType.ACTION_TYPE);
 		ActionType actionType = actionBox.getEnumValue();
 		
-		if (actionType == ActionType.ACTIVATE_ACTION)
+		if (actionType == ActionType.FURTHERINPUTACTIVATE_ACTION)
+			newAction = Action.getActionExample(FurtherInputActivateAction.class);
+		else if (actionType == ActionType.ACTIVATE_ACTION)
 			newAction = Action.getActionExample(ActivateAction.class);
 		else
 			newAction = Action.getActionExample(DeployAction.class);

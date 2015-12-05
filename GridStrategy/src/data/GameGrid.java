@@ -194,25 +194,26 @@ public class GameGrid
 		return count;
 	}
 	
-	public void activateAbility(int x, int y, AbilityType abilityType, Unit unit, Integer secondValue, Integer thirdValue)
+	public boolean activateAbility(int x, int y, AbilityType abilityType, Unit unit, Integer secondValue)
 	{
+		boolean result;
 		switch(abilityType)
 		{
 		case DEPLOYPOINT:
-			this.newDeployPoint(x, y);
-			break;
+			result = this.newDeployPoint(x, y);
 		case ARTILLERY:
-			this.fireArtillery(x, y, unit);
-			break;
+			result = this.fireArtillery(x, y, unit);
 		case SHIFTER:
-			this.shiftUnit(x, y, unit, secondValue, thirdValue);
-			break;
+			result = this.shiftUnit(x, y, unit, secondValue);
 		default:
+			result = false;
 		}
-		this.noteMove();
+		if (result)
+			this.noteMove();
+		return result;
 	}
 	
-	private void fireArtillery(int x, int y, Unit unit)
+	private boolean fireArtillery(int x, int y, Unit unit)
 	{
 		Sound.ARTILLERY_FIRE.play();
 		int direction;
@@ -256,6 +257,8 @@ public class GameGrid
 		
 		if (!shotStopped)
 			this.considerEvent(new OneUnitEvent(this, EventType.ARTILLERY_WITHOUT_HIT, x, y, unit));
+		
+		return true;
 	}
 	
 	private void artilleryHit(int sourceX, int sourceY, int targetX, int targetY, Unit unit1, Unit unit2)
@@ -264,13 +267,14 @@ public class GameGrid
 		this.considerEvent(new TwoUnitEvent(this, EventType.ARTILLERY_HIT, sourceX, sourceY, unit1, targetX, targetY, unit2));
 	}
 	
-	private void newDeployPoint(int x, int y)
+	private boolean newDeployPoint(int x, int y)
 	{
 		boolean ownedByPlayer1 = this.gridUnits[x][y].isOwnedByPlayer1();
 		Unit unit = new Unit(ownedByPlayer1, BUNKER);
 		this.gridUnits[x][y] = unit;
 		this.updateDeployPoints(ownedByPlayer1, x);
 		considerEvent(new OneUnitEvent(this, EventType.DEPLOYING_UNIT, x, y, unit));
+		return true;
 	}
 	
 	private void updateDeployPoints(boolean ownedByPlayer1, int x)
@@ -658,7 +662,8 @@ public class GameGrid
 			return this.map.getPlayer2Types();
 	}
 	
-	public boolean activateCplayerUnit(boolean isPlayer1, UnitType unitType, int x, ColumnSearchCondition searchCondition)
+	public boolean activateCplayerUnit(boolean isPlayer1, UnitType unitType, int x, ColumnSearchCondition searchCondition, 
+			Integer furtherInput)
 	{
 		int start;
 		int end;
@@ -683,20 +688,23 @@ public class GameGrid
 			Unit unit = this.gridUnits[x][i];
 			if (unit != null && unit.isOwnedByPlayer1() == isPlayer1 && unit.getUnitType() == unitType)
 			{
-				this.activateAbility(x, i, unitType.getAbilityType(), unit, null, null);
-				return true;
+				return this.activateAbility(x, i, unitType.getAbilityType(), unit, furtherInput);
 			}
 		}
 		
 		return false;
 	}
 	
-	public void shiftUnit(int x, int y, Unit unit, int newX, int newY)
+	public boolean shiftUnit(int x, int y, Unit unit, int value)
 	{
-		this.gridUnits[newX][newY] = unit;
+		if ((x == 0 && value == 0) || (x == Main.GRIDWIDTH - 1 && value == 1))
+			return false;
+		int newX = value == 0 ? (x - 1) : (x + 1);
+		this.gridUnits[newX][y] = unit;
 		this.gridUnits[x][y] = null;
 		this.considerEvent(new TwoPositionEvent(this, SHIFTING_UNIT, x, 
-				y, unit, newX, newY));
+				y, unit, newX, y));
+		return true;
 	}
 	
 	private boolean attemptUnitPurchase(boolean isPlayer1, int cost)

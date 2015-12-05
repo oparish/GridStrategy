@@ -30,6 +30,7 @@ public class CPlayer
 		actionClasses = new ArrayList<Class<? extends Action>>();
 		actionClasses.add(DeployAction.class);
 		actionClasses.add(ActivateAction.class);
+		actionClasses.add(FurtherInputActivateAction.class);
 	}
 	
 	private static Class<? extends Condition> getConditionClass(int value)

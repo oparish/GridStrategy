@@ -139,6 +139,23 @@ public class Spawner
 		return actions;
 	}
 	
+	private static FurtherInputActivateAction[] createFurtherInputActivateActionBatch(UnitType unitType)
+	{
+		FurtherInputActivateAction[] actions = new FurtherInputActivateAction[Main.GRIDWIDTH];
+		ColumnSearchCondition columnSearchCondition = Spawner.randomColumnSearchCondition();
+		int furtherInput = Spawner.randomFurtherInput(2);
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			actions[i] = new FurtherInputActivateAction(i, unitType, columnSearchCondition, furtherInput);
+		}
+		return actions;
+	}
+	
+	private static int randomFurtherInput(int range)
+	{
+		return random.nextInt(range);
+	}
+	
 	private static DeployAction[] createDeployActionBatch()
 	{
 		DeployAction[] actions = new DeployAction[Main.GRIDWIDTH];
@@ -158,9 +175,12 @@ public class Spawner
 		{
 		case DEPLOY_ACTION:
 			return Spawner.createDeployActionBatch();
+		case FURTHERINPUTACTIVATE_ACTION:
+			UnitType unitType1 = Spawner.randomUnitType();
+			return Spawner.createFurtherInputActivateActionBatch(unitType1);
 		case ACTIVATE_ACTION:
-			UnitType unitType = Spawner.randomUnitType();
-			return Spawner.createActivateActionBatch(unitType);
+			UnitType unitType2 = Spawner.randomUnitType();
+			return Spawner.createActivateActionBatch(unitType2);
 		default:
 			return null;
 		}
@@ -207,6 +227,9 @@ public class Spawner
 		{
 		case DEPLOY_ACTION:
 			return new DeployAction(Main.NO_SPECIFIC_COLUMN, randomUnitType());
+		case FURTHERINPUTACTIVATE_ACTION:
+			return new FurtherInputActivateAction(Main.NO_SPECIFIC_COLUMN, randomActivatableUnitType(), randomColumnSearchCondition(), 
+					randomFurtherInput(2));
 		case ACTIVATE_ACTION:
 			return new ActivateAction(Main.NO_SPECIFIC_COLUMN, randomActivatableUnitType(), randomColumnSearchCondition());
 		default:

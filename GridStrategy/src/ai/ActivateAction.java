@@ -12,7 +12,7 @@ import data.Unit;
 import data.UnitType;
 
 public class ActivateAction extends DeployAction
-{
+{	
 	public ActivateAction(List<Integer> integers)
 	{
 		super(integers);
@@ -50,7 +50,7 @@ public class ActivateAction extends DeployAction
 		if (columnPos == Main.NO_SPECIFIC_COLUMN)
 			columnPos = column;
 		boolean result = gameGrid.activateCplayerUnit(isPlayer1, this.getUnitType(), columnPos, 
-				this.getColumnSearchCondition());
+				this.getColumnSearchCondition(), null);
 		return result;
 	}
 	

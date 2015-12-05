@@ -495,7 +495,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			}
 			else
 			{
-				this.gameGrid.activateAbility(x, y, abilityType, cell.getUnit(), null, null);
+				this.gameGrid.activateAbility(x, y, abilityType, cell.getUnit(), null);
 				this.switchScreenState(GameScreenState.STANDARD);
 			}		
 		}
@@ -503,19 +503,22 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void checkForFurtherInput(Cell cell, int x, int y)
 	{
-		for (Integer[] point : this.furtherInputPoints)
+		switch (this.furtherInputType)
 		{
-			if (point[0] == x && point[1] == y)
-			{
-				this.setFurtherInput(x, y);
-				break;
-			}
+		case SHIFTER:
+			if (y == this.furtherInputPos[1] && (x == this.furtherInputPos[0] - 1))
+				this.setFurtherInput(0);
+			else if (y == this.furtherInputPos[1] && (x == this.furtherInputPos[0] + 1))
+				this.setFurtherInput(1);
+			break;
+		default:
 		}
+
 	}
 	
-	private void setFurtherInput(int x, int y)
+	private void setFurtherInput(int value)
 	{
-		this.gameGrid.activateAbility(this.furtherInputPos[0], this.furtherInputPos[1], this.furtherInputType, this.furtherInputUnit, x, y);
+		this.gameGrid.activateAbility(this.furtherInputPos[0], this.furtherInputPos[1], this.furtherInputType, this.furtherInputUnit, value);
 		this.switchScreenState(STANDARD);
 	}
 	
