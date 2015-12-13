@@ -34,16 +34,22 @@ public class DeployAction extends Action
 		return ("		Deploy Action: " + this.getUnitType().toString() + ", " + this.getColumnPos());
 	}
 	
-	public boolean attemptAction(GameGrid gameGrid, boolean isPlayer1, int checkResult)
+	public int attemptAction(GameGrid gameGrid, boolean isPlayer1, int checkResult)
 	{
 		Unit unit = new Unit(isPlayer1, this.getUnitType());
 		if (!gameGrid.getAvailableUnitTypes(isPlayer1).contains(this.getUnitType()))
-			return false;
+			return Main.GENERIC_CHECK_FAILURE;
 		
 		int columnPos = this.getColumnPos();
 		if (columnPos == Main.NO_SPECIFIC_COLUMN)
 			columnPos = checkResult;
-		return gameGrid.deployUnit(unit, columnPos);
+		
+		if (gameGrid.deployUnit(unit, columnPos))
+			return columnPos;
+		else if (columnPos == Main.NO_SPECIFIC_COLUMN)
+			return CPlayer.TRY_NEW_COLUMN;
+		else
+			return Main.GENERIC_CHECK_FAILURE;
 	}
 	
 	public boolean checkViability(ObservationBatch observationBatch, int column, boolean isPlayer1)

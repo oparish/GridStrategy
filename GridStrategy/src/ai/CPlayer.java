@@ -16,6 +16,8 @@ import ai.headers.SpecificColumnConditionHeader;
 
 public class CPlayer
 {	
+	public static final int TRY_NEW_COLUMN = -2; 
+	
 	private static ArrayList<Class<? extends Condition>> conditionClasses;
 	private static ArrayList<Class<? extends Action>> actionClasses;
 	
@@ -151,14 +153,22 @@ public class CPlayer
 		Main.debugOut("Making move: " + this.isPlayer1 );
 		for(Rule rule : this.rules)
 		{
-			int checkResult = rule.getCondition().checkCondition(observationBatch, rule.getAction());
-			if (checkResult != Main.GENERIC_CHECK_FAILURE)
+			Condition condition = rule.getCondition();
+			int columnResult = condition.checkCondition(observationBatch, rule.getAction());
+			while (columnResult != Main.GENERIC_CHECK_FAILURE)
 			{
-				boolean result = rule.getAction().attemptAction(gameGrid, this.isPlayer1, checkResult);
+				int result = rule.getAction().attemptAction(gameGrid, this.isPlayer1, columnResult);
 				Main.debugOut(this.isPlayer1);
 				Main.debugOut("Result: " + result);
-				if (result)
+				if (result >= 0)
 						return true;
+				else if (rule.getAction().getColumnPos() == Main.NO_SPECIFIC_COLUMN && condition instanceof ColumnCondition)
+					columnResult = ((ColumnCondition) condition).runCheck(observationBatch, rule.getAction(), columnResult + 1);
+				else if (rule.getAction().getColumnPos() == Main.NO_SPECIFIC_COLUMN && columnResult != Main.GRIDWIDTH - 1)
+					columnResult++;
+				else
+					break;
+					
 			}
 		}
 		return false;

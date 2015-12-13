@@ -36,6 +36,13 @@ public class SpecificColumnCondition extends ColumnCondition
 		this.conditionFields.put(ConditionFieldName.COLUMN, column);
 	}
 	
+	public int runCheck(ObservationBatch observationBatch, Action action, int checkStartPos)
+	{
+		System.out.println("SpecificColumnCondition being treated as ColumnCondition.");
+		System.exit(0);
+		return -1;
+	}
+	
 	@Override
 	protected int runCheck(ObservationBatch observationBatch, Action action)
 	{

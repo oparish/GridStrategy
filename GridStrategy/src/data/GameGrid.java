@@ -194,23 +194,26 @@ public class GameGrid
 		return count;
 	}
 	
-	public boolean activateAbility(int x, int y, AbilityType abilityType, Unit unit, Integer secondValue)
+	public int activateAbility(int x, int y, AbilityType abilityType, Unit unit, Integer secondValue)
 	{
 		boolean result;
 		switch(abilityType)
 		{
 		case DEPLOYPOINT:
 			result = this.newDeployPoint(x, y);
+			break;
 		case ARTILLERY:
 			result = this.fireArtillery(x, y, unit);
+			break;
 		case SHIFTER:
 			result = this.shiftUnit(x, y, unit, secondValue);
+			break;
 		default:
 			result = false;
 		}
 		if (result)
 			this.noteMove();
-		return result;
+		return result? y : Main.GENERIC_CHECK_FAILURE;
 	}
 	
 	private boolean fireArtillery(int x, int y, Unit unit)
@@ -648,8 +651,8 @@ public class GameGrid
 		else
 		{
 			DeployAction action = new DeployAction(actionNumber, unitTypes.get(unitNumber));
-			boolean result = action.attemptAction(this, this.isPlayer1Turn, Main.GENERIC_CHECK_SUCCESS);
-			if (!result)
+			int result = action.attemptAction(this, this.isPlayer1Turn, Main.GENERIC_CHECK_SUCCESS);
+			if (result != Main.GENERIC_CHECK_FAILURE)
 				this.noteMove();
 		}
 	}
@@ -662,7 +665,7 @@ public class GameGrid
 			return this.map.getPlayer2Types();
 	}
 	
-	public boolean activateCplayerUnit(boolean isPlayer1, UnitType unitType, int x, ColumnSearchCondition searchCondition, 
+	public int activateCplayerUnit(boolean isPlayer1, UnitType unitType, int x, ColumnSearchCondition searchCondition, 
 			Integer furtherInput)
 	{
 		int start;
@@ -688,16 +691,18 @@ public class GameGrid
 			Unit unit = this.gridUnits[x][i];
 			if (unit != null && unit.isOwnedByPlayer1() == isPlayer1 && unit.getUnitType() == unitType)
 			{
-				return this.activateAbility(x, i, unitType.getAbilityType(), unit, furtherInput);
+				int result =  this.activateAbility(x, i, unitType.getAbilityType(), unit, furtherInput);
+				if (result != Main.GENERIC_CHECK_FAILURE)
+					return x;
 			}
 		}
 		
-		return false;
+		return Main.GENERIC_CHECK_FAILURE;
 	}
 	
 	public boolean shiftUnit(int x, int y, Unit unit, int value)
 	{
-		if ((x == 0 && value == 0) || (x == Main.GRIDWIDTH - 1 && value == 1))
+		if ((x == 0 && value == 0) || (x == Main.GRIDWIDTH - 1 && value == 1) || (value == 0 && this.gridUnits[x - 1][y] != null) || (value == 1 && this.gridUnits[x + 1][y] != null))
 			return false;
 		int newX = value == 0 ? (x - 1) : (x + 1);
 		this.gridUnits[newX][y] = unit;

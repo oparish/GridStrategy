@@ -739,7 +739,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		{
 			PanelControl control = entry.getValue();
 			
-			if (entry.getKey() != ControlType.COLUMN && !control.isEnabled())
+			if (entry.getKey() == ControlType.COLUMN && !control.isEnabled())
 			{
 				newAction.setColumnPos(Main.NO_SPECIFIC_COLUMN);
 			}

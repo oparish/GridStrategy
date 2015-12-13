@@ -197,7 +197,7 @@ public abstract class Action
 		}
 	}
 	
-	public abstract boolean attemptAction(GameGrid gameGrid, boolean isPlayer1, int checkResult);
+	public abstract int attemptAction(GameGrid gameGrid, boolean isPlayer1, int checkResult);
 	
 	public abstract boolean checkViability(ObservationBatch observationBatch, int column, boolean isPlayer1);
 }

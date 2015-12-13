@@ -44,14 +44,17 @@ public class ActivateAction extends DeployAction
 		return"		Activate Action: " + this.getUnitType().toString() + ", " + this.getColumnPos() + ", " + this.getColumnSearchCondition().name();
 	}
 	
-	public boolean attemptAction(GameGrid gameGrid, boolean isPlayer1, int column)
+	public int attemptAction(GameGrid gameGrid, boolean isPlayer1, int column, int rowResult)
 	{
 		int columnPos = this.getColumnPos();
 		if (columnPos == Main.NO_SPECIFIC_COLUMN)
 			columnPos = column;
-		boolean result = gameGrid.activateCplayerUnit(isPlayer1, this.getUnitType(), columnPos, 
+		int result = gameGrid.activateCplayerUnit(isPlayer1, this.getUnitType(), column, 
 				this.getColumnSearchCondition(), null);
-		return result;
+		if (result == Main.GENERIC_CHECK_FAILURE && columnPos == Main.NO_SPECIFIC_COLUMN)
+			return CPlayer.TRY_NEW_COLUMN;
+		else
+			return result;
 	}
 	
 	public boolean checkViability(ObservationBatch observationBatch, int column, boolean isPlayer1)

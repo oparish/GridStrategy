@@ -42,13 +42,16 @@ public class FurtherInputActivateAction extends ActivateAction
 				this.getColumnSearchCondition().name() + ", " + this.getFurtherInput();
 	}
 	
-	public boolean attemptAction(GameGrid gameGrid, boolean isPlayer1, int column)
+	public int attemptAction(GameGrid gameGrid, boolean isPlayer1, int column)
 	{
 		int columnPos = this.getColumnPos();
 		if (columnPos == Main.NO_SPECIFIC_COLUMN)
 			columnPos = column;
-		boolean result = gameGrid.activateCplayerUnit(isPlayer1, this.getUnitType(), columnPos, 
+		int result = gameGrid.activateCplayerUnit(isPlayer1, this.getUnitType(), column, 
 				this.getColumnSearchCondition(), this.getFurtherInput());
-		return result;
+		if (result == Main.GENERIC_CHECK_FAILURE && columnPos == Main.NO_SPECIFIC_COLUMN)
+			return CPlayer.TRY_NEW_COLUMN;
+		else
+			return result;
 	}
 }
