@@ -113,8 +113,7 @@ public class ColumnCondition extends Condition implements NumberCondition
 			int pos = colList[i];
 			ArrayList<Unit> conditionUnits = this.findUnits(observationBatch, pos);
 			this.filterTypes(this.getUnitType(), this.getUnitPlayer(), conditionUnits);
-			if (this.checkNumber(observationBatch, conditionUnits) && action.checkViability(observationBatch, pos, 
-					this.employerIsPlayer1))
+			if (this.checkNumber(observationBatch, conditionUnits))
 				return pos;
 		}
 	

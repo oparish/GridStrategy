@@ -56,15 +56,4 @@ public class ActivateAction extends DeployAction
 		else
 			return result;
 	}
-	
-	public boolean checkViability(ObservationBatch observationBatch, int column, boolean isPlayer1)
-	{
-		for (int i = 0; i < Main.GRIDHEIGHT; i++)
-		{
-			Unit unit = observationBatch.getUnits()[column][i];
-			if (unit != null && unit.getUnitType() == this.getUnitType())
-				return true;
-		}
-		return false;
-	}
 }

@@ -51,13 +51,4 @@ public class DeployAction extends Action
 		else
 			return Main.GENERIC_CHECK_FAILURE;
 	}
-	
-	public boolean checkViability(ObservationBatch observationBatch, int column, boolean isPlayer1)
-	{
-		int deployPos = observationBatch.getPlayerDeploymentPoints(isPlayer1)[column];
-		if ((isPlayer1 && deployPos == -1) || (!isPlayer1 && deployPos == Main.GRIDHEIGHT))
-			return true;
-		else
-			return observationBatch.getUnits()[column][deployPos] == null;
-	}
 }
