@@ -175,6 +175,14 @@ public class Animator
 		return new AtomicAnimation(frames);
 	}
 	
+	public static AtomicAnimation getClearAnimation(Unit unit)
+	{
+		ArrayList<FrameWithContext> frames = new ArrayList<FrameWithContext>();
+		OperationFrame removeFrame = new OperationFrame(SHORT_PAUSE, unit, REMOVE);
+		frames.add(new FrameWithContext(removeFrame, true));
+		return new AtomicAnimation(frames);
+	}
+	
 	public static VerticalAnimationSeries getFiringAnimationSeries(Unit unit)
 	{
 		AtomicAnimation fireAnimation = Animator.getSimpleFireAnimation(unit);

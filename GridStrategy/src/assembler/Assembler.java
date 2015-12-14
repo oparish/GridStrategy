@@ -181,12 +181,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		case ACTION_TYPE:
 			ActionType oldType;
 			ActionType newType = ((EnumBox<ActionType>) panelControl).getEnumValue();
-			if (action instanceof FurtherInputActivateAction)
-				oldType = ActionType.FURTHERINPUTACTIVATE_ACTION;
-			else if (action instanceof ActivateAction)
-				oldType = ActionType.ACTIVATE_ACTION;
-			else
-				oldType = ActionType.DEPLOY_ACTION;
+			oldType = ActionType.getActionType(action.getClass());
 			changed = newType != oldType;
 			this.actionPanel.changeEnabledControls(newType);
 			break;
@@ -613,7 +608,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		Condition condition = rule.getCondition();
 		this.changeSelectedCondition(condition);
 		this.loadAction(rule.getAction());
-		this.actionPanel.enableBoxes();
+		this.actionPanel.changeEnabledControls(ActionType.getActionType(rule.getAction().getClass()));
 		
 		this.clearHierarchyList();
 		
@@ -624,15 +619,22 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	{
 		this.actionPanel.changeAction(action);
 		this.actionPanel.changePosition(action.getColumnPos());
-		this.actionPanel.changeUnitTypeBox(action.getUnitType());
-		if (action instanceof ActivateAction)
+		
+		switch(ActionType.getActionType(action.getClass()))
 		{
+		case ACTIVATE_ACTION:
 			ActivateAction activateAction = (ActivateAction) action;
 			this.actionPanel.changeConditionBox(activateAction.getColumnSearchCondition());
-		}
-		else
-		{
+			break;
+		case DEPLOY_ACTION:
+		case FURTHERINPUTACTIVATE_ACTION:
+			this.actionPanel.changeUnitTypeBox(action.getUnitType());
 			this.actionPanel.disablePositionBox();
+			break;
+		case CLEAR_ACTION:
+			this.actionPanel.disableUnitTypeBox();
+			this.actionPanel.disablePositionBox();
+			break;
 		}
 	}
 	
@@ -727,13 +729,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		HashMap<ControlType, PanelControl> controlMap = this.actionPanel.getControls();
 		EnumBox<ActionType> actionBox = (EnumBox<ActionType>) controlMap.get(ControlType.ACTION_TYPE);
 		ActionType actionType = actionBox.getEnumValue();
-		
-		if (actionType == ActionType.FURTHERINPUTACTIVATE_ACTION)
-			newAction = Action.getActionExample(FurtherInputActivateAction.class);
-		else if (actionType == ActionType.ACTIVATE_ACTION)
-			newAction = Action.getActionExample(ActivateAction.class);
-		else
-			newAction = Action.getActionExample(DeployAction.class);
+		newAction = Action.getActionExample(actionType.getActionClass());
 		
 		for (Entry<ControlType, PanelControl> entry : controlMap.entrySet())
 		{

@@ -1,6 +1,7 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import data.GameGrid;
 import main.FileOperations;
@@ -19,7 +20,6 @@ public class CPlayer
 	public static final int TRY_NEW_COLUMN = -2; 
 	
 	private static ArrayList<Class<? extends Condition>> conditionClasses;
-	private static ArrayList<Class<? extends Action>> actionClasses;
 	
 	static
 	{
@@ -29,10 +29,6 @@ public class CPlayer
 		conditionClasses.add(GateCondition.class);
 		conditionClasses.add(CreditCondition.class);
 		conditionClasses.add(NoCondition.class);
-		actionClasses = new ArrayList<Class<? extends Action>>();
-		actionClasses.add(DeployAction.class);
-		actionClasses.add(ActivateAction.class);
-		actionClasses.add(FurtherInputActivateAction.class);
 	}
 	
 	private static Class<? extends Condition> getConditionClass(int value)
@@ -52,15 +48,17 @@ public class CPlayer
 	
 	private static Class<? extends Action> getActionClass(int value)
 	{
-		return (Class<? extends Action>) CPlayer.actionClasses.get(value);
+		return (Class<? extends Action>) ActionType.values()[value].getActionClass();
 	}
 	
 	public static Integer getActionClassOrdinal(Class<? extends Action> actionClass)
 	{
-		for (int i = 0; i < actionClasses.size(); i++)
+		int i = 0;
+		for (ActionType actionType : ActionType.values())
 		{
-			if (actionClass == actionClasses.get(i))
+			if (actionClass == actionType.getActionClass())
 				return i;
+			i++;
 		}
 		return null;
 	}

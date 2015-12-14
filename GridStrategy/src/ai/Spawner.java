@@ -227,6 +227,8 @@ public class Spawner
 		{
 		case DEPLOY_ACTION:
 			return new DeployAction(Main.NO_SPECIFIC_COLUMN, randomUnitType());
+		case CLEAR_ACTION:
+			return new ClearAction(Main.NO_SPECIFIC_COLUMN);
 		case FURTHERINPUTACTIVATE_ACTION:
 			return new FurtherInputActivateAction(Main.NO_SPECIFIC_COLUMN, randomActivatableUnitType(), randomColumnSearchCondition(), 
 					randomFurtherInput(2));

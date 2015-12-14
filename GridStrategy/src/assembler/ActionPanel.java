@@ -67,20 +67,28 @@ public class ActionPanel extends JPanel
 	
 	public void changeEnabledControls(ActionType actionType)
 	{
-		if (actionType == ActionType.FURTHERINPUTACTIVATE_ACTION)
+		switch (actionType)
 		{
-			this.conditionBox.setEnabled(true);
-			this.furtherInputSpinner.setEnabled(true);
-		}
-		else if (actionType == ActionType.ACTIVATE_ACTION)
-		{
-			this.conditionBox.setEnabled(true);
-			this.furtherInputSpinner.setEnabled(false);
-		}
-		else
-		{
-			this.conditionBox.setEnabled(false);
-			this.furtherInputSpinner.setEnabled(false);
+			case FURTHERINPUTACTIVATE_ACTION:
+				this.conditionBox.setEnabled(true);
+				this.unitTypeBox.setEnabled(true);
+				this.furtherInputSpinner.setEnabled(true);
+				break;
+			case ACTIVATE_ACTION:
+				this.conditionBox.setEnabled(true);
+				this.unitTypeBox.setEnabled(true);
+				this.furtherInputSpinner.setEnabled(false);
+				break;
+			case CLEAR_ACTION:
+				this.conditionBox.setEnabled(false);
+				this.unitTypeBox.setEnabled(false);
+				this.furtherInputSpinner.setEnabled(false);
+				break;
+			case DEPLOY_ACTION:
+				this.conditionBox.setEnabled(false);
+				this.unitTypeBox.setEnabled(true);
+				this.furtherInputSpinner.setEnabled(false);
+				break;
 		}
 	}
 	
@@ -90,13 +98,6 @@ public class ActionPanel extends JPanel
 		{
 			entry.getValue().setDirty(false);
 		}
-	}
-	
-	public void enableBoxes()
-	{
-		this.actionTypeBox.setEnabled(true);
-		this.positionSpinner.getCheckBox().setEnabled(true);
-		this.unitTypeBox.setEnabled(true);
 	}
 	
 	public void disableControls()
@@ -109,19 +110,7 @@ public class ActionPanel extends JPanel
 	
 	public void changeAction(Action action)
 	{
-		ActionType type;
-		if (action.getClass() == DeployAction.class)
-		{
-			type = ActionType.DEPLOY_ACTION;
-		}
-		else if (action.getClass() == FurtherInputActivateAction.class)
-		{
-			type = ActionType.FURTHERINPUTACTIVATE_ACTION;
-		}
-		else
-		{
-			type = ActionType.ACTIVATE_ACTION;
-		}
+		ActionType type = ActionType.getActionType(action.getClass());
 		this.actionTypeBox.setEnumValue(type);
 		this.setNotDirty();
 	}
@@ -150,6 +139,11 @@ public class ActionPanel extends JPanel
 	{
 		this.conditionBox.setEnabled(true);
 		this.conditionBox.setEnumValue(columnSearchCondition);
+	}
+	
+	public void disableUnitTypeBox()
+	{
+		this.unitTypeBox.setEnabled(false);
 	}
 	
 	public void disablePositionBox()

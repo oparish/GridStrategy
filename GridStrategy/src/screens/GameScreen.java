@@ -2,6 +2,7 @@ package screens;
 
 import static java.awt.GridBagConstraints.BOTH;
 import static screens.GameScreenState.ACTIVATING_ABILITY;
+import static screens.GameScreenState.CLEARING_DEPLOY_POINT;
 import static screens.GameScreenState.COMPUTER_PLAYING;
 import static screens.GameScreenState.DEPLOYING_UNIT;
 import static screens.GameScreenState.MOVING_UNITS;
@@ -147,6 +148,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		case DEPLOYING_UNIT:
 			this.switchToDeployingScreen();
 			break;
+		case CLEARING_DEPLOY_POINT:
+			this.switchToClearingPointScreen();
+			break;
 		case ACTIVATING_ABILITY:
 			this.switchToActivatingAbilityScreen();
 			break;
@@ -171,6 +175,7 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 			this.cellPanel.clearShiftPoints(this.furtherInputPoints);
 			break;
 		case DEPLOYING_UNIT:
+		case CLEARING_DEPLOY_POINT:
 			this.cellPanel.clearDeployPoints(this.getPlayer1DeploymentPoints());
 			break;
 		default:
@@ -199,7 +204,13 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	
 	private void switchToDeployingScreen()
 	{
-		this.cellPanel.showDeployPoints(this.getPlayer1DeploymentPoints());
+		this.cellPanel.showDeployPoints(this.getPlayer1DeploymentPoints(), true);
+		this.controlPane.runningPlayerOperation(true);
+	}
+	
+	private void switchToClearingPointScreen()
+	{
+		this.cellPanel.showDeployPoints(this.getPlayer1DeploymentPoints(), false);
 		this.controlPane.runningPlayerOperation(true);
 	}
 	
@@ -252,6 +263,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 				case ACTIVATE_ABILITY:
 					this.activateAbility();
 					break;
+				case CLEAR_DEPLOY_POINT:
+					this.clearDeployPoint();
+					break;
 				case CANCEL:
 					this.cancelOperation();
 					break;
@@ -260,6 +274,11 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 				default:
 			}
 		}
+	}
+	
+	private void clearDeployPoint()
+	{
+		this.switchScreenState(CLEARING_DEPLOY_POINT);
 	}
 
 	@Override
@@ -299,6 +318,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 				break;
 			case DEPLOYING_UNIT:
 				paintUnitDeploy(eventLocation1, unit1);
+				break;
+			case UNIT_CLEARED:
+				paintClearingUnit(eventLocation1, unit1);
 				break;
 			case UNITBASEATTACK:
 				paintBaseAttack(eventLocation1, unit1);
@@ -393,6 +415,13 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		deployAnimation.playAnimation(paintArea);
 	}
 	
+	private void paintClearingUnit(EventLocation eventLocation, Unit unit1)
+	{
+		Animation clearAnimation = Animator.getClearAnimation(unit1);
+		PaintArea paintArea = this.getPaintAreaFromEventLocation(eventLocation);
+		clearAnimation.playAnimation(paintArea);
+	}
+	
 	private void paintBaseAttack(EventLocation eventLocation, Unit unit1)
 	{
 		Animation baseAttackAnimation = Animator.getBaseAttackAnimation(unit1);
@@ -449,6 +478,10 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 		else if (this.screenState == GameScreenState.DEPLOYING_UNIT)
 		{
 			this.checkForDeployPoint(column, row);
+		}
+		else if (this.screenState == GameScreenState.CLEARING_DEPLOY_POINT)
+		{
+			this.gameGrid.clearPoint(column, row);
 		}
 	}
 	

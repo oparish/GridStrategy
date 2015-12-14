@@ -8,7 +8,7 @@ import javax.swing.JButton;
 @SuppressWarnings("serial")
 public class ControlButton extends JButton
 {
-	private static final int CONTROLBUTTONWIDTH = 120;
+	private static final int CONTROLBUTTONWIDTH = 240;
 	private static final int CONTROLBUTTONHEIGHT = 30;
 	ControlButtonType buttonType;
 	

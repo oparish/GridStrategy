@@ -87,6 +87,9 @@ public class MessagePane extends List implements MyEventListener
 		case DEPLOYING_UNIT:
 			this.add("Deploying " + unit + " at " + xPos + ", " + yPos);
 			break;
+		case UNIT_CLEARED:
+			this.add("Clearing " + unit + " at " + xPos + ", " + yPos);
+			break;
 		case MOVING_UNIT:
 			this.add("Moving " + unit + " from " + xPos + ", " + yPos + " to "+ xPos2 + ", " + yPos2);
 			break;

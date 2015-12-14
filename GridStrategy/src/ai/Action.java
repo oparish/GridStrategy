@@ -27,6 +27,7 @@ public abstract class Action
 	{
 		Action.actionFieldNames = new HashMap<Class<? extends Action>, ActionFieldName[]>();
 		Action.actionFieldNames.put(DeployAction.class, new ActionFieldName[]{ActionFieldName.COLUMNPOS, ActionFieldName.UNITTYPE});
+		Action.actionFieldNames.put(ClearAction.class, new ActionFieldName[]{ActionFieldName.COLUMNPOS});
 		Action.actionFieldNames.put(ActivateAction.class, new ActionFieldName[]{ActionFieldName.COLUMNPOS, ActionFieldName.UNITTYPE, 
 			ActionFieldName.ACTIVATECONDITION});
 		Action.actionFieldNames.put(FurtherInputActivateAction.class, new ActionFieldName[]{ActionFieldName.COLUMNPOS, ActionFieldName.UNITTYPE, 
@@ -55,22 +56,22 @@ public abstract class Action
 	
 	public static Action getActionExample(Class<? extends Action> actionClass)
 	{
-		if (actionClass == DeployAction.class)
+		ActionType actionType = ActionType.getActionType(actionClass);
+		
+		switch(actionType)
 		{
+		case DEPLOY_ACTION:
 			return new DeployAction(0, UnitType.ARTILLERY);
-		}
-		else if (actionClass == FurtherInputActivateAction.class)
-		{
+		case FURTHERINPUTACTIVATE_ACTION:
 			return new FurtherInputActivateAction(0, UnitType.COMMANDO, ColumnSearchCondition.FURTHEST_FROM_START, 0);
-		}
-		else if (actionClass == ActivateAction.class)
-		{
+		case ACTIVATE_ACTION:
 			return new ActivateAction(0, UnitType.ARTILLERY, ColumnSearchCondition.FURTHEST_FROM_START);
+		case CLEAR_ACTION:
+			return new ClearAction(0);
 		}
-		else
-		{
-			return null;
-		}
+
+		return null;
+
 	}
 	
 	
@@ -98,6 +99,10 @@ public abstract class Action
 		{
 			return "Activate Action";
 		}
+		else if (actionClass == ClearAction.class)
+		{
+			return "Clear Action";
+		}
 		else
 		{
 			return null;
@@ -124,6 +129,10 @@ public abstract class Action
 		else if (actionClass == FurtherInputActivateAction.class)
 		{
 			return new FurtherInputActivateAction(integers);
+		}
+		else if (actionClass == ClearAction.class)
+		{
+			return new ClearAction(integers);
 		}
 		else
 		{
@@ -178,6 +187,8 @@ public abstract class Action
 		
 		if (this instanceof DeployAction)
 			return new DeployAction(newMap);
+		else if (this instanceof ClearAction)
+			return new ClearAction(newMap);
 		else if (this instanceof FurtherInputActivateAction)
 			return new FurtherInputActivateAction(newMap);
 		else

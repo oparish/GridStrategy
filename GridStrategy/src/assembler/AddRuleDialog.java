@@ -11,6 +11,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 
 import ai.Action;
+import ai.ActionType;
 import ai.ActivateAction;
 import ai.ColumnCondition;
 import ai.Condition;
@@ -64,8 +65,15 @@ public class AddRuleDialog extends NewConditionDialog
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		gridBagConstraints.gridwidth = 1;
-		this.actionOptions = new AssemblerList<Class<? extends Action>>(new Class[]{DeployAction.class, ActivateAction.class, 
-				FurtherInputActivateAction.class}, AssemblerListType.ACTIONCLASSES);
+		Class<? extends Action>[] actionTypeList = new Class[ActionType.values().length];
+		int i = 0;
+		for (ActionType actionType : ActionType.values())
+		{
+			actionTypeList[i] = actionType.getActionClass();
+			i++;
+		}
+		
+		this.actionOptions = new AssemblerList<Class<? extends Action>>(actionTypeList, AssemblerListType.ACTIONCLASSES);
 		this.actionOptions.setCellRenderer(new ActionOptionsCellRenderer());
 		this.actionOptions.setSelectedIndex(0);
 		this.add(new JScrollPane(this.actionOptions), gridBagConstraints);

@@ -2,8 +2,8 @@ package buttons;
 
 public enum ControlButtonType
 {
-	NEXT_TURN("Next Turn"), MAIN_MENU("Main Menu"), DEPLOY_UNIT("Deploy Unit"), ACTIVATE_ABILITY("Activate Ability"),
-	CANCEL("Cancel"), QUIT("Quit");
+	NEXT_TURN("Next Turn"), MAIN_MENU("Main Menu"), DEPLOY_UNIT("Deploy Unit"), ACTIVATE_ABILITY("Activate Ability"), 
+	CLEAR_DEPLOY_POINT("Clear Deploy Point"), CANCEL("Cancel"), QUIT("Quit");
 	
 	private String text;
 	

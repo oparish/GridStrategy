@@ -270,6 +270,17 @@ public class GameGrid
 		this.considerEvent(new TwoUnitEvent(this, EventType.ARTILLERY_HIT, sourceX, sourceY, unit1, targetX, targetY, unit2));
 	}
 	
+	public int clearPoint(int x, int y)
+	{
+		Unit unit = this.gridUnits[x][y];
+		if (unit == null)
+			return Main.GENERIC_CHECK_FAILURE;
+		this.gridUnits[x][y] = null;
+		this.considerEvent(new OneUnitEvent(this, EventType.UNIT_CLEARED, x, y, unit));
+		this.noteMove();
+		return y;
+	}
+	
 	private boolean newDeployPoint(int x, int y)
 	{
 		boolean ownedByPlayer1 = this.gridUnits[x][y].isOwnedByPlayer1();

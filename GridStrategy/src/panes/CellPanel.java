@@ -215,12 +215,12 @@ public class CellPanel extends LinesPanel implements ActionListener
 		this.g2d.drawImage(image, paintArea.paintedX, yValue.intValue(), this);
 	}
 	
-	public void showDeployPoints(Integer[] deployPositions)
+	public void showDeployPoints(Integer[] deployPositions, boolean unitCheck)
 	{
 		for (int i = 0; i < deployPositions.length; i++)
 		{
 			PaintArea paintArea = this.gridInfo.getDeployPointPaintArea(i, deployPositions[i]);
-			if (!(paintArea instanceof Cell) || ((Cell) paintArea).getUnit() == null)
+			if (!(paintArea instanceof Cell) || !unitCheck || ((Cell) paintArea).getUnit() == null)
 				this.addOverlayImages(paintArea, CellImage.ARROW, CellImage.ARROW2);
 		}
 	}
