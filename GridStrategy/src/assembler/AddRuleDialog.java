@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -47,7 +48,9 @@ public class AddRuleDialog extends NewConditionDialog
 		{
 			Condition condition = Condition.getConditionExample((Class<? extends Condition>) this.conditionOptions.getSelectedValue());
 			Action action = Action.getActionExample((Class<? extends Action>) this.actionOptions.getSelectedValue());
-			Rule rule = new Rule(condition, action);
+			ArrayList<Action> actionList = new ArrayList<Action>();
+			actionList.add(action);
+			Rule rule = new Rule(condition, actionList);
 			this.assembler.addRule(rule);
 			this.dispose();
 		}

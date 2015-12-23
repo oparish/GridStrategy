@@ -17,7 +17,7 @@ import ai.Rule;
 
 public class RulePanel extends JPanel
 {	
-	public RulePanel(Assembler assembler, ConditionPanel conditionPanel, ActionPanel actionPanel)
+	public RulePanel(Assembler assembler, ConditionPanel conditionPanel, ActionFieldPanel actionPanel)
 	{
 		super();
 		this.setLayout(new GridLayout(2,1));

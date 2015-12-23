@@ -15,51 +15,68 @@ public class Rule
 		this.condition = condition;
 	}
 
-	private Action action;
+	private ArrayList<Action> actions;
 	
-	public void setAction(Action action) {
-		this.action = action;
+	public void setActions(ArrayList<Action> actions) {
+		this.actions = actions;
 	}
 
-	public Rule(Condition condition, Action action)
+	public Rule(Condition condition, ArrayList<Action> actions)
 	{
 		this.condition = condition;
-		this.action = action;
+		this.actions = actions;
 	}
 	
 	public Rule(List<Integer> integers, boolean player1, RuleHeader ruleHeader)
 	{
 		ConditionHeader conditionHeader = ruleHeader.getConditionHeader();
-		ActionHeader actionHeader = ruleHeader.getActionHeader();
+		ArrayList<ActionHeader> actionHeaders = ruleHeader.getActionHeaders();
+		this.actions = new ArrayList<Action>();
 		this.condition = Condition.makeCondition(integers.subList(0, conditionHeader.getSize()), player1, conditionHeader);
-		this.action = Action.makeAction(integers.subList(conditionHeader.getSize(), actionHeader.getSize() + conditionHeader.getSize()), 
-				player1, ruleHeader.getActionHeader());
+		for (ActionHeader actionHeader : actionHeaders)
+		{
+			Action action = Action.makeAction(integers.subList(conditionHeader.getSize(), actionHeader.getSize() + conditionHeader.getSize()), 
+					player1, actionHeader);
+			this.actions.add(action);
+		}
 	}
 	
 	public Rule clone()
 	{
-		return new Rule (this.condition.clone(), this.action.clone());
+		ArrayList<Action> actions = new ArrayList<Action>();
+		for (Action action : actions)
+		{
+			actions.add(action.clone());
+		}
+		return new Rule (this.condition.clone(), actions);
 	}
 	
 	public Condition getCondition() {
 		return condition;
 	}
 	
-	public Action getAction() {
-		return action;
+	public ArrayList<Action> getActions() {
+		return this.actions;
 	}
 	
 	public String toString()
 	{
-		return "Rule:\n" + this.action.toString() + 
-				"\n" + this.condition.toString(0);
+		String actions = "";
+		for (Action action : this.actions)
+		{
+			actions += (action.toString() + "\n");
+		}
+		return "Rule:\n" + actions + this.condition.toString(0);
 	}
 	
 	public ArrayList<Byte> toBytes()
 	{
 		ArrayList<Byte> bytes = new ArrayList<Byte>();
 		bytes.addAll(this.condition.toBytes());
-		bytes.addAll(this.action.toBytes());
+		for (Action action : this.actions)
+		{
+			bytes.addAll(action.toBytes());
+		}
 		return bytes;
 	}
 	
@@ -67,7 +84,11 @@ public class Rule
 	{
 		ArrayList<Byte> headerByteList = new ArrayList<Byte>();
 		headerByteList.addAll(this.condition.getHeaderBytes());
-		headerByteList.add(this.action.getHeaderByte());
+		headerByteList.add(Integer.valueOf(headerByteList.size()).byteValue());
+		for (Action action : this.actions)
+		{
+			headerByteList.add(action.getHeaderByte());
+		}
 		return headerByteList;
 	}
 }

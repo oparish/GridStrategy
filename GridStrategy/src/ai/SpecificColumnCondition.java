@@ -44,7 +44,7 @@ public class SpecificColumnCondition extends ColumnCondition
 	}
 	
 	@Override
-	protected int runCheck(ObservationBatch observationBatch, Action action)
+	protected int runCheck(ObservationBatch observationBatch)
 	{
 		Integer column = this.getColumn();
 		ArrayList<Unit> conditionUnits = this.findUnits(observationBatch, column);
