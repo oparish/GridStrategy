@@ -15,6 +15,8 @@ public class Spawner
 	private static final ConditionClass[] randomConditionClasses = {ConditionClass.COLUMN, ConditionClass.GATE};
 	private static final int MIN_RULES = 3;
 	private static final int MAX_RULES = 10;
+	private static final int MIN_ACTIONS = 1;
+	private static final int MAX_ACTIONS = 3;
 	private static Random random;
 	
 	static
@@ -36,7 +38,14 @@ public class Spawner
 	
 	private static Rule createCompletelyRandomRule(boolean isPlayer1)
 	{
-		return new Rule(createCondition(isPlayer1), createAction());
+		ArrayList<Action> actions = new ArrayList<Action>();
+		int range = MAX_ACTIONS - MIN_ACTIONS + 1;
+		int actionNum = random.nextInt(range) + MIN_ACTIONS;
+		for (int i = 0; i < actionNum; i++)
+		{
+			actions.add(createAction());
+		}
+		return new Rule(createCondition(isPlayer1), actions);
 	}
 	
 	private static Condition createCondition(boolean isPlayer1)
@@ -185,20 +194,6 @@ public class Spawner
 			return null;
 		}
 
-	}
-	
-	private static ArrayList<Rule> createDefaultRuleBatch(boolean isPlayer1)
-	{
-		ArrayList<Rule> rules = new ArrayList<Rule>();
-		NoCondition noCondition = new NoCondition(isPlayer1);
-		UnitType unitType = Spawner.randomUnitType();
-		for (int i = 0; i < Main.GRIDWIDTH; i++)
-		{
-			DeployAction deployAction = new DeployAction(i, unitType);
-			rules.add(new Rule(noCondition, deployAction));
-		}
-		
-		return rules;
 	}
 	
 	private static GateCondition createGateCondition(boolean isPlayer1)

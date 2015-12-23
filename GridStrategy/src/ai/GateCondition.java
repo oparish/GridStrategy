@@ -84,10 +84,10 @@ public class GateCondition extends Condition
 		return gateCondition;
 	}
 	
-	protected int runCheck(ObservationBatch observationBatch, Action action)
+	protected int runCheck(ObservationBatch observationBatch)
 	{
-		int result1 = this.condition1.checkCondition(observationBatch, action);
-		int result2 = this.condition2.checkCondition(observationBatch, action);
+		int result1 = this.condition1.checkCondition(observationBatch);
+		int result2 = this.condition2.checkCondition(observationBatch);
 		
 		switch(this.getGateType())
 		{

@@ -121,13 +121,13 @@ public abstract class Condition
 		return Condition.getConditionFieldNames(this.getClass());
 	}
 	
-	public int checkCondition(ObservationBatch observationBatch, Action action)
+	public int checkCondition(ObservationBatch observationBatch)
 	{
-		int check = runCheck(observationBatch, action);
+		int check = runCheck(observationBatch);
 		return check;
 	}
 	
-	protected abstract int runCheck(ObservationBatch observationBatch, Action action);
+	protected abstract int runCheck(ObservationBatch observationBatch);
 	
 	public abstract String toString(int depth);
 	

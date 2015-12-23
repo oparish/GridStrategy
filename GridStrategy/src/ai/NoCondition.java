@@ -14,7 +14,7 @@ public class NoCondition extends Condition
 	}
 
 	@Override
-	protected int runCheck(ObservationBatch observationBatch, Action action)
+	protected int runCheck(ObservationBatch observationBatch)
 	{
 		return Main.GENERIC_CHECK_SUCCESS;
 	}

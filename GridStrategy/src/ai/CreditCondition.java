@@ -27,7 +27,7 @@ public class CreditCondition extends Condition implements NumberCondition
 	}
 
 	@Override
-	protected int runCheck(ObservationBatch observationBatch, Action action)
+	protected int runCheck(ObservationBatch observationBatch)
 	{
 		int credits = observationBatch.getCredits();
 		switch(this.getConditionType())

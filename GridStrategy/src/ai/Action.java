@@ -184,15 +184,14 @@ public abstract class Action
 		{
 			newMap.put(entry.getKey(), entry.getValue());
 		}
-		
-		if (this instanceof DeployAction)
-			return new DeployAction(newMap);
-		else if (this instanceof ClearAction)
+		if (this instanceof ClearAction)
 			return new ClearAction(newMap);
 		else if (this instanceof FurtherInputActivateAction)
 			return new FurtherInputActivateAction(newMap);
-		else
+		else if(this instanceof ActivateAction)
 			return new ActivateAction(newMap);
+		else 
+			return new DeployAction(newMap);
 	}
 	
 	protected enum ActionFieldName

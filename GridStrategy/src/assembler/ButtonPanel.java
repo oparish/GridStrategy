@@ -12,7 +12,7 @@ public class ButtonPanel extends JPanel
 	public ButtonPanel(ActionListener actionListener)
 	{
 		super();
-		this.setLayout(new GridLayout(2, 5));
+		this.setLayout(new GridLayout(3, 5));
 		for (AssemblerButtonType buttonType : AssemblerButtonType.values())
 		{
 			this.add(new AssemblerButton(buttonType, actionListener));

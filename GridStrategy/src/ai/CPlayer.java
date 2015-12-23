@@ -2,6 +2,7 @@ package ai;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import data.GameGrid;
 import main.FileOperations;
@@ -89,12 +90,18 @@ public class CPlayer
 		{
 			ConditionHeader conditionHeader = this.makeConditionHeader(integers, counter);
 			counter += conditionHeader.getHeaderSize();
-			ActionHeader actionHeader = this.makeActionHeader(integers, counter);
+			ArrayList<ActionHeader> actionHeaders = new ArrayList<ActionHeader>();
+			int actionCount = integers.get(counter);
 			counter++;
-			RuleHeader ruleHeader = new RuleHeader(conditionHeader, actionHeader);
+			for(int i = 0; i < actionCount; i++)
+			{
+				ActionHeader actionHeader = this.makeActionHeader(integers, counter);
+				actionHeaders.add(actionHeader);
+				counter++;
+			}	
+			RuleHeader ruleHeader = new RuleHeader(conditionHeader, actionHeaders);
 			ruleHeaders.add(ruleHeader);
 		}	
-		
 		
 		int ruleStart = counter;
 		int ruleEnd;
@@ -142,7 +149,6 @@ public class CPlayer
 	{
 		Class<? extends Action> actionClass = CPlayer.getActionClass(integers.get(counter));
 		ActionHeader actionHeader = new ActionHeader(actionClass);
-		counter++;
 		return actionHeader;
 	}
 	
@@ -152,24 +158,49 @@ public class CPlayer
 		for(Rule rule : this.rules)
 		{
 			Condition condition = rule.getCondition();
-			int columnResult = condition.checkCondition(observationBatch, rule.getAction());
-			while (columnResult != Main.GENERIC_CHECK_FAILURE)
+			int columnResult = condition.checkCondition(observationBatch);
+			int columnPos = 0;
+			HashMap<Integer, Boolean> checkMap = new HashMap<Integer, Boolean>();
+			
+			for (Action action : rule.getActions())
 			{
-				int result = rule.getAction().attemptAction(gameGrid, this.isPlayer1, columnResult);
-				Main.debugOut(this.isPlayer1);
-				Main.debugOut("Result: " + result);
-				if (result >= 0)
-						return true;
-				else if (rule.getAction().getColumnPos() == Main.NO_SPECIFIC_COLUMN && condition instanceof ColumnCondition)
-					columnResult = ((ColumnCondition) condition).runCheck(observationBatch, rule.getAction(), columnResult + 1);
-				else if (rule.getAction().getColumnPos() == Main.NO_SPECIFIC_COLUMN && columnResult != Main.GRIDWIDTH - 1)
-					columnResult++;
-				else
-					break;
-					
+				while (columnResult != Main.GENERIC_CHECK_FAILURE)
+				{
+					checkMap.put(columnPos, true);
+					int result = action.attemptAction(gameGrid, this.isPlayer1, columnResult);
+					Main.debugOut(this.isPlayer1);
+					Main.debugOut("Result: " + result);
+					if (result >= 0)
+							return true;
+					else if (action.getColumnPos() == Main.NO_SPECIFIC_COLUMN && condition instanceof ColumnCondition)
+					{
+						columnResult = getNextColumnResult(columnResult, checkMap, (ColumnCondition) condition, observationBatch);
+					}
+					else if (action.getColumnPos() == Main.NO_SPECIFIC_COLUMN && columnResult != Main.GRIDWIDTH - 1)
+						columnResult++;
+					else
+						break;				
+				}
+				checkMap.put(columnPos, false);
 			}
 		}
 		return false;
+	}
+	
+	private int getNextColumnResult(int oldResult, HashMap<Integer, Boolean> checkMap, ColumnCondition columnCondition, 
+			ObservationBatch observationBatch)
+	{
+		int resultToCheck = oldResult + 1;
+		if (checkMap.containsKey(resultToCheck))
+		{
+			boolean check = checkMap.get(resultToCheck);
+			if (check)
+				return resultToCheck;
+			else
+				return this.getNextColumnResult(resultToCheck, checkMap, columnCondition, observationBatch);			
+		}
+		else
+			return columnCondition.runCheck(observationBatch, resultToCheck);
 	}
 	
 	public int getNumberOfRules()

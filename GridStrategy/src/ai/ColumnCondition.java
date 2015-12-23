@@ -100,12 +100,12 @@ public class ColumnCondition extends Condition implements NumberCondition
 	}
 
 	@Override
-	protected int runCheck(ObservationBatch observationBatch, Action action)
+	protected int runCheck(ObservationBatch observationBatch)
 	{
-		return this.runCheck(observationBatch, action, 0);
+		return this.runCheck(observationBatch, 0);
 	}
 	
-	public int runCheck(ObservationBatch observationBatch, Action action, int checkStartPos)
+	public int runCheck(ObservationBatch observationBatch, int checkStartPos)
 	{
 		int [] colList = Main.getRandomColumnList();
 		for (int i = checkStartPos; i < Main.GRIDWIDTH; i++)

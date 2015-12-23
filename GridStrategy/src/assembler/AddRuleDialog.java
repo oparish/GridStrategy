@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -47,7 +48,9 @@ public class AddRuleDialog extends NewConditionDialog
 		{
 			Condition condition = Condition.getConditionExample((Class<? extends Condition>) this.conditionOptions.getSelectedValue());
 			Action action = Action.getActionExample((Class<? extends Action>) this.actionOptions.getSelectedValue());
-			Rule rule = new Rule(condition, action);
+			ArrayList<Action> actionList = new ArrayList<Action>();
+			actionList.add(action);
+			Rule rule = new Rule(condition, actionList);
 			this.assembler.addRule(rule);
 			this.dispose();
 		}
@@ -77,25 +80,6 @@ public class AddRuleDialog extends NewConditionDialog
 		this.actionOptions.setCellRenderer(new ActionOptionsCellRenderer());
 		this.actionOptions.setSelectedIndex(0);
 		this.add(new JScrollPane(this.actionOptions), gridBagConstraints);
-	}
-	
-	private class ActionOptionsCellRenderer implements ListCellRenderer<Class<? extends Action>>
-	{
-		@Override
-		public Component getListCellRendererComponent(
-				JList<? extends Class<? extends Action>> arg0, Class<? extends Action> actionClass, int index, boolean selected,
-				boolean arg4)
-		{
-			String text = Action.getActionClassName(actionClass);
-			if (selected)
-			{
-				return AssemblerList.getSelectedLabel(text);
-			}
-			else
-			{
-				return new JLabel(text);
-			}
-		}
 	}
 	
 }

@@ -1,5 +1,7 @@
 package ai.headers;
 
+import java.util.ArrayList;
+
 import ai.Action;
 
 public class RuleHeader
@@ -9,20 +11,25 @@ public class RuleHeader
 		return conditionHeader;
 	}
 
-	private ActionHeader actionHeader;
+	private ArrayList<ActionHeader> actionHeaders;
 	
-	public ActionHeader getActionHeader() {
-		return actionHeader;
+	public ArrayList<ActionHeader> getActionHeaders() {
+		return actionHeaders;
 	}
 
-	public RuleHeader(ConditionHeader conditionHeader, ActionHeader actionHeader)
+	public RuleHeader(ConditionHeader conditionHeader, ArrayList<ActionHeader> actionHeaders)
 	{
 		this.conditionHeader = conditionHeader;
-		this.actionHeader = actionHeader;
+		this.actionHeaders = actionHeaders;
 	}
 	
 	public int getSize()
 	{
-		return this.conditionHeader.getSize() + this.actionHeader.getSize();
+		int actionHeaderSize = 0;
+		for (ActionHeader actionHeader : this.actionHeaders)
+		{
+			actionHeaderSize += actionHeader.getSize();
+		}
+		return this.conditionHeader.getSize() + actionHeaderSize;
 	}
 }

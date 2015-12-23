@@ -30,6 +30,7 @@ import ai.Action;
 import ai.ActionType;
 import ai.ActivateAction;
 import ai.CPlayer;
+import ai.ClearAction;
 import ai.ColumnCondition;
 import ai.ColumnSearchCondition;
 import ai.Condition;
@@ -56,16 +57,20 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	private CPlayer cPlayer;
 	private AssemblerList<Condition> hierarchyList;
 	private AssemblerList<Condition> gateList;
+	private AssemblerList<Action> actionsList;
 	private Rule selectedRule;
 	private Condition selectedCondition;
+	private Action selectedAction;
 	private ConditionPanel conditionPanel;
-	private ConditionFieldPanel conditionFieldPanel;
 	private ActionPanel actionPanel;
+	private ConditionFieldPanel conditionFieldPanel;
+	private ActionFieldPanel actionFieldPanel;
 	private ListPanel listPanel;
 	private boolean changingControls;
 	private int selectedListIndex;
 	private List<Condition> hierarchyContents = new ArrayList<Condition>();
 	private List<Rule> ruleListContents = new ArrayList<Rule>();
+	private List<Action> actionsContents = new ArrayList<Action>();
 	
 	public Assembler() throws IOException
 	{
@@ -83,11 +88,13 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.ruleListContents = this.cPlayer.getRules();
 		this.setupHierarchyList();
 		this.setupGateList();
+		this.setupActionsList();
 		this.ruleList = new AssemblerList<Rule>(this.ruleListContents.toArray(new Rule[this.ruleListContents.size()]), 
 				AssemblerListType.RULE);
 		this.listPanel = new ListPanel(this, this.ruleList);
-		this.actionPanel = new ActionPanel(this);
+		this.actionFieldPanel = new ActionFieldPanel(this);
 		this.conditionFieldPanel = new ConditionFieldPanel(this);
+		this.actionPanel = new ActionPanel(this.actionFieldPanel, this.actionsList);
 		this.conditionPanel = new ConditionPanel(this.conditionFieldPanel, this.hierarchyList, this.gateList);
 		this.add(this.listPanel, this.getGridBagConstraints(0, 0, 1));
 		this.rulePanel = new RulePanel(this, this.conditionPanel, this.actionPanel);
@@ -107,6 +114,14 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		Condition[] conditions = new Condition[hierarchyContents.size()];
 		this.hierarchyContents.toArray(conditions);
 		this.hierarchyList.setListData(conditions);
+	}
+	
+	public void addToActionList(Action action)
+	{
+		this.actionsContents.add(action);
+		Action[] actionArray = new Action[actionsContents.size()];
+		this.actionsContents.toArray(actionArray);
+		this.actionsList.setListData(actionArray);
 	}
 	
 	public void truncateHierarchyList(int index)
@@ -164,6 +179,18 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.hierarchyList.addListSelectionListener(this);
 	}
 	
+	private void setupActionsList()
+	{
+		this.actionsList = new AssemblerList<Action>(new Action[]{}, AssemblerListType.ACTION);
+//		this.actionsList.setCellRenderer(new ConditionListCellRenderer());
+		this.actionsList.addListSelectionListener(this);
+	}
+	
+	private void clearActionsList()
+	{
+		this.actionsList.setListData(new Action[]{});
+	}
+	
 	private void setupGateList()
 	{
 		
@@ -174,26 +201,25 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	
 	private void changeAction(PanelControl panelControl, ControlType controlType)
 	{
-		Action action = this.selectedRule.getAction();
 		boolean changed;
 		switch(controlType)
 		{
 		case ACTION_TYPE:
 			ActionType oldType;
 			ActionType newType = ((EnumBox<ActionType>) panelControl).getEnumValue();
-			oldType = ActionType.getActionType(action.getClass());
+			oldType = ActionType.getActionType(this.selectedAction.getClass());
 			changed = newType != oldType;
-			this.actionPanel.changeEnabledControls(newType);
+			this.actionFieldPanel.changeEnabledControls(newType);
 			break;
 		case COLUMN:
-			changed = ((NumberSpinner) panelControl).getNumber() != action.getColumnPos();
+			changed = ((NumberSpinner) panelControl).getNumber() != this.selectedAction.getColumnPos();
 			break;
 		case UNIT_TYPE:
-			changed = ((EnumBox<UnitType>) panelControl).getEnumValue() != action.getUnitType();
+			changed = ((EnumBox<UnitType>) panelControl).getEnumValue() != this.selectedAction.getUnitType();
 			break;
 		case CONDITION_TYPE:
-			if (action instanceof ActivateAction)
-				changed = ((EnumBox<ColumnSearchCondition>) panelControl).getEnumValue() != ((ActivateAction) action).getColumnSearchCondition();
+			if (this.selectedAction instanceof ActivateAction)
+				changed = ((EnumBox<ColumnSearchCondition>) panelControl).getEnumValue() != ((ActivateAction) this.selectedAction).getColumnSearchCondition();
 			else
 				changed = false;
 			break;
@@ -313,8 +339,15 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 	}
 	
+	private void saveActionList()
+	{
+		if (this.selectedRule != null)
+			this.selectedRule.setActions(this.cloneActionList((ArrayList<Action>)this.actionsContents));
+	}
+	
 	private void saveCPlayer(boolean as)
 	{
+		this.saveActionList();
 		this.saveAction();
 		this.saveCondition();
 		
@@ -359,10 +392,12 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.ruleList.setListData(newRules);
 		this.ruleListContents.remove(this.selectedRule);
 		this.selectedRule = null;
+		this.selectedAction = null;
 		this.conditionFieldPanel.disableControls();
-		this.actionPanel.disableControls();
+		this.actionFieldPanel.disableControls();
 		this.conditionFieldPanel.setNotDirty();
-		this.actionPanel.setNotDirty();
+		this.actionFieldPanel.setNotDirty();
+		this.clearActionsList();
 		this.changingControls = false;
 	}
 	
@@ -372,10 +407,11 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.selectedCondition = null;
 		this.cPlayer = new CPlayer(new ArrayList<Rule>(), true);
 		this.conditionFieldPanel.disableControls();
-		this.actionPanel.disableControls();
+		this.actionFieldPanel.disableControls();
 		this.ruleList.setListData(new Rule[0]);
 		this.hierarchyList.setListData(new Condition[0]);
 		this.gateList.setListData(new Condition[0]);
+		this.actionsList.setListData(new Action[0]);
 		this.ruleListContents.clear();
 		this.hierarchyContents.clear();
 		FileOperations.clearLastCPlayer();
@@ -383,12 +419,28 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	
 	private void resetAction()
 	{
-		this.loadAction(this.selectedRule.getAction());
+		if (this.selectedAction != null)
+			this.loadAction(this.selectedAction);
+		else
+			JOptionPane.showMessageDialog(this, "You must have an action selected.");
 	}
 	
 	private void resetCondition()
 	{
 		this.loadCondition(this.selectedCondition);
+	}
+	
+	private void newAction()
+	{
+		AddActionDialog addActionDialog = new AddActionDialog(this);
+		addActionDialog.setVisible(true);
+	}
+	
+	public void addNewActionToList(Class<? extends Action> actionClass)
+	{
+		Action newAction = Action.getActionExample(actionClass);
+		this.addToActionList(newAction);
+		this.actionPanel.setDirty(true);
 	}
 	
 	private void processButtonPress(AssemblerButton assemblerButton)
@@ -419,6 +471,15 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		case MOVE_DOWN:
 			this.moveRule(false);
 			break;
+		case NEW_ACTION:
+			this.newAction();
+			break;
+		case REMOVE_ACTION:
+			this.removeActionFromList();
+			break;
+		case SAVE_ACTION:
+			this.saveActionViaButton();
+			break;
 		case CHANGE_CONDITION:
 			if (this.selectedCondition != null)
 			{
@@ -445,9 +506,31 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		}
 	}
 	
+	private void saveActionViaButton()
+	{
+		if (this.selectedRule != null)
+		{
+			this.saveActionList();
+			this.saveAction();
+			this.loadActions(this.selectedRule);
+		}
+	}
+	
+	private void removeActionFromList()
+	{
+		if (this.selectedAction != null)
+		{
+			this.actionsContents.remove(this.actionsList.getSelectedIndex());
+			Action[] actionArray = new Action[actionsContents.size()];
+			this.actionsContents.toArray(actionArray);
+			this.actionsList.setListData(actionArray);
+			this.selectedAction = null;
+		}
+	}
+	
 	private void saveCondition()
 	{
-		if (this.selectedCondition == null)
+		if (this.selectedRule == null || this.selectedCondition == null)
 			return;
 		
 		Condition newCondition;
@@ -596,9 +679,14 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 	{	
 		if (this.actionPanel.isDirty())
 		{
-			this.saveAction();
+			this.saveActionList();
 		}
 		
+		if (this.actionFieldPanel.isDirty())
+		{
+			this.saveAction();
+		}
+			
 		if (this.conditionFieldPanel.isDirty())
 		{
 			this.saveCondition();
@@ -607,33 +695,52 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.selectedRule = rule;
 		Condition condition = rule.getCondition();
 		this.changeSelectedCondition(condition);
-		this.loadAction(rule.getAction());
-		this.actionPanel.changeEnabledControls(ActionType.getActionType(rule.getAction().getClass()));
+		this.loadActions(rule);
+		this.actionFieldPanel.disableControls();
 		
 		this.clearHierarchyList();
 		
 		this.selectedListIndex = index;
 	}
 	
+	private void loadActions(Rule rule)
+	{
+		Action[] actionsArray = new Action[rule.getActions().size()];
+		this.actionsList.setListData(rule.getActions().toArray(actionsArray));
+		this.actionsContents = this.cloneActionList(rule.getActions());
+	}
+	
+	private ArrayList<Action> cloneActionList(ArrayList<Action> actionList)
+	{
+		ArrayList<Action> newActionList = new ArrayList<Action>();
+		for (Action action : actionList)
+		{
+			newActionList.add(action.clone());
+		}
+		return newActionList;
+	}
+	
 	private void loadAction(Action action)
 	{
-		this.actionPanel.changeAction(action);
-		this.actionPanel.changePosition(action.getColumnPos());
+		this.selectedAction = action;
+		this.actionFieldPanel.changeAction(action);
+		this.actionFieldPanel.changePosition(action.getColumnPos());
+		this.actionFieldPanel.changeEnabledControls(ActionType.getActionType(action.getClass()));
 		
 		switch(ActionType.getActionType(action.getClass()))
 		{
 		case ACTIVATE_ACTION:
 			ActivateAction activateAction = (ActivateAction) action;
-			this.actionPanel.changeConditionBox(activateAction.getColumnSearchCondition());
+			this.actionFieldPanel.changeConditionBox(activateAction.getColumnSearchCondition());
 			break;
 		case DEPLOY_ACTION:
 		case FURTHERINPUTACTIVATE_ACTION:
-			this.actionPanel.changeUnitTypeBox(action.getUnitType());
-			this.actionPanel.disablePositionBox();
+			this.actionFieldPanel.changeUnitTypeBox(action.getUnitType());
+			this.actionFieldPanel.disablePositionBox();
 			break;
 		case CLEAR_ACTION:
-			this.actionPanel.disableUnitTypeBox();
-			this.actionPanel.disablePositionBox();
+			this.actionFieldPanel.disableUnitTypeBox();
+			this.actionFieldPanel.disablePositionBox();
 			break;
 		}
 	}
@@ -681,6 +788,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			AssemblerListType type = list.getType();
 			switch(type)
 			{
+				case ACTION:
+					this.loadAction(this.actionsList.getSelectedValue());
+				break;
 				case RULE:
 					this.changeSelectedRule((Rule) list.getSelectedValue(), list.getSelectedIndex());
 					break;
@@ -714,19 +824,20 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 		this.selectedRule = null;
 		this.selectedCondition = null;
 		this.clearHierarchyList();
+		this.clearActionsList();
 		this.clearGateList();
-		this.actionPanel.disableControls();
+		this.actionFieldPanel.disableControls();
 		this.conditionFieldPanel.disableControls();
 	}
 	
 	private void saveAction()
 	{
-		if (this.selectedRule == null)
+		if (this.selectedRule == null || this.actionsList.getSelectedIndex() == -1)
 			return;
 			
 		Action newAction;
 		
-		HashMap<ControlType, PanelControl> controlMap = this.actionPanel.getControls();
+		HashMap<ControlType, PanelControl> controlMap = this.actionFieldPanel.getControls();
 		EnumBox<ActionType> actionBox = (EnumBox<ActionType>) controlMap.get(ControlType.ACTION_TYPE);
 		ActionType actionType = actionBox.getEnumValue();
 		newAction = Action.getActionExample(actionType.getActionClass());
@@ -742,8 +853,9 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			else if (control.isEnabled() && entry.getKey() != ControlType.ACTION_TYPE)
 				this.completeActionChange(control, entry.getKey(), newAction);
 		}
-		this.selectedRule.setAction(newAction);
-		this.actionPanel.setNotDirty();
+		
+		this.selectedRule.getActions().set(this.actionsList.getSelectedIndex(), newAction);
+		this.actionFieldPanel.setNotDirty();
 	}
 	
 	private class ConditionListCellRenderer implements ListCellRenderer<Condition>
