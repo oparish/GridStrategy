@@ -526,6 +526,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			this.actionsContents.toArray(actionArray);
 			this.actionsList.setListData(actionArray);
 			this.selectedAction = null;
+			this.actionPanel.setDirty(true);
 		}
 	}
 	
