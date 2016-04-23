@@ -12,6 +12,7 @@ import ai.headers.CreditConditionHeader;
 import ai.headers.GateConditionHeader;
 import ai.headers.NoConditionHeader;
 import ai.headers.SpecificColumnConditionHeader;
+import ai.headers.UnitCountConditionHeader;
 import main.FileOperations;
 import main.Main;
 import data.UnitType;
@@ -27,6 +28,8 @@ public abstract class Condition
 	{
 		Condition.conditionFieldNames = new HashMap<Class<? extends Condition>, ConditionFieldName[]>();
 		Condition.conditionFieldNames.put(GateCondition.class, new ConditionFieldName[]{ConditionFieldName.GATETYPE});
+		Condition.conditionFieldNames.put(UnitCountCondition.class, new ConditionFieldName[]{ConditionFieldName.ROW, ConditionFieldName.UNIT_TYPE, 
+			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE, ConditionFieldName.UNIT_PLAYER});
 		Condition.conditionFieldNames.put(ColumnCondition.class, new ConditionFieldName[]{ConditionFieldName.ROW, ConditionFieldName.UNIT_TYPE, 
 			ConditionFieldName.NUMBER, ConditionFieldName.CONDITION_TYPE, ConditionFieldName.UNIT_PLAYER});
 		Condition.conditionFieldNames.put(SpecificColumnCondition.class, new ConditionFieldName[]{ConditionFieldName.ROW, ConditionFieldName.COLUMN, ConditionFieldName.UNIT_TYPE, 
@@ -82,6 +85,10 @@ public abstract class Condition
 		{
 			return new ColumnCondition(newMap, this.employerIsPlayer1);
 		}
+		else if (this instanceof UnitCountCondition)
+		{
+			return new UnitCountCondition(newMap, this.employerIsPlayer1);
+		}
 		else if (this instanceof CreditCondition)
 		{
 			return new CreditCondition(newMap, this.employerIsPlayer1);
@@ -98,6 +105,8 @@ public abstract class Condition
 			return new SpecificColumnCondition(integers, isPlayer1, (SpecificColumnConditionHeader) conditionHeader);
 		else if (conditionHeader.getClass() == ColumnConditionHeader.class)
 			return new ColumnCondition(integers, isPlayer1, (ColumnConditionHeader) conditionHeader);
+		else if (conditionHeader.getClass() == UnitCountConditionHeader.class)
+			return new UnitCountCondition(integers, isPlayer1, (UnitCountConditionHeader) conditionHeader);
 		else if (conditionHeader.getClass() == GateConditionHeader.class)
 			return new GateCondition(integers, isPlayer1, (GateConditionHeader) conditionHeader);
 		else if (conditionHeader.getClass() == CreditConditionHeader.class)
@@ -171,6 +180,10 @@ public abstract class Condition
 		{
 			return "Column Condition";
 		}
+		else if (conditionClass == UnitCountCondition.class)
+		{
+			return "Unit Count Condition";
+		}
 		else if (conditionClass == GateCondition.class)
 		{
 			return "Gate Condition";
@@ -198,6 +211,10 @@ public abstract class Condition
 		else if (conditionClass == ColumnCondition.class)
 		{
 			return new ColumnCondition(ConditionType.EQUAL_TO, 0, true);
+		}
+		else if (conditionClass == UnitCountCondition.class)
+		{
+			return new UnitCountCondition(ConditionType.EQUAL_TO, 0, true);
 		}
 		else if (conditionClass == GateCondition.class)
 		{

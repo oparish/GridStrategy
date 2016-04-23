@@ -15,6 +15,7 @@ import ai.headers.GateConditionHeader;
 import ai.headers.NoConditionHeader;
 import ai.headers.RuleHeader;
 import ai.headers.SpecificColumnConditionHeader;
+import ai.headers.UnitCountConditionHeader;
 
 public class CPlayer
 {	
@@ -27,6 +28,7 @@ public class CPlayer
 		conditionClasses = new ArrayList<Class<? extends Condition>>();
 		conditionClasses.add(SpecificColumnCondition.class);
 		conditionClasses.add(ColumnCondition.class);
+		conditionClasses.add(UnitCountCondition.class);
 		conditionClasses.add(GateCondition.class);
 		conditionClasses.add(CreditCondition.class);
 		conditionClasses.add(NoCondition.class);
@@ -133,6 +135,10 @@ public class CPlayer
 		else if (conditionClass == ColumnCondition.class)
 		{
 			conditionHeader = new ColumnConditionHeader(conditionClass);
+		}
+		else if (conditionClass == UnitCountCondition.class)
+		{
+			conditionHeader = new UnitCountConditionHeader(conditionClass);
 		}
 		else if (conditionClass == CreditCondition.class)
 		{

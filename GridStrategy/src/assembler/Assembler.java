@@ -44,6 +44,7 @@ import ai.NoCondition;
 import ai.NumberCondition;
 import ai.Rule;
 import ai.SpecificColumnCondition;
+import ai.UnitCountCondition;
 import main.FileOperations;
 import main.Main;
 
@@ -256,24 +257,24 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			((SpecificColumnCondition)condition).setColumn(((NumberSpinner) panelControl).getNumber());
 			break;
 		case UNIT_TYPE:
-			((ColumnCondition)condition).setUnitType(((EnumBox<UnitType>) panelControl).getEnumValue());
+			((UnitCountCondition)condition).setUnitType(((EnumBox<UnitType>) panelControl).getEnumValue());
 			break;
 		case NUMBER:
 			((NumberCondition)condition).setNumber(((NumberSpinner) panelControl).getNumber());
 			break;
 		case ROW:
-			((ColumnCondition)condition).setRow(((NumberSpinner) panelControl).getNumber());
+			((UnitCountCondition)condition).setRow(((NumberSpinner) panelControl).getNumber());
 			break;
 		case GATE_TYPE:
 			((GateCondition)condition).setGateType(((EnumBox<GateType>) panelControl).getEnumValue());
 			break;
 		case CONDITION_TYPE:
-			((ColumnCondition)condition).setConditionType(((EnumBox<ConditionType>) panelControl).getEnumValue());
+			((UnitCountCondition)condition).setConditionType(((EnumBox<ConditionType>) panelControl).getEnumValue());
 			break;
 		case UNIT_PLAYER:
 			PlayerEnum playerEnum = ((EnumBox<PlayerEnum>) panelControl).getEnumValue();
 			boolean value = playerEnum == PlayerEnum.ONE ? true : false;	
-			((ColumnCondition) condition).setUnitPlayer(value);
+			((UnitCountCondition) condition).setUnitPlayer(value);
 			break;
 		}
 	}
@@ -545,8 +546,10 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			newCondition = Condition.getConditionExample(NoCondition.class);
 		else if (this.selectedCondition instanceof SpecificColumnCondition)
 			newCondition = Condition.getConditionExample(SpecificColumnCondition.class);
-		else
+		else if (this.selectedCondition instanceof ColumnCondition)
 			newCondition = Condition.getConditionExample(ColumnCondition.class);
+		else
+			newCondition = Condition.getConditionExample(UnitCountCondition.class);
 
 		for (Entry<ControlType, PanelControl> entry : controlMap.entrySet())
 		{
@@ -633,7 +636,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			changed =  number == null || number != ((NumberSpinner) panelControl).getNumber();
 			break;
 		case UNIT_TYPE:
-			UnitType unitType  = ((ColumnCondition) condition).getUnitType();
+			UnitType unitType  = ((UnitCountCondition) condition).getUnitType();
 			changed = unitType == null || ((EnumBox<UnitType>) panelControl).getEnumValue() != unitType;
 			break;
 		case NUMBER:
@@ -641,11 +644,11 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			changed = number == null || ((NumberSpinner) panelControl).getNumber() != number;
 			break;
 		case ROW:
-			number = ((ColumnCondition) condition).getRow();
+			number = ((UnitCountCondition) condition).getRow();
 			changed = number== null || ((NumberSpinner) panelControl).getNumber() != number;
 			break;
 		case CONDITION_TYPE:
-			ConditionType conditionType = ((ColumnCondition) condition).getConditionType();
+			ConditionType conditionType = ((UnitCountCondition) condition).getConditionType();
 			changed = conditionType == null || ((EnumBox<ConditionType>) panelControl).getEnumValue() != conditionType;
 			break;
 		case GATE_TYPE:
@@ -654,7 +657,7 @@ public class Assembler extends JFrame implements ActionListener, ChangeListener,
 			break;
 		case UNIT_PLAYER:
 			PlayerEnum player;
-			Boolean currentValue = ((ColumnCondition) condition).getUnitPlayer();
+			Boolean currentValue = ((UnitCountCondition) condition).getUnitPlayer();
 			if (currentValue == null)
 				player = null;
 			else if (currentValue == true)

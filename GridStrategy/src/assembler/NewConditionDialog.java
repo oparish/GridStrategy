@@ -20,6 +20,7 @@ import ai.GateCondition;
 import ai.NoCondition;
 import ai.Rule;
 import ai.SpecificColumnCondition;
+import ai.UnitCountCondition;
 
 public class NewConditionDialog extends JDialog implements ActionListener
 {
@@ -71,7 +72,7 @@ public class NewConditionDialog extends JDialog implements ActionListener
 		gridBagConstraints.gridy = 0;
 		gridBagConstraints.fill = GridBagConstraints.BOTH;
 		gridBagConstraints.gridwidth = width;
-		this.conditionOptions = new AssemblerList<Class<? extends Condition>>(new Class[]{ColumnCondition.class, SpecificColumnCondition.class, GateCondition.class, CreditCondition.class, NoCondition.class}, AssemblerListType.CONDITIONCLASSES);
+		this.conditionOptions = new AssemblerList<Class<? extends Condition>>(new Class[]{ColumnCondition.class, UnitCountCondition.class, SpecificColumnCondition.class, GateCondition.class, CreditCondition.class, NoCondition.class}, AssemblerListType.CONDITIONCLASSES);
 		this.conditionOptions.setCellRenderer(new ConditionOptionsCellRenderer());
 		this.conditionOptions.setSelectedIndex(0);
 		this.add(new JScrollPane(this.conditionOptions), gridBagConstraints);

@@ -22,6 +22,7 @@ import ai.GateCondition;
 import ai.GateType;
 import ai.NoCondition;
 import ai.SpecificColumnCondition;
+import ai.UnitCountCondition;
 import data.UnitType;
 import main.Main;
 
@@ -117,16 +118,16 @@ public class ConditionFieldPanel extends JPanel
 	{	
 		this.conditionTypeLabel.setText(condition.getConditionClassName());
 		
-		if (condition instanceof ColumnCondition)
+		if (condition instanceof UnitCountCondition)
 		{
 			this.switchAllControls(true);
-			ColumnCondition columnCondition = (ColumnCondition) condition;
-			this.numberSpinner.setValue(columnCondition.getNumber());
-			this.unitBox.setValue(columnCondition.getUnitType());
-			this.rowSpinner.setValue(columnCondition.getRow());
-			this.conditionBox.setValue(columnCondition.getConditionType());
+			UnitCountCondition unitCountCondition = (UnitCountCondition) condition;
+			this.numberSpinner.setValue(unitCountCondition.getNumber());
+			this.unitBox.setValue(unitCountCondition.getUnitType());
+			this.rowSpinner.setValue(unitCountCondition.getRow());
+			this.conditionBox.setValue(unitCountCondition.getConditionType());
 			this.gateBox.switchEnabled(false);
-			Boolean player = columnCondition.getUnitPlayer();
+			Boolean player = unitCountCondition.getUnitPlayer();
 			if (player == null)
 				this.playerBox.setValue(null);
 			else if (player == true)
@@ -136,7 +137,7 @@ public class ConditionFieldPanel extends JPanel
 			if (condition instanceof SpecificColumnCondition)
 			{
 				this.columnSpinner.setEnabled(true);
-				this.columnSpinner.setValue(((SpecificColumnCondition)columnCondition).getColumn());
+				this.columnSpinner.setValue(((SpecificColumnCondition)unitCountCondition).getColumn());
 			}
 			else
 			{
