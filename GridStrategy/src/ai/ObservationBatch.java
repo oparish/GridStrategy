@@ -51,4 +51,16 @@ public class ObservationBatch
 		else
 			return this.getPlayer2DeploymentPoints();
 	}
+	
+	public ArrayList<Integer> getValidDeployColumns()
+	{
+		Integer[] deployPoints = this.getPlayerDeploymentPoints(this.isPlayer1);
+		ArrayList<Integer> deployColumns = new ArrayList<Integer>();
+		for (int i = 0; i < Main.GRIDWIDTH; i++)
+		{
+			if (units[i][deployPoints[i]] == null)
+				deployColumns.add(i);
+		}
+		return deployColumns;
+	}
 }

@@ -17,18 +17,12 @@ public class Spawner
 	private static final int MAX_RULES = 10;
 	private static final int MIN_ACTIONS = 1;
 	private static final int MAX_ACTIONS = 3;
-	private static Random random;
-	
-	static
-	{
-		Spawner.random = new Random();
-	}
 	
 	public static CPlayer createCPlayer(boolean isPlayer1)
 	{
 		ArrayList<Rule> rules = new ArrayList<Rule>();
 		int range = MAX_RULES - MIN_RULES + 1;
-		int ruleNum = random.nextInt(range) + MIN_RULES;
+		int ruleNum = RandomGen.randomIntPlus(range, MIN_RULES);
 		for (int i = 0; i < ruleNum; i++)
 		{
 			rules.add(createCompletelyRandomRule(isPlayer1));
@@ -40,7 +34,7 @@ public class Spawner
 	{
 		ArrayList<Action> actions = new ArrayList<Action>();
 		int range = MAX_ACTIONS - MIN_ACTIONS + 1;
-		int actionNum = random.nextInt(range) + MIN_ACTIONS;
+		int actionNum = RandomGen.randomIntPlus(range, MIN_ACTIONS);
 		for (int i = 0; i < actionNum; i++)
 		{
 			actions.add(createAction());
@@ -50,7 +44,7 @@ public class Spawner
 	
 	private static Condition createCondition(boolean isPlayer1)
 	{
-		if (randomBoolean())
+		if (RandomGen.randomBoolean())
 			return createColumnCondition(isPlayer1);
 		else
 			return createGateCondition(isPlayer1);	
@@ -66,16 +60,16 @@ public class Spawner
 	
 	private static SpecificColumnCondition createSpecificColumnCondition(boolean isPlayer1)
 	{		
-		boolean useColumnCount = randomBoolean();
-		boolean useRowCount = randomBoolean();
-		boolean useUnitType = randomBoolean();
+		boolean useColumnCount = RandomGen.randomBoolean();
+		boolean useRowCount = RandomGen.randomBoolean();
+		boolean useUnitType = RandomGen.randomBoolean();
 		return Spawner.createSpecificColumnCondition(useColumnCount, useRowCount, useUnitType, isPlayer1);
 	}
 	
 	private static ColumnCondition createColumnCondition(boolean isPlayer1)
 	{
-		boolean useRowCount = randomBoolean();
-		boolean useUnitType = randomBoolean();
+		boolean useRowCount = RandomGen.randomBoolean();
+		boolean useUnitType = RandomGen.randomBoolean();
 		return Spawner.createColumnCondition(useRowCount, useUnitType, isPlayer1);
 	}
 	
@@ -84,19 +78,19 @@ public class Spawner
 		int unitCount;
 		
 		if (useRowCount)
-			unitCount = random.nextInt(2);
+			unitCount = RandomGen.randomInt(2);
 		else
-			unitCount = random.nextInt(Main.GRIDWIDTH + 1);		
+			unitCount = RandomGen.randomInt(Main.GRIDWIDTH + 1);
 		
-		ColumnCondition columnCondition = new ColumnCondition(randomConditionType(), unitCount, isPlayer1);
+		ColumnCondition columnCondition = new ColumnCondition(RandomGen.randomConditionType(), unitCount, isPlayer1);
 		if (useUnitType)
 		{
-			columnCondition.setUnitType(randomUnitType());
-			columnCondition.setUnitPlayer(randomBoolean());
+			columnCondition.setUnitType(RandomGen.randomUnitType());
+			columnCondition.setUnitPlayer(RandomGen.randomBoolean());
 		}
 
 		if (useRowCount)
-			columnCondition.setRow(randomRow());
+			columnCondition.setRow(RandomGen.randomRow());
 		return columnCondition;
 	}
 	
@@ -106,26 +100,26 @@ public class Spawner
 		int unitCount;
 		
 		if (useColumnCount && useRowCount)
-			unitCount = random.nextInt(2);
+			unitCount = RandomGen.randomInt(2);
 		else if (useColumnCount)
-			unitCount = random.nextInt(Main.GRIDWIDTH + 1);
+			unitCount = RandomGen.randomInt(Main.GRIDWIDTH + 1);
 		else if (useRowCount)
-			unitCount = random.nextInt(Main.GRIDHEIGHT + 1);
+			unitCount = RandomGen.randomInt(Main.GRIDHEIGHT + 1);
 		else
-			unitCount = random.nextInt(Main.GRIDWIDTH * Main.GRIDHEIGHT + 1);		
+			unitCount = RandomGen.randomInt(Main.GRIDWIDTH * Main.GRIDHEIGHT + 1);
 		
 		SpecificColumnCondition columnCondition = new SpecificColumnCondition(
-				randomConditionType(), unitCount, randomColumn(), isPlayer1);
+				RandomGen.randomConditionType(), unitCount, RandomGen.randomColumn(), isPlayer1);
 		if (useUnitType)
 		{
-			columnCondition.setUnitType(randomUnitType());
-			columnCondition.setUnitPlayer(randomBoolean());
+			columnCondition.setUnitType(RandomGen.randomUnitType());
+			columnCondition.setUnitPlayer(RandomGen.randomBoolean());
 		}
 
 		if (useColumnCount)
-			columnCondition.setColumn(randomColumn());
+			columnCondition.setColumn(RandomGen.randomColumn());
 		if (useRowCount)
-			columnCondition.setRow(randomRow());
+			columnCondition.setRow(RandomGen.randomRow());
 		return columnCondition;
 	}
 	
@@ -134,13 +128,13 @@ public class Spawner
 		if (parameters.containsKey(parameter))
 			return parameters.get(parameter);
 		else
-			return randomBoolean();
+			return RandomGen.randomBoolean();
 	}
 	
 	private static ActivateAction[] createActivateActionBatch(UnitType unitType)
 	{
 		ActivateAction[] actions = new ActivateAction[Main.GRIDWIDTH];
-		ColumnSearchCondition columnSearchCondition = Spawner.randomColumnSearchCondition();
+		ColumnSearchCondition columnSearchCondition = RandomGen.randomColumnSearchCondition();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
 			actions[i] = new ActivateAction(i, unitType, columnSearchCondition);
@@ -151,8 +145,8 @@ public class Spawner
 	private static FurtherInputActivateAction[] createFurtherInputActivateActionBatch(UnitType unitType)
 	{
 		FurtherInputActivateAction[] actions = new FurtherInputActivateAction[Main.GRIDWIDTH];
-		ColumnSearchCondition columnSearchCondition = Spawner.randomColumnSearchCondition();
-		int furtherInput = Spawner.randomFurtherInput(2);
+		ColumnSearchCondition columnSearchCondition = RandomGen.randomColumnSearchCondition();
+		int furtherInput = RandomGen.randomInt(2);
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
 			actions[i] = new FurtherInputActivateAction(i, unitType, columnSearchCondition, furtherInput);
@@ -160,15 +154,10 @@ public class Spawner
 		return actions;
 	}
 	
-	private static int randomFurtherInput(int range)
-	{
-		return random.nextInt(range);
-	}
-	
 	private static DeployAction[] createDeployActionBatch()
 	{
 		DeployAction[] actions = new DeployAction[Main.GRIDWIDTH];
-		UnitType unitType = Spawner.randomUnitType();
+		UnitType unitType = RandomGen.randomUnitType();
 		for (int i = 0; i < Main.GRIDWIDTH; i++)
 		{
 			actions[i] = new DeployAction(i, unitType);
@@ -179,16 +168,16 @@ public class Spawner
 	
 	private static Action[] createActionBatch()
 	{
-		ActionType actionType = Spawner.randomActionType();
+		ActionType actionType = RandomGen.randomActionType();
 		switch (actionType)
 		{
 		case DEPLOY_ACTION:
 			return Spawner.createDeployActionBatch();
 		case FURTHERINPUTACTIVATE_ACTION:
-			UnitType unitType1 = Spawner.randomUnitType();
+			UnitType unitType1 = RandomGen.randomUnitType();
 			return Spawner.createFurtherInputActivateActionBatch(unitType1);
 		case ACTIVATE_ACTION:
-			UnitType unitType2 = Spawner.randomUnitType();
+			UnitType unitType2 = RandomGen.randomUnitType();
 			return Spawner.createActivateActionBatch(unitType2);
 		default:
 			return null;
@@ -199,84 +188,25 @@ public class Spawner
 	private static GateCondition createGateCondition(boolean isPlayer1)
 	{
 		return new GateCondition(createCondition(isPlayer1), createCondition(isPlayer1),
-				randomGateType(), isPlayer1);
-	}
-	
-	private static ConditionType randomConditionType()
-	{
-		ConditionType[] conditionTypes = ConditionType.values();
-		int randTypeNumber = random.nextInt(conditionTypes.length);
-		return conditionTypes[randTypeNumber];
-	}
-	
-	private static GateType randomGateType()
-	{
-		GateType[] gateTypes = GateType.values();
-		int randTypeNumber = random.nextInt(gateTypes.length);
-		return gateTypes[randTypeNumber];
+				RandomGen.randomGateType(), isPlayer1);
 	}
 	
 	private static Action createAction()
 	{
-		switch (randomActionType())
+		switch (RandomGen.randomActionType())
 		{
 		case DEPLOY_ACTION:
-			return new DeployAction(Main.NO_SPECIFIC_COLUMN, randomUnitType());
+			return new DeployAction(Main.NO_SPECIFIC_COLUMN, RandomGen.randomUnitType());
 		case CLEAR_ACTION:
 			return new ClearAction(Main.NO_SPECIFIC_COLUMN);
 		case FURTHERINPUTACTIVATE_ACTION:
-			return new FurtherInputActivateAction(Main.NO_SPECIFIC_COLUMN, randomActivatableUnitType(), randomColumnSearchCondition(), 
-					randomFurtherInput(2));
+			return new FurtherInputActivateAction(Main.NO_SPECIFIC_COLUMN, RandomGen.randomActivatableUnitType(), RandomGen.randomColumnSearchCondition(), 
+					RandomGen.randomInt(2));
 		case ACTIVATE_ACTION:
-			return new ActivateAction(Main.NO_SPECIFIC_COLUMN, randomActivatableUnitType(), randomColumnSearchCondition());
+			return new ActivateAction(Main.NO_SPECIFIC_COLUMN, RandomGen.randomActivatableUnitType(), RandomGen.randomColumnSearchCondition());
 		default:
 			return null;
 		}
-	}
-	
-	private static ActionType randomActionType()
-	{
-		ActionType[] actionTypes = ActionType.values();
-		int randomNumber = random.nextInt(actionTypes.length);
-		return actionTypes[randomNumber];
-	}
-	
-	private static int randomColumn()
-	{
-		return random.nextInt(Main.GRIDWIDTH);
-	}
-	
-	private static int randomRow()
-	{
-		return random.nextInt(Main.GRIDHEIGHT);
-	}
-	private static boolean randomBoolean()
-	{
-		if (random.nextInt(2) == 0)
-			return true;
-		else
-			return false;
-	}
-	
-	private static UnitType randomUnitType()
-	{
-		ArrayList<UnitType> unitTypes = UnitType.getDeployableUnitTypes();
-		int randTypeNumber = random.nextInt(unitTypes.size());
-		return unitTypes.get(randTypeNumber);
-	}
-	
-	private static UnitType randomActivatableUnitType()
-	{
-		ArrayList<UnitType> unitTypes = UnitType.getActivatableUnitTypes();
-		int randTypeNumber = random.nextInt(unitTypes.size());
-		return unitTypes.get(randTypeNumber);
-	}
-	
-	private static ColumnSearchCondition randomColumnSearchCondition()
-	{
-		ColumnSearchCondition[] columnSearchConditions = ColumnSearchCondition.values();
-		int randTypeNumber = random.nextInt(columnSearchConditions.length);
-		return columnSearchConditions[randTypeNumber];
 	}
 	
 	private enum ColumnConditionParameter

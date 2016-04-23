@@ -99,11 +99,14 @@ public class UnitCountCondition extends Condition implements NumberCondition
 	
 	public int runCheck(ObservationBatch observationBatch, int checkStartPos)
 	{
-		int [] colList = Main.getRandomColumnList();
 		ArrayList<Unit> conditionUnits = this.findUnitsOnGrid(observationBatch);
 		this.filterTypes(this.getUnitType(), this.getUnitPlayer(), conditionUnits);
 		if (this.checkNumber(observationBatch, conditionUnits))
-			return 0;
+		{
+			ArrayList<Integer> deployPoints = observationBatch.getValidDeployColumns();
+			int rnd = RandomGen.randomInt(deployPoints.size());
+			return deployPoints.get(rnd);
+		}
 	
 		return Main.GENERIC_CHECK_FAILURE;
 	}
