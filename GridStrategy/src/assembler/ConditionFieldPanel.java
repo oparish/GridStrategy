@@ -43,7 +43,7 @@ public class ConditionFieldPanel extends JPanel
 		this.setLayout(new GridLayout(8, 3));
 		
 		this.conditionTypeLabel = new JLabel("                   ");
-		this.columnSpinner = new NumberSpinner(0, Main.GRIDWIDTH - 1, ControlType.COLUMN, PanelType.CONDITION, assembler, true);
+		this.columnSpinner = new NumberSpinner(0, Main.GRIDWIDTH - 1, ControlType.COLUMN, PanelType.CONDITION, assembler, false);
 		this.unitBox = new EnumBox<UnitType>(UnitType.values(), ControlType.UNIT_TYPE, PanelType.CONDITION, assembler, true);
 		this.numberSpinner = new NumberSpinner(0, 99, ControlType.NUMBER, PanelType.CONDITION, assembler, true);
 		this.rowSpinner = new NumberSpinner(0, Main.GRIDHEIGHT - 1, ControlType.ROW, PanelType.CONDITION, assembler, true);
@@ -134,11 +134,13 @@ public class ConditionFieldPanel extends JPanel
 			else
 				this.playerBox.setValue(PlayerEnum.TWO);
 			if (condition instanceof SpecificColumnCondition)
+			{
+				this.columnSpinner.setEnabled(true);
 				this.columnSpinner.setValue(((SpecificColumnCondition)columnCondition).getColumn());
+			}
 			else
 			{
 				this.columnSpinner.setEnabled(false);
-				this.columnSpinner.getCheckBox().setEnabled(false);
 			}
 		}
 		else if (condition instanceof GateCondition)
@@ -180,6 +182,10 @@ public class ConditionFieldPanel extends JPanel
 			{
 				this.add(checkbox);
 				checkbox.addActionListener(assembler);
+			}
+			else
+			{
+				this.add(new JPanel());
 			}
 		}
 		else

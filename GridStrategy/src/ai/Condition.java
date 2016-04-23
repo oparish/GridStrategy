@@ -193,7 +193,7 @@ public abstract class Condition
 	{
 		if (conditionClass == SpecificColumnCondition.class)
 		{
-			return new SpecificColumnCondition(ConditionType.EQUAL_TO, 0, true);
+			return new SpecificColumnCondition(ConditionType.EQUAL_TO, 0, 0, true);
 		}
 		else if (conditionClass == ColumnCondition.class)
 		{

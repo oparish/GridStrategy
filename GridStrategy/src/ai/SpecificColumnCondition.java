@@ -18,9 +18,10 @@ public class SpecificColumnCondition extends ColumnCondition
 		super(fieldMap, isPlayer1);
 	}
 	
-	public SpecificColumnCondition(ConditionType conditionType, int number, boolean isPlayer1)
+	public SpecificColumnCondition(ConditionType conditionType, int number, int column, boolean isPlayer1)
 	{
 		super(conditionType, number, isPlayer1);
+		this.setColumn(column);
 	}
 	
 	public SpecificColumnCondition(List<Integer> integers, boolean isPlayer1, SpecificColumnConditionHeader conditionHeader)

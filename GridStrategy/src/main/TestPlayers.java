@@ -58,7 +58,7 @@ public class TestPlayers
 		(int columnPos, int rowPos, Unit unit, ConditionType conditionType, int number)
 	{
 		SpecificColumnCondition testCondition = 
-				new SpecificColumnCondition(conditionType, number, false);
+				new SpecificColumnCondition(conditionType, number, 0, false);
 		testCondition.setColumn(columnPos);
 		testCondition.setRow(rowPos);
 		testCondition.setUnitType(unit.getUnitType());

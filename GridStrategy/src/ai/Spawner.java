@@ -115,7 +115,7 @@ public class Spawner
 			unitCount = random.nextInt(Main.GRIDWIDTH * Main.GRIDHEIGHT + 1);		
 		
 		SpecificColumnCondition columnCondition = new SpecificColumnCondition(
-				randomConditionType(), unitCount, isPlayer1);
+				randomConditionType(), unitCount, randomColumn(), isPlayer1);
 		if (useUnitType)
 		{
 			columnCondition.setUnitType(randomUnitType());
