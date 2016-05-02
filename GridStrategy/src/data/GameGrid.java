@@ -435,13 +435,20 @@ public class GameGrid
 		while (distance > 0)
 		{
 			endPos += directionToWalk;
-			distance -= this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.ROUGH) && 
-					!unitType.hasCategory(FLYING) ? 2 : 1;
-			if (this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.OBSTACLE) 
-					&& !unitType.hasCategory(UnitCategory.FLYING))
+			if (endPos >= 0 && endPos < Main.GRIDHEIGHT)
 			{
-				endPos -= directionToWalk;
-				break;
+				distance -= this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.ROUGH) && 
+						!unitType.hasCategory(FLYING) ? 2 : 1;
+				if (this.map.getGridTerrain()[column][endPos].hasCategory(TerrainCategory.OBSTACLE) 
+						&& !unitType.hasCategory(UnitCategory.FLYING))
+				{
+					endPos -= directionToWalk;
+					break;
+				}
+			}
+			else
+			{
+				distance--;
 			}
 		}
 		return endPos;
