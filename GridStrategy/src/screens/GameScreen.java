@@ -466,6 +466,9 @@ public class GameScreen extends JFrame implements ActionListener, MyEventListene
 	{
 		int column = this.getColumnFromPosition(e.getX());
 		int row = this.getRowFromPosition(e.getY());
+		if (column == -1 || row == -1)
+			return;
+			
 		PaintArea paintArea = this.gridPane.getGridInfo().getDeployPointPaintArea(column, row);
 		if (this.screenState == GameScreenState.ACTIVATING_ABILITY && paintArea instanceof Cell)
 		{
