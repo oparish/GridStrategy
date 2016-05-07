@@ -6,7 +6,7 @@ import main.Main;
 
 public class DefaultMap implements Map
 {
-	Terrain[][] gridTerrain;
+	Terrain[][] gridTerrain = new Terrain[Main.GRIDWIDTH][Main.GRIDHEIGHT];
 	
 	public DefaultMap()
 	{
