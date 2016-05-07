@@ -671,6 +671,10 @@ public class GameGrid
 			DeployAction action = new DeployAction(actionNumber, unitTypes.get(unitNumber));
 			int result = action.attemptAction(this, this.isPlayer1Turn, Main.GENERIC_CHECK_SUCCESS);
 			if (result != Main.GENERIC_CHECK_FAILURE)
+			{
+				this.noteMove();
+			}
+			else
 				this.noteMove();
 		}
 	}
